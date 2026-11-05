@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-05
+   Versie: 2026-11-05b (kader niet op Shorts)
    ========================================================= */
 /* =========================================================
    KADER OP MAAT (Revidd, sinds oktober 2026)
@@ -22,6 +22,8 @@
 (() => {
   const frame = window.frameElement;
   if (!frame) return;
+  /* Schermvullende pagina's (Shorts) regelen hun kader zelf */
+  if (document.getElementById('bagage-shorts') || document.querySelector('[data-bagage-eigen-kader]')) return;
   const host = window.parent;
   const hdoc = host.document;
 
