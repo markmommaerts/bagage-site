@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-05b (kader niet op Shorts)
+   Versie: 2026-11-06 (ondertitels halfdoorzichtig)
    ========================================================= */
 /* =========================================================
    KADER OP MAAT (Revidd, sinds oktober 2026)
@@ -238,7 +238,9 @@ bar + ' span{color:#f4f1e9!important}' +
 'html.bagage-search-light footer,html.bagage-search-light footer *{background:#f7f4ee!important;color:#55534f!important;border-color:#ddd6c8!important}' +
 'html.bagage-search-light footer img,html.bagage-search-light footer svg{filter:invert(1)}' +
 'html.bagage-search-light #bagage-page-hits{color:#1a1a18!important}' +
-'html.bagage-search-light #bagage-page-hits a{color:#1a1a18!important;background:#fff!important;border-color:#ddd6c8!important;border-left-color:#ef6a28!important}';
+'html.bagage-search-light #bagage-page-hits a{color:#1a1a18!important;background:#fff!important;border-color:#ddd6c8!important;border-left-color:#ef6a28!important}' +
+/* Ondertitels in de Revidd-speler (Video.js): halfdoorzichtige grijze achtergrond i.p.v. zwart */
+'.video-js .vjs-text-track-display .vjs-text-track-cue>div{background-color:rgba(20,20,20,.55)!important;color:#fff!important;padding:.05em .3em!important;border-radius:2px;text-shadow:0 1px 2px rgba(0,0,0,.8)}';
 document.head.append(st);
 const lang = () => (location.pathname.split('/')[1] || 'nl').replace(/^en$/, 'nl');
 const isOldHome = p => /^\/(en|nl)\/home\/?$/.test(p);
