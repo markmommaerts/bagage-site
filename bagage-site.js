@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-06 (ondertitels halfdoorzichtig)
+   Versie: 2026-11-06b (ondertitels halfdoorzichtig)
    ========================================================= */
 /* =========================================================
    KADER OP MAAT (Revidd, sinds oktober 2026)
@@ -158,15 +158,15 @@
   Element.prototype.scrollIntoView = function (opt) {
     const smooth = !(opt && typeof opt === 'object' && opt.behavior === 'auto') &&
       !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const top = Math.max(0, scrollPos() + window.bagageTopOnPage(this) - headerBottom() - 16);
+    const el = this;
+    const dest = () => Math.max(0, scrollPos() + window.bagageTopOnPage(el) - headerBottom() - 16);
     const s = target();
-    const start = s.scrollTop;
-    s.scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' });
-    /* Zacht scrollen wordt door Revidd soms afgebroken (bv. na het wisselen van pagina):
-       is er na een halve seconde niets bewogen, dan meteen naar de plek springen. */
-    if (smooth && Math.abs(top - start) > 2) {
-      setTimeout(() => { if (Math.abs(s.scrollTop - start) < 2) s.scrollTop = top; }, 450);
-    }
+    s.scrollTo({ top: dest(), behavior: smooth ? 'smooth' : 'auto' });
+    /* Zacht scrollen wordt soms afgebroken: door Revidd (na het wisselen van pagina) of doordat het kader
+       intussen korter wordt (bv. na 'Alles bekijken' onderaan de catalogus). Dan bleef je onder de inhoud
+       op een zwart vlak staan. Daarom nadien controleren en zo nodig meteen naar de juiste plek springen. */
+    const check = () => { const t = dest(); if (Math.abs(target().scrollTop - t) > 4) target().scrollTop = t; };
+    (smooth ? [650, 1300] : [120, 600]).forEach(ms => setTimeout(check, ms));
   };
 
   /* Vensters over de pagina (bv. de lezer van Achtergrond) staan 'fixed' in het kader.
