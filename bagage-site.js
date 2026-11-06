@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-06c (tab Duiding, oranje sluitknop)
+   Versie: 2026-11-06c (tab Duiding, oranje sluitknop, Lees meer)
    ========================================================= */
 /* =========================================================
    KADER OP MAAT (Revidd, sinds oktober 2026)
@@ -243,7 +243,7 @@ bar + ' span{color:#f4f1e9!important}' +
 '.video-js .vjs-text-track-display .vjs-text-track-cue>div{background:transparent!important;background-color:transparent!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 3px rgba(0,0,0,.7)}' +
 /* Duiding (Ghost-artikel bij een titel): sluitknop in Bagage-oranje, tab 'Nieuwsbrief' heet 'Duiding' */
 'button[aria-label="Close article"]{background:#ef6a28!important;color:#fff!important}' +
-'[data-bagage-duiding]{font-size:0!important}[data-bagage-duiding]::after{content:"Duiding";font-size:16px}';
+'[data-bagage-duiding]{font-size:0!important}[data-bagage-duiding]::after{content:"Duiding";font-size:16px}[data-bagage-lees]{font-size:0!important}[data-bagage-lees]::after{content:"Lees meer →";font-size:11px}';
 document.head.append(st);
 const lang = () => (location.pathname.split('/')[1] || 'nl').replace(/^en$/, 'nl');
 const isOldHome = p => /^\/(en|nl)\/home\/?$/.test(p);
@@ -335,6 +335,9 @@ new MutationObserver(() => {
 if (!shTimer) shTimer = setTimeout(() => { shTimer = 0; searchHits(); }, 120);
 document.querySelectorAll('button[value]:not([data-bagage-duiding])').forEach(b => {
 if (/^nieuwsbrief$/i.test(b.textContent.trim())) b.setAttribute('data-bagage-duiding', '');
+});
+document.querySelectorAll('span[style]:not([data-bagage-lees])').forEach(sp => {
+if (!sp.childElementCount && /^read more\s*→?$/i.test(sp.textContent.trim())) sp.setAttribute('data-bagage-lees', '');
 });
 document.querySelectorAll('.MuiDrawer-paper p.rd-menu__item').forEach(p => {
 if (!p.textContent.trim() && !p.querySelector('img,svg')) (p.closest('div.cursor-pointer') || p).style.setProperty('display', 'none', 'important');
