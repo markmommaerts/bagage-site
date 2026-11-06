@@ -239,8 +239,8 @@ bar + ' span{color:#f4f1e9!important}' +
 'html.bagage-search-light footer img,html.bagage-search-light footer svg{filter:invert(1)}' +
 'html.bagage-search-light #bagage-page-hits{color:#1a1a18!important}' +
 'html.bagage-search-light #bagage-page-hits a{color:#1a1a18!important;background:#fff!important;border-color:#ddd6c8!important;border-left-color:#ef6a28!important}' +
-/* Ondertitels in de Revidd-speler (Video.js): halfdoorzichtige grijze achtergrond i.p.v. zwart */
-'.video-js .vjs-text-track-display .vjs-text-track-cue>div{background-color:rgba(20,20,20,.3)!important;color:#fff!important;padding:.05em .3em!important;border-radius:2px;text-shadow:0 1px 2px rgba(0,0,0,.8)}';
+/* Ondertitels in de Revidd-speler (Video.js): geen achtergrond, alleen lichte schaduw */
+'.video-js .vjs-text-track-display .vjs-text-track-cue>div{background:transparent!important;background-color:transparent!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 3px rgba(0,0,0,.7)}';
 document.head.append(st);
 const lang = () => (location.pathname.split('/')[1] || 'nl').replace(/^en$/, 'nl');
 const isOldHome = p => /^\/(en|nl)\/home\/?$/.test(p);
