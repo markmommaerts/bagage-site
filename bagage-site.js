@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-06b (ondertitels zonder achtergrond, scrollcorrectie)
+   Versie: 2026-11-06c (tab Duiding, oranje sluitknop)
    ========================================================= */
 /* =========================================================
    KADER OP MAAT (Revidd, sinds oktober 2026)
@@ -240,7 +240,10 @@ bar + ' span{color:#f4f1e9!important}' +
 'html.bagage-search-light #bagage-page-hits{color:#1a1a18!important}' +
 'html.bagage-search-light #bagage-page-hits a{color:#1a1a18!important;background:#fff!important;border-color:#ddd6c8!important;border-left-color:#ef6a28!important}' +
 /* Ondertitels in de Revidd-speler (Video.js): geen achtergrond, alleen lichte schaduw */
-'.video-js .vjs-text-track-display .vjs-text-track-cue>div{background:transparent!important;background-color:transparent!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 3px rgba(0,0,0,.7)}';
+'.video-js .vjs-text-track-display .vjs-text-track-cue>div{background:transparent!important;background-color:transparent!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 3px rgba(0,0,0,.7)}' +
+/* Duiding (Ghost-artikel bij een titel): sluitknop in Bagage-oranje, tab 'Nieuwsbrief' heet 'Duiding' */
+'button[aria-label="Close article"]{background:#ef6a28!important;color:#fff!important}' +
+'[data-bagage-duiding]{font-size:0!important}[data-bagage-duiding]::after{content:"Duiding";font-size:16px}';
 document.head.append(st);
 const lang = () => (location.pathname.split('/')[1] || 'nl').replace(/^en$/, 'nl');
 const isOldHome = p => /^\/(en|nl)\/home\/?$/.test(p);
@@ -330,6 +333,9 @@ if (grid) grid.parentNode.insertBefore(box, grid); else head.parentNode.insertBe
 let shTimer = 0;
 new MutationObserver(() => {
 if (!shTimer) shTimer = setTimeout(() => { shTimer = 0; searchHits(); }, 120);
+document.querySelectorAll('button[value]:not([data-bagage-duiding])').forEach(b => {
+if (/^nieuwsbrief$/i.test(b.textContent.trim())) b.setAttribute('data-bagage-duiding', '');
+});
 document.querySelectorAll('.MuiDrawer-paper p.rd-menu__item').forEach(p => {
 if (!p.textContent.trim() && !p.querySelector('img,svg')) (p.closest('div.cursor-pointer') || p).style.setProperty('display', 'none', 'important');
 });
