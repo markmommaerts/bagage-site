@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-06c (tab Duiding, oranje sluitknop, Lees meer)
+   Versie: 2026-11-06c (tab Duiding hersteld, oranje sluitknop, Lees meer)
    ========================================================= */
 /* =========================================================
    KADER OP MAAT (Revidd, sinds oktober 2026)
@@ -330,19 +330,25 @@ box.append(a);
 });
 if (grid) grid.parentNode.insertBefore(box, grid); else head.parentNode.insertBefore(box, head.nextSibling);
 };
-let shTimer = 0;
+let shTimer = 0, lbTimer = 0;
+const labels = () => {
+/* Revidd hergebruikt de tabknoppen: bij elke wijziging opnieuw kijken welke knop 'Nieuwsbrief' is */
+document.querySelectorAll('button[value]').forEach(b => {
+const on = /^nieuwsbrief$/i.test(b.textContent.trim());
+if (on !== b.hasAttribute('data-bagage-duiding')) b.toggleAttribute('data-bagage-duiding', on);
+});
+document.querySelectorAll('span[style]').forEach(sp => {
+const on = !sp.childElementCount && /^read more\s*→?$/i.test(sp.textContent.trim());
+if (on !== sp.hasAttribute('data-bagage-lees')) sp.toggleAttribute('data-bagage-lees', on);
+});
+};
 new MutationObserver(() => {
 if (!shTimer) shTimer = setTimeout(() => { shTimer = 0; searchHits(); }, 120);
-document.querySelectorAll('button[value]:not([data-bagage-duiding])').forEach(b => {
-if (/^nieuwsbrief$/i.test(b.textContent.trim())) b.setAttribute('data-bagage-duiding', '');
-});
-document.querySelectorAll('span[style]:not([data-bagage-lees])').forEach(sp => {
-if (!sp.childElementCount && /^read more\s*→?$/i.test(sp.textContent.trim())) sp.setAttribute('data-bagage-lees', '');
-});
+if (!lbTimer) lbTimer = setTimeout(() => { lbTimer = 0; labels(); }, 100);
 document.querySelectorAll('.MuiDrawer-paper p.rd-menu__item').forEach(p => {
 if (!p.textContent.trim() && !p.querySelector('img,svg')) (p.closest('div.cursor-pointer') || p).style.setProperty('display', 'none', 'important');
 });
-}).observe(document.body, { childList: true, subtree: true });
+}).observe(document.body, { childList: true, subtree: true, characterData: true });
 const restoreGuard = () => {
 let saved = null;
 try { saved = JSON.parse(sessionStorage.getItem('bagageHomeScroll') || 'null'); } catch (e) {}
