@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-06c (tab Duiding, Lees meer, vergrootglas gsm, oude home, geen onderbalk, footer NL)
+   Versie: 2026-11-06c (tab Duiding, Lees meer, vergrootglas gsm, oude home, geen onderbalk, footer NL, links boven ©)
    ========================================================= */
 /* =========================================================
    KADER OP MAAT (Revidd, sinds oktober 2026)
@@ -248,7 +248,9 @@ bar + ' span{color:#f4f1e9!important}' +
 /* Vergrootglas rechtsboven op gsm alleen op Catalogus, Reeksen & dossiers en Zoeken  */
 '@media(max-width:820px){html.bagage-geen-zoek div.fixed:has(img[alt="NavLogo"]) *:has(> img[alt="searchIcon"]),html.bagage-geen-zoek div.fixed:has(img[alt="NavLogo"]) img[alt="searchIcon"]{visibility:hidden!important;pointer-events:none!important}}' +
 '[data-bagage-duiding]{font-size:0!important}[data-bagage-duiding]::after{content:"Duiding";font-size:16px}[data-bagage-lees]{font-size:0!important}[data-bagage-lees]::after{content:"Lees meer →";font-size:11px}' +
-'[data-bagage-foot=privacy],[data-bagage-foot=voorwaarden]{font-size:0!important}[data-bagage-foot=privacy]::after{content:"Privacybeleid";font-size:14px}[data-bagage-foot=voorwaarden]::after{content:"Gebruiksvoorwaarden";font-size:14px}[data-bagage-foot=weg]{display:none!important}';
+'[data-bagage-foot=privacy],[data-bagage-foot=voorwaarden]{font-size:0!important}[data-bagage-foot=privacy]::after{content:"Privacybeleid";font-size:14px}[data-bagage-foot=voorwaarden]::after{content:"Gebruiksvoorwaarden";font-size:14px}[data-bagage-foot=weg]{display:none!important}' +
+'footer:has([data-bagage-footlinks]) a:has([data-bagage-foot]),footer:has([data-bagage-footlinks]) a[data-bagage-foot]{display:none!important}' +
+'[data-bagage-footlinks]{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin:14px 0 10px;font-size:13px}[data-bagage-footlinks] a{color:inherit;text-decoration:none}[data-bagage-footlinks] a:hover{color:#b63712!important}';
 document.head.append(st);
 const lang = () => (location.pathname.split('/')[1] || 'nl').replace(/^en$/, 'nl');
 const isOldHome = p => /^\/(en|nl)\/home\/?$/.test(p);
@@ -350,6 +352,17 @@ if (el.childElementCount) return;
 const t = el.textContent.trim();
 const nl = /^privacy policy$/i.test(t) ? 'privacy' : /^terms of use$/i.test(t) ? 'voorwaarden' : /^(information|informatie)$/i.test(t) ? 'weg' : '';
 if (nl && el.getAttribute('data-bagage-foot') !== nl) el.setAttribute('data-bagage-foot', nl);
+});
+/* Privacybeleid en Gebruiksvoorwaarden onder het logo, net boven de ©-regel */
+document.querySelectorAll('footer').forEach(f => {
+const copy = [...f.querySelectorAll('*')].find(el => !el.childElementCount && /^©/.test(el.textContent.trim()));
+if (!copy || (copy.previousElementSibling && copy.previousElementSibling.hasAttribute('data-bagage-footlinks'))) return;
+f.querySelectorAll('[data-bagage-footlinks]').forEach(n => n.remove());
+const href = k => { const a = f.querySelector('[data-bagage-foot=' + k + ']'); const l = a && a.closest('a'); return l ? l.href : '/' + (k === 'privacy' ? 'privacy-policy' : 'terms-of-use'); };
+const nav = document.createElement('div');
+nav.setAttribute('data-bagage-footlinks', '');
+nav.innerHTML = '<a href="' + href('privacy') + '">Privacybeleid</a><a href="' + href('voorwaarden') + '">Gebruiksvoorwaarden</a>';
+copy.parentNode.insertBefore(nav, copy);
 });
 document.querySelectorAll('span[style]').forEach(sp => {
 const on = !sp.childElementCount && /^read more\s*→?$/i.test(sp.textContent.trim());
