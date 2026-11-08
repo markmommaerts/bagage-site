@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-06c (tab Duiding, Lees meer, vergrootglas gsm, oude home, geen onderbalk)
+   Versie: 2026-11-06c (tab Duiding, Lees meer, vergrootglas gsm, oude home, geen onderbalk, footer NL)
    ========================================================= */
 /* =========================================================
    KADER OP MAAT (Revidd, sinds oktober 2026)
@@ -247,7 +247,8 @@ bar + ' span{color:#f4f1e9!important}' +
 'div.fixed.bottom-0.left-0.w-full.shadow-md:has(img[alt="Home"]){display:none!important}' +
 /* Vergrootglas rechtsboven op gsm alleen op Catalogus, Reeksen & dossiers en Zoeken  */
 '@media(max-width:820px){html.bagage-geen-zoek div.fixed:has(img[alt="NavLogo"]) *:has(> img[alt="searchIcon"]),html.bagage-geen-zoek div.fixed:has(img[alt="NavLogo"]) img[alt="searchIcon"]{visibility:hidden!important;pointer-events:none!important}}' +
-'[data-bagage-duiding]{font-size:0!important}[data-bagage-duiding]::after{content:"Duiding";font-size:16px}[data-bagage-lees]{font-size:0!important}[data-bagage-lees]::after{content:"Lees meer →";font-size:11px}';
+'[data-bagage-duiding]{font-size:0!important}[data-bagage-duiding]::after{content:"Duiding";font-size:16px}[data-bagage-lees]{font-size:0!important}[data-bagage-lees]::after{content:"Lees meer →";font-size:11px}' +
+'[data-bagage-foot=privacy],[data-bagage-foot=voorwaarden]{font-size:0!important}[data-bagage-foot=privacy]::after{content:"Privacybeleid";font-size:14px}[data-bagage-foot=voorwaarden]::after{content:"Gebruiksvoorwaarden";font-size:14px}[data-bagage-foot=weg]{display:none!important}';
 document.head.append(st);
 const lang = () => (location.pathname.split('/')[1] || 'nl').replace(/^en$/, 'nl');
 const isOldHome = p => /^\/(en|nl)\/home\/?$/.test(p);
@@ -342,6 +343,13 @@ if (isOldHome(location.pathname)) { location.replace('/' + lang()); return; }
 document.querySelectorAll('button[value]').forEach(b => {
 const on = /^nieuwsbrief$/i.test(b.textContent.trim());
 if (on !== b.hasAttribute('data-bagage-duiding')) b.toggleAttribute('data-bagage-duiding', on);
+});
+/* Footer van Revidd: Nederlandse benamingen, kopje 'Informatie' weg */
+document.querySelectorAll('footer *').forEach(el => {
+if (el.childElementCount) return;
+const t = el.textContent.trim();
+const nl = /^privacy policy$/i.test(t) ? 'privacy' : /^terms of use$/i.test(t) ? 'voorwaarden' : /^(information|informatie)$/i.test(t) ? 'weg' : '';
+if (nl && el.getAttribute('data-bagage-foot') !== nl) el.setAttribute('data-bagage-foot', nl);
 });
 document.querySelectorAll('span[style]').forEach(sp => {
 const on = !sp.childElementCount && /^read more\s*→?$/i.test(sp.textContent.trim());
