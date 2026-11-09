@@ -21,3 +21,9 @@ Een nieuwe reeks: één blok toevoegen in `reeksen.js`. De uitleg staat bovenaan
 
 `templates/reekspagina.html` is de meest recente reekspagina (De boom die het bos verbergt)
 en dient als vertrekpunt voor een nieuwe reeks- of partnerpagina.
+
+## Automatische controle
+
+Bij elke wijziging kijkt GitHub de code na (map `controle/`, instellingen in `.github/workflows/controle.yml`):
+de lijst in `reeksen.js` (verplichte velden, dubbels, max. 3 op Home, links), de JavaScript en de HTML van de sjablonen.
+Loopt er iets mis, dan krijg je een mail en staat er een rood kruisje bij de wijziging op GitHub.

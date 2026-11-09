@@ -888,9 +888,17 @@
       parts.push(fig);
     }
     const body = el('div', 'bg-reader-body');
-    body.innerHTML = p.html || '';               // tekst komt uit onze eigen Ghost-site
+    /* Tekst komt uit onze eigen Ghost-site. Toch eerst opschonen in een losse kopie (daar draait niets),
+       zodat er nooit code mee de pagina in kan: geen scripts, kaders of formulieren,
+       geen on…-attributen (bv. onerror) en geen javascript:-links. */
+    const clean = new DOMParser().parseFromString(p.html || '', 'text/html').body;
+    clean.querySelectorAll('script, iframe, object, embed, form, link, meta, base, style').forEach(n => n.remove());
+    clean.querySelectorAll('*').forEach(n => [...n.attributes].forEach(at => {
+      const v = at.value.replace(/[\s\u0000-\u001f]+/g, '').toLowerCase();
+      if (/^on/i.test(at.name) || (/^(javascript|vbscript|data:text)/.test(v) && /^(href|src|action|formaction|xlink:href)$/i.test(at.name))) n.removeAttribute(at.name);
+    }));
+    body.append(...clean.childNodes);
     body.querySelectorAll('a[href]').forEach(a => { a.target = '_blank'; a.rel = 'noopener'; });
-    body.querySelectorAll('script').forEach(sc => sc.remove());
     parts.push(body);
     const foot = el('div', 'bg-reader-foot');
     const sub = el('a', 'catalog-btn', 'Schrijf je in op de nieuwsbrief →');
