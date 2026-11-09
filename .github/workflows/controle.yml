@@ -1,0 +1,26 @@
+# Automatische controle: draait bij elke wijziging op GitHub.
+# Gaat er iets mis, dan krijg je een mail en staat er een rood kruisje bij de wijziging.
+name: Controle
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  controle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Hulpprogramma's installeren
+        run: npm install --no-save --no-package-lock html-validate@9 eslint@9 globals@15
+      - name: Lijst van reeksen nakijken
+        run: node controle/reeksen-check.js
+      - name: JavaScript nakijken
+        run: |
+          node controle/sjabloon-scripts.js
+          npx eslint -c controle/eslint.config.mjs bagage-site.js reeksen.js controle/tmp
+      - name: HTML van de sjablonen nakijken
+        run: npx html-validate -c controle/htmlvalidate.json templates
