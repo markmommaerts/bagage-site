@@ -57,7 +57,7 @@ window.BAGAGE_REEKSEN = [
   { page:'de-boom-die-het-bos-verbergt',
     title:'De boom die het bos verbergt', type:'Reeks · 6 delen', soort:'reeks',
     href:'https://bagage.store1.revidd.video/nl/pages/de-boom-die-het-bos-verbergt',
-    image:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/528383b5-96ab-4dd2-a311-e297931b5834.jpg',
+    image:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/01929e84-afd9-4441-88c9-637113ebc549.jpg',
     tekst:'Zes iconische bomen, zes bossen over de hele wereld. Telkens één opmerkelijke boom, maar het bos als geheel speelt de hoofdrol.',
     home:true,
     ids:['6aaa9359ef56438006250b3f'] }
