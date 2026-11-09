@@ -16,3 +16,8 @@ bouwen hun kaarten uit deze lijst:
     <script src="https://markmommaerts.github.io/bagage-site/reeksen.js"></script>
 
 Een nieuwe reeks: één blok toevoegen in `reeksen.js`. De uitleg staat bovenaan het bestand.
+
+## Sjablonen
+
+`templates/reekspagina.html` is de meest recente reekspagina (De boom die het bos verbergt)
+en dient als vertrekpunt voor een nieuwe reeks- of partnerpagina.

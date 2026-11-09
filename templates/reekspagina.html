@@ -1,0 +1,942 @@
+<script>
+(() => {
+  let host;
+  try{ host = window.parent && window.parent !== window ? window.parent.document : document; }
+  catch{ return; }
+  const view = host.defaultView;
+  const lang = () => view.location.pathname.split('/')[1] || 'nl';
+
+  if(!host.getElementById('bagage-aarde-chrome')){
+    const style = host.createElement('style');
+    style.id = 'bagage-aarde-chrome';
+    style.textContent =
+      'div:has(> button > img[src*="ic-back"]){display:none!important}' +
+      /* eigen onderbalk, zelfde opbouw als die van Revidd */
+      '#bagage-bottombar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;justify-content:space-around;align-items:center;' +
+      'padding:10px 0 calc(10px + env(safe-area-inset-bottom));background:#000;color:#fff;font:12px/1.2 Arial,Helvetica,sans-serif;border-top:1px solid #272d2f}' +
+      '#bagage-bottombar button{appearance:none;background:none;border:0;color:#aaa8a2;display:flex;flex-direction:column;align-items:center;gap:4px;font:inherit;cursor:pointer;padding:0 12px}' +
+      '#bagage-bottombar img{height:20px;width:20px}' +
+      '@media (max-width:639px){#bagage-bottombar{display:flex}}' +
+      '.bagage-head{transition:background-color .3s ease}' +
+      '.bagage-head.bagage-head-solid{background-color:rgba(9,12,13,.94)!important}';
+    style.textContent += '.MuiDrawer-paper div.cursor-pointer:has(> p.rd-menu__item:empty){display:none!important}';
+    host.head.append(style);
+
+    /* Het logo linkt bij Revidd naar de oude startpagina (/nl/home); hier naar de landingspagina (/nl). */
+    const onLogo = e => {
+      /* Logo in de kop én in de footer van Revidd: dat is geen gewone link maar een klikbaar blok rond het logo */
+      const t = e.target;
+      const box = t.closest && t.closest('a, [class*="cursor-pointer"]');
+      const isLogo = (t.matches && t.matches('img[alt="NavLogo"]')) || (box && box.querySelector('img[alt="NavLogo"]'));
+      if(!isLogo) return;
+      e.preventDefault();
+      e.stopPropagation();
+      view.location.href = '/' + lang();
+    };
+    host.addEventListener('click', onLogo, true);
+
+    /* Onderbalk op gsm */
+    let bar = host.getElementById('bagage-bottombar');
+    if(!bar){
+      bar = host.createElement('nav');
+      bar.id = 'bagage-bottombar';
+      bar.setAttribute('aria-label', 'Snelmenu');
+      bar.innerHTML =
+        '<button type="button" data-go="home"><img src="/icons/home.svg" alt=""><span>Home</span></button>' +
+        '<button type="button" data-go="search"><img src="/icons/search-icon.svg" alt=""><span>Zoeken</span></button>' +
+        '<button type="button" data-go="profile"><img src="/icons/profile_inactive.svg" alt=""><span>Profiel</span></button>';
+      bar.addEventListener('click', e => {
+        const btn = e.target.closest('button');
+        if(!btn) return;
+        const go = btn.dataset.go;
+        if(go === 'home') view.location.href = '/' + lang();
+        if(go === 'profile') view.location.href = '/' + lang() + '/settings?s';
+        if(go === 'search'){
+          const icon = host.querySelector('img[alt="searchIcon"]');
+          if(icon) icon.click();
+        }
+      });
+      host.body.append(bar);
+    }
+
+    const cleanup = () => {
+      style.remove();
+      bar.remove();
+      host.removeEventListener('click', onLogo, true);
+    };
+    window.addEventListener('pagehide', cleanup);
+    window.addEventListener('unload', cleanup);
+  }
+
+  const frame = window.frameElement;
+  if(!frame) return;
+  const measure = () => {
+    const root = document.getElementById('bagage-aarde-revidd');
+    const logo = host.querySelector('img[alt="NavLogo"]');
+    const header = logo && logo.closest('.fixed');
+    if(!root || !header) return;
+    const overlap = Math.max(0, Math.round(((el) => { const v = el.ownerDocument.defaultView; let st = (el.ownerDocument.scrollingElement || el.ownerDocument.documentElement).scrollTop; for (let p = frame.parentElement; p && p !== el.ownerDocument.body; p = p.parentElement) { const oy = v.getComputedStyle(p).overflowY; if (oy !== 'visible' && oy !== 'clip' && p.scrollHeight > p.clientHeight + 1) { st = p.scrollTop; break; } } const b = el.getBoundingClientRect().bottom; if (st <= 2 || !v.__bagageHeaderMax) v.__bagageHeaderMax = Math.max(v.__bagageHeaderMax || 0, b); return v.__bagageHeaderMax - (frame.getBoundingClientRect().top + st); })(header)));
+    root.style.setProperty('--revidd-header', overlap + 'px');
+  };
+  document.addEventListener('DOMContentLoaded', measure);
+  window.addEventListener('load', measure);
+  view.addEventListener('resize', measure);
+  setTimeout(measure, 1500);
+
+  /* Donkere kop zodra de pagina gescrold is: logo en taalkeuze blijven zichtbaar boven de lichte nieuwsbrief */
+  const solidHeader = () => {
+    const logo = host.querySelector('img[alt="NavLogo"]');
+    const header = logo && logo.closest('.fixed');
+    if(!header) return;
+    header.classList.add('bagage-head');
+    header.classList.toggle('bagage-head-solid', window.scrollY > 10 || view.scrollY > 10);
+  };
+  window.addEventListener('scroll', solidHeader, { passive:true });
+  view.addEventListener('scroll', solidHeader, { passive:true });
+  setTimeout(solidHeader, 1500);
+})();
+</script>
+<div id="bagage-aarde-revidd">
+<style>
+#bagage-aarde-revidd{
+  /* Huisstijl Bagage (zelfde tokens als Home, Catalogus en Over ons) */
+  --black:#090c0d;--text:#f4f1e9;--paper:#f4f1e9;--orange:#ef6a28;--orange-hover:#f4844c;--orange-dark:#b63712;
+  --gold:#e8b654;--muted-hex:#aaa8a2;--muted-dark:#55534f;--line-hex:#272d2f;
+  --serif:Georgia,"Times New Roman",serif;--sans:Arial,Helvetica,sans-serif;
+  /* bestaande namen, nu gekoppeld aan de huisstijl */
+  --ink:var(--text);--muted:rgba(244,241,233,.80);--soft:rgba(244,241,233,.56);
+  --line:rgba(244,241,233,.12);--accent:var(--orange);--accent-dark:var(--orange-hover);
+  width:100%;margin:0;padding:0;background:var(--black);color:var(--ink);
+  font-family:var(--serif);
+}
+#bagage-aarde-revidd,#bagage-aarde-revidd *{box-sizing:border-box}
+#bagage-aarde-revidd a{color:inherit}
+#bagage-aarde-revidd .poster{position:relative;width:100%;max-width:none;margin:0;overflow:hidden;background:var(--black)}
+#bagage-aarde-revidd .poster-bg{
+  position:absolute;inset:0;
+  background-image:url("https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/01929e84-afd9-4441-88c9-637113ebc549.jpg?width=1600");
+  background-size:cover;background-repeat:no-repeat;background-position:center top;
+  transform:scale(1.035);filter:brightness(.64) contrast(1.06) saturate(.92)
+}
+#bagage-aarde-revidd .poster-overlay{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(960px 560px at 50% 14%,rgba(255,255,255,.07),transparent 56%),
+    linear-gradient(180deg,rgba(0,0,0,.06) 0%,rgba(0,0,0,.18) 18%,rgba(0,0,0,.52) 45%,rgba(0,0,0,.86) 72%,#000 100%),
+    linear-gradient(90deg,rgba(0,0,0,.52),rgba(0,0,0,.10) 35%,rgba(0,0,0,.12) 65%,rgba(0,0,0,.55))
+}
+#bagage-aarde-revidd .poster-inner{position:relative;z-index:2;padding:54px 42px 54px}
+#bagage-aarde-revidd .topline{text-align:center;font:600 11px/1.4 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+#bagage-aarde-revidd .center{margin:clamp(56px,8vw,120px) auto 0;max-width:900px;text-align:center}
+#bagage-aarde-revidd .eyebrow{font:600 11px/1.4 var(--sans);letter-spacing:.30em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+#bagage-aarde-revidd .title{margin:0;font-size:clamp(3.5rem,7.6vw,6.6rem);line-height:.94;font-weight:400;text-transform:none;letter-spacing:-.04em;color:var(--text);text-shadow:0 3px 18px rgba(0,0,0,.46)}
+#bagage-aarde-revidd .tagline{margin:22px auto 30px;font-size:clamp(1.2rem,2.1vw,1.8rem);line-height:1.3;letter-spacing:-.01em;color:var(--muted)}
+#bagage-aarde-revidd .tagline span{display:block}
+#bagage-aarde-revidd .promo{margin:0 auto;max-width:62ch;font:400 clamp(16px,1.3vw,19px)/1.65 var(--sans);color:rgba(244,241,233,.92)}
+#bagage-aarde-revidd .meta-row{margin:32px auto 0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px 12px}
+#bagage-aarde-revidd .meta-row span{padding:6px 10px;border:1px solid rgba(244,241,233,.35);background:rgba(9,12,13,.35);font:700 10px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--text)}
+
+#bagage-aarde-revidd .section{max-width:1180px;margin:82px auto 0}
+#bagage-aarde-revidd .section-kicker{text-align:center;margin:0 0 8px;font:700 12px/1.4 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--orange)}
+#bagage-aarde-revidd .section-title{text-align:center;margin:0 0 24px;font-size:clamp(1.9rem,3.4vw,3rem);font-weight:400;letter-spacing:-.035em;line-height:1.04;color:var(--text)}
+#bagage-aarde-revidd .section-copy{max-width:720px;margin:-10px auto 24px;text-align:center;font:400 17px/1.6 var(--sans);color:var(--muted-hex)}
+
+#bagage-aarde-revidd .episodes{display:grid;grid-template-columns:repeat(4,302px);gap:24px;width:1280px;max-width:100%;margin:0 auto;justify-content:center}
+#bagage-aarde-revidd .episode{display:block;min-width:0}
+#bagage-aarde-revidd .episode-frame{position:relative;width:302px;height:170px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:#000}
+#bagage-aarde-revidd .episode-frame iframe{display:block;width:302px;height:170px;border:0}
+#bagage-aarde-revidd .video-poster{display:block;text-decoration:none;position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;padding:0;margin:0;background:#000;cursor:pointer;overflow:hidden}
+#bagage-aarde-revidd .video-poster img{display:block;width:100%;height:100%;object-fit:cover}
+#bagage-aarde-revidd .video-poster:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.22))}
+#bagage-aarde-revidd .video-poster .episode-play{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center}
+#bagage-aarde-revidd .episode-play span{width:54px;height:54px;border-radius:50%;border:1px solid rgba(255,255,255,.76);background:rgba(0,0,0,.24);position:relative}
+#bagage-aarde-revidd .episode-play span:after{content:"";position:absolute;left:21px;top:16px;border-left:15px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent}
+#bagage-aarde-revidd .video-poster:hover .episode-play span{border-color:var(--accent);background:rgba(255,103,25,.18)}
+#bagage-aarde-revidd .episode-no{margin:12px 0 4px;font:700 11px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--orange)}
+#bagage-aarde-revidd .episode-name{margin:0;font-size:1.3rem;font-weight:400;letter-spacing:-.01em;line-height:1.15;color:var(--text)}
+#bagage-aarde-revidd .trailer-shell{position:relative;width:1280px;max-width:100%;margin:0 auto;background:#000}
+#bagage-aarde-revidd .trailer-shell iframe{border:0;display:block;max-width:100%}
+#bagage-aarde-revidd .trailer-shell .video-poster .episode-play span{width:76px;height:76px}
+#bagage-aarde-revidd .trailer-shell .video-poster .episode-play span:after{left:30px;top:22px;border-left-width:21px;border-top-width:15px;border-bottom-width:15px}
+#bagage-aarde-revidd .starband{margin-top:82px;text-align:center}
+#bagage-aarde-revidd .starline{display:flex;justify-content:center;flex-wrap:wrap;gap:30px}
+#bagage-aarde-revidd .star{min-width:180px}
+#bagage-aarde-revidd .star .name{display:block;font-size:clamp(1.4rem,2.2vw,2.2rem);line-height:1;letter-spacing:-.02em}
+#bagage-aarde-revidd .star .role{display:block;margin-top:6px;font:500 10px/1.4 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--soft)}
+#bagage-aarde-revidd .infoblock{margin-top:26px;border-top:1px solid var(--line);padding:30px 18px 0}
+#bagage-aarde-revidd .prestige-wrap{max-width:1160px;margin:0 auto}
+#bagage-aarde-revidd .prestige-head{margin-bottom:14px;font:700 12px/1.4 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--orange)}
+#bagage-aarde-revidd .prestige-lines{display:flex;flex-direction:column;gap:10px}
+#bagage-aarde-revidd .prestige-line{font:400 16px/1.6 var(--sans);color:var(--muted-hex)}
+#bagage-aarde-revidd .prestige-line strong{color:var(--text);font-weight:700}
+#bagage-aarde-revidd .info-strip{max-width:1100px;margin:28px auto 0;display:flex;flex-wrap:wrap;justify-content:center;gap:18px 28px}
+#bagage-aarde-revidd .info-item{max-width:360px}
+#bagage-aarde-revidd .mini-title{margin-bottom:8px;font:700 12px/1.4 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--orange)}
+#bagage-aarde-revidd .mini-text{margin:0;font:400 16px/1.6 var(--sans);color:var(--muted-hex)}
+
+#bagage-aarde-revidd .partner-context{max-width:1180px;margin:72px auto 0;padding-top:34px;border-top:1px solid var(--line)}
+#bagage-aarde-revidd .partner-hero{display:flex;justify-content:center;align-items:center;gap:18px;margin-bottom:26px;text-decoration:none}
+#bagage-aarde-revidd .partner-hero img{width:108px;height:72px;object-fit:contain}
+#bagage-aarde-revidd .partner-label{display:block;font:600 10px/1.4 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--soft);margin-bottom:4px}
+#bagage-aarde-revidd .partner-name{display:block;font-size:1.9rem;line-height:1.05;color:var(--text)}
+#bagage-aarde-revidd .context-intro{max-width:720px;margin:0 auto 20px;text-align:center;font:400 17px/1.6 var(--sans);color:var(--muted-hex)}
+#bagage-aarde-revidd .context-ribbon{display:flex;gap:16px;overflow-x:auto;padding:6px 0 14px;justify-content:center}
+#bagage-aarde-revidd .context-card{flex:0 0 220px;text-decoration:none;background:var(--paper);color:#111;border-radius:0;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.22);transition:.18s}
+#bagage-aarde-revidd .context-card:hover{transform:translateY(-3px)}
+#bagage-aarde-revidd .context-image{height:170px;background:#dedbd3;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px 10px 4px;border-bottom:1px solid rgba(0,0,0,.08)}
+#bagage-aarde-revidd .context-image img{max-width:100%;max-height:100%;object-fit:contain}
+#bagage-aarde-revidd .context-body{padding:16px 14px 18px;color:#111}
+#bagage-aarde-revidd .context-kicker{margin-bottom:6px;font:700 11px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--orange-dark)}
+#bagage-aarde-revidd .context-name{margin:0 0 6px;font-size:1.1rem;font-weight:400;letter-spacing:-.015em;line-height:1.15;color:#111;white-space:nowrap}
+#bagage-aarde-revidd .context-body{padding-left:12px;padding-right:12px}
+#bagage-aarde-revidd .context-copy{margin:0;font:400 14px/1.5 var(--sans);color:var(--muted-dark)}
+
+#bagage-aarde-revidd .access-band{max-width:900px;margin:72px auto 0;padding:42px 28px;border:1px solid var(--line-hex);background:rgba(9,12,13,.92);box-shadow:0 18px 48px rgba(0,0,0,.28);text-align:center}
+#bagage-aarde-revidd .access-title{margin:0 0 10px;font-size:clamp(1.9rem,3.2vw,2.8rem);font-weight:400;letter-spacing:-.035em;color:var(--text)}
+#bagage-aarde-revidd .access-copy{margin:0 auto 24px;max-width:56ch;font:400 16px/1.6 var(--sans);color:var(--muted-hex)}
+#bagage-aarde-revidd .rent-btn{display:inline-flex;align-items:center;justify-content:center;min-height:58px;padding:15px 28px;text-decoration:none;background:var(--accent);border:1px solid var(--accent);color:#111;font:700 12px/1.3 var(--sans);letter-spacing:.14em;text-transform:uppercase}
+#bagage-aarde-revidd .rent-btn:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
+
+#bagage-aarde-revidd .newsletter{max-width:900px;margin:34px auto 0;padding:42px 28px;text-align:center;background:#211f1c;border:1px solid rgba(255,255,255,.15);box-shadow:0 18px 48px rgba(0,0,0,.28)}
+#bagage-aarde-revidd .newsletter h2{margin:0 0 12px;font-size:clamp(1.7rem,3vw,2.6rem);font-weight:500;color:#fff}
+#bagage-aarde-revidd .newsletter p{max-width:590px;margin:0 auto 22px;font-size:16px;line-height:1.6;color:var(--muted)}
+#bagage-aarde-revidd .newsletter-btn{display:inline-flex;min-height:54px;align-items:center;justify-content:center;padding:14px 26px;text-decoration:none;border:1px solid rgba(244,239,228,.55);color:#fff;font:700 11px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase}
+#bagage-aarde-revidd .newsletter-btn:hover{border-color:var(--accent);background:rgba(255,103,25,.12)}
+
+@media(max-width:900px){
+  #bagage-aarde-revidd .poster-inner{padding:34px 20px 44px}
+
+  #bagage-aarde-revidd .context-ribbon{justify-content:flex-start}
+}
+@media(max-width:640px){
+  #bagage-aarde-revidd .poster-bg{background-size:280% auto;background-position:center top;transform:none}
+  #bagage-aarde-revidd .poster-inner{padding:24px 16px 36px}
+  #bagage-aarde-revidd .center{margin-top:48px}
+  #bagage-aarde-revidd .title{font-size:clamp(2.8rem,16vw,4.7rem)}
+  #bagage-aarde-revidd .tagline span{white-space:normal}
+  #bagage-aarde-revidd .section{margin-top:62px}
+  #bagage-aarde-revidd .partner-hero{flex-direction:column;text-align:center}
+  #bagage-aarde-revidd .partner-name{font-size:1.5rem}
+  #bagage-aarde-revidd .context-card{flex-basis:82%}
+  #bagage-aarde-revidd .rent-btn,#bagage-aarde-revidd .newsletter-btn{width:100%}
+}
+
+#bagage-aarde-revidd .rent-btn{gap:7px;flex-wrap:wrap}
+#bagage-aarde-revidd .rent-btn small{
+  font-size:8px;
+  line-height:1;
+  letter-spacing:.08em;
+  text-transform:none;
+  font-weight:600;
+  opacity:.72;
+}
+
+
+#bagage-aarde-revidd .access-actions{
+  display:flex;
+  justify-content:center;
+  align-items:stretch;
+  gap:12px;
+  flex-wrap:wrap;
+}
+#bagage-aarde-revidd .catalog-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:58px;
+  padding:15px 28px;
+  text-decoration:none;
+  background:transparent;
+  border:1px solid rgba(244,239,228,.58);
+  color:#fff;
+  font:700 11px/1.3 var(--sans);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  transition:all .2s ease;
+}
+#bagage-aarde-revidd .catalog-btn:hover,
+#bagage-aarde-revidd .catalog-btn:focus{
+  border-color:var(--accent);
+  background:rgba(255,103,25,.10);
+}
+@media(max-width:640px){
+  #bagage-aarde-revidd .access-actions{flex-direction:column}
+  #bagage-aarde-revidd .catalog-btn{width:100%}
+}
+
+
+
+
+
+#bagage-aarde-revidd .partner-goodplanet{
+  flex-direction:column;
+  gap:12px;
+  text-align:center;
+}
+#bagage-aarde-revidd .partner-goodplanet .partner-label{
+  display:block;
+  text-align:center;
+}
+#bagage-aarde-revidd .partner-goodplanet img{
+  width:170px;
+  height:auto;
+  max-height:none;
+  object-fit:contain;
+}
+
+/* V4 — achtergrond over de volledige pagina */
+#bagage-aarde-revidd{
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.52) 0%,rgba(0,0,0,.68) 48%,rgba(0,0,0,.78) 100%),
+    url("https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/01929e84-afd9-4441-88c9-637113ebc549.jpg?width=1600") center top / cover fixed no-repeat !important;
+}
+#bagage-aarde-revidd .poster{
+  background:transparent !important;
+}
+#bagage-aarde-revidd .poster-bg{
+  display:none !important;
+}
+#bagage-aarde-revidd .poster-overlay{
+  background:linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.18) 36%,rgba(0,0,0,.34) 72%,rgba(0,0,0,.48) 100%) !important;
+}
+@media (max-width:768px){
+  #bagage-aarde-revidd{
+    background:
+      linear-gradient(180deg,rgba(0,0,0,.54) 0%,rgba(0,0,0,.70) 48%,rgba(0,0,0,.80) 100%),
+      url("https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/01929e84-afd9-4441-88c9-637113ebc549.jpg?width=1600") center top / cover scroll no-repeat !important;
+  }
+}
+
+
+
+
+
+/* V7 — vier reportageplayers blijven naast elkaar */
+#bagage-aarde-revidd .episodes{
+  display:grid !important;
+  grid-template-columns:repeat(4, minmax(0,1fr)) !important;
+  gap:24px !important;
+  width:1280px !important;
+  max-width:100% !important;
+  margin:0 auto !important;
+  justify-content:stretch !important;
+}
+#bagage-aarde-revidd .episode{
+  min-width:0 !important;
+  width:100% !important;
+}
+#bagage-aarde-revidd .episode-frame{
+  position:relative !important;
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio:16/9 !important;
+  overflow:hidden !important;
+  background:#000 !important;
+}
+#bagage-aarde-revidd .episode-frame iframe{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  display:block !important;
+  border:0 !important;
+}
+#bagage-aarde-revidd .episode-frame .video-poster{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+}
+@media (max-width:760px){
+  #bagage-aarde-revidd .episodes{
+    gap:8px !important;
+  }
+  #bagage-aarde-revidd .episode-no{
+    font-size:7px !important;
+    letter-spacing:.10em !important;
+  }
+  #bagage-aarde-revidd .episode-name{
+    font-size:.78rem !important;
+  }
+  #bagage-aarde-revidd .episode-play span{
+    width:34px !important;
+    height:34px !important;
+  }
+  #bagage-aarde-revidd .episode-play span:after{
+    left:13px !important;
+    top:9px !important;
+    border-left-width:10px !important;
+    border-top-width:7px !important;
+    border-bottom-width:7px !important;
+  }
+}
+
+
+
+/* V16 — trailer en vier reportages op exact dezelfde gecentreerde 1280px-as */
+#bagage-aarde-revidd .section[aria-labelledby="trailer-title"],
+#bagage-aarde-revidd .section[aria-labelledby="episodes-title"]{
+  width:1280px !important;
+  max-width:100% !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+#bagage-aarde-revidd .section[aria-labelledby="trailer-title"] > iframe{
+  display:block !important;
+  width:1280px !important;
+  max-width:100% !important;
+  height:auto !important;
+  aspect-ratio:16/9 !important;
+  margin:0 auto !important;
+  border:0 !important;
+}
+#bagage-aarde-revidd .section[aria-labelledby="episodes-title"] .episodes{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:24px !important;
+}
+
+/* V17 — uniform met Home, Catalogus en Over ons: knoppen, nieuwsbrief en footer */
+#bagage-aarde-revidd .rent-btn,
+#bagage-aarde-revidd .catalog-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:48px;
+  padding:14px 21px;text-decoration:none;font:700 14px/1.4 var(--sans);letter-spacing:0;text-transform:none;
+  transition:background-color .2s ease,border-color .2s ease
+}
+#bagage-aarde-revidd .rent-btn{background:var(--orange);border:1px solid var(--orange);color:#111;flex-wrap:nowrap}
+#bagage-aarde-revidd .rent-btn:hover{background:var(--orange-hover);border-color:var(--orange-hover)}
+#bagage-aarde-revidd .rent-btn small{font-size:11px;font-weight:400;letter-spacing:0;opacity:.75}
+#bagage-aarde-revidd .catalog-btn{background:transparent;border:1px solid rgba(244,241,233,.6);color:var(--text)}
+#bagage-aarde-revidd .catalog-btn:hover,#bagage-aarde-revidd .catalog-btn:focus{background:rgba(244,241,233,.08);border-color:var(--text)}
+#bagage-aarde-revidd a:focus-visible,#bagage-aarde-revidd button:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+
+#bagage-aarde-revidd .bs-newsletter{max-width:1180px;margin:72px auto 0;border-top:1px solid var(--line);padding:36px 0 48px;text-align:left}
+#bagage-aarde-revidd .bs-newsletter-inner{display:flex;justify-content:space-between;align-items:center;gap:32px}
+#bagage-aarde-revidd .bs-newsletter h2{font-size:clamp(26px,2.5vw,34px);font-weight:400;letter-spacing:-.02em;line-height:1.12;margin:0 0 8px;color:var(--text)}
+#bagage-aarde-revidd .bs-newsletter p{font:400 16px/1.6 var(--sans);color:var(--muted-hex);margin:0;max-width:640px}
+#bagage-aarde-revidd footer{max-width:1180px;margin:0 auto;text-align:left;border-top:1px solid var(--line);padding:30px 0 45px;color:#8d9292;font:400 13px/1.6 var(--sans)}
+#bagage-aarde-revidd .bs-foot{display:flex;justify-content:space-between;gap:20px}
+#bagage-aarde-revidd .bs-footlinks{display:flex;flex-wrap:wrap;gap:20px}
+#bagage-aarde-revidd .bs-footlinks a{text-decoration:none}
+#bagage-aarde-revidd .bs-footlinks a:hover{color:var(--text)}
+@media(max-width:640px){
+  #bagage-aarde-revidd .rent-btn{flex-wrap:wrap;gap:4px 8px;padding:14px 16px}
+  #bagage-aarde-revidd .bs-newsletter{margin-top:56px}
+  #bagage-aarde-revidd .bs-newsletter-inner{flex-direction:column;align-items:flex-start;gap:22px}
+  #bagage-aarde-revidd .bs-newsletter .catalog-btn{width:100%}
+  #bagage-aarde-revidd .bs-foot{display:block}
+  #bagage-aarde-revidd .bs-footlinks{margin-top:16px}
+}
+
+/* V18 — trailer gecentreerd en volledig gevuld (16:9) */
+#bagage-aarde-revidd .trailer-frame{position:relative;width:75%;max-width:960px;margin:0 auto;aspect-ratio:16/9;background:#000;overflow:hidden;border:1px solid var(--line)}
+/* De Revidd-speler vult zijn kader alleen op 1280×720; daarom renderen we hem op die maat en schalen we hem mee met het kader (zie script). */
+#bagage-aarde-revidd .trailer-frame iframe{position:absolute;left:0;top:0;width:1280px!important;height:720px!important;max-width:none!important;border:0;display:block;transform-origin:0 0;transform:scale(var(--trailer-scale,1))}
+#bagage-aarde-revidd .section[aria-labelledby="trailer-title"]{text-align:center}
+@media(max-width:760px){#bagage-aarde-revidd .trailer-frame{width:100%}}
+
+/* V19 — korte voorstelling van de partner onder het logo */
+#bagage-aarde-revidd .partner-about{max-width:680px;margin:-6px auto 18px;text-align:center;font-family:var(--serif);font-size:clamp(1.2rem,1.7vw,1.45rem);line-height:1.4;letter-spacing:-.01em;color:var(--text)}
+/* V20 — gsm: de vier reportages in 2 × 2 in plaats van 4 piepkleine naast elkaar */
+@media (max-width:760px){
+  #bagage-aarde-revidd .section[aria-labelledby="episodes-title"] .episodes{grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:22px 14px !important}
+  #bagage-aarde-revidd .episode-no{font-size:10px !important;letter-spacing:.14em !important}
+  #bagage-aarde-revidd .episode-name{font-size:1.05rem !important}
+  #bagage-aarde-revidd .episode-play span{width:44px !important;height:44px !important}
+  #bagage-aarde-revidd .episode-play span:after{left:17px !important;top:13px !important;border-left-width:12px !important;border-top-width:8px !important;border-bottom-width:8px !important}
+}
+/* Gsm: ruimte onderaan voor de knoppenbalk Home · Zoeken · Profiel */
+@media(max-width:639px){#bagage-aarde-revidd footer{padding-bottom:110px}}
+/* V21 — Achtergrond: berichten uit Ghost met de tag van deze pagina (verschijnt pas als er een bericht is) */
+#bagage-aarde-revidd .bg-achtergrond{max-width:1180px;margin:72px auto 0;padding-top:34px;border-top:1px solid var(--line);text-align:left}
+#bagage-aarde-revidd .bg-achtergrond .section-kicker,#bagage-aarde-revidd .bg-achtergrond .section-title{text-align:center}
+#bagage-aarde-revidd .bg-posts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:8px}
+#bagage-aarde-revidd .bg-post{display:flex;flex-direction:column;min-width:0;text-decoration:none;background:rgba(9,12,13,.92);border:1px solid var(--line-hex);transition:border-color .2s ease}
+#bagage-aarde-revidd .bg-post:hover{border-color:rgba(244,241,233,.45)}
+#bagage-aarde-revidd .bg-post-img{aspect-ratio:16/9;background:#15191a;overflow:hidden}
+#bagage-aarde-revidd .bg-post-img img{display:block;width:100%;height:100%;object-fit:cover}
+#bagage-aarde-revidd .bg-post-body{display:flex;flex-direction:column;flex:1;padding:16px 18px 18px}
+#bagage-aarde-revidd .bg-post-date{font:700 11px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--orange)}
+#bagage-aarde-revidd .bg-post-title{margin:6px 0 8px;font-family:var(--serif);font-size:1.35rem;font-weight:400;letter-spacing:-.015em;line-height:1.15;color:var(--text)}
+#bagage-aarde-revidd .bg-post-excerpt{margin:0 0 14px;font:400 15px/1.5 var(--sans);color:var(--muted-hex);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#bagage-aarde-revidd .bg-post-more{margin-top:auto;align-self:flex-start;padding-bottom:3px;border-bottom:2px solid var(--orange);font:700 11px/1.4 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--text)}
+@media(max-width:900px){#bagage-aarde-revidd .bg-posts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){#bagage-aarde-revidd .bg-posts{grid-template-columns:1fr}#bagage-aarde-revidd .bg-achtergrond{margin-top:56px}}
+#bagage-aarde-revidd .bg-achtergrond[hidden]{display:none}
+/* V22 — Achtergrond: volledig artikel lezen binnen Bagage (lezer over de pagina) */
+#bagage-aarde-revidd .bg-reader{position:fixed;inset:0;z-index:100;display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;overscroll-behavior:contain;background:#090c0d;padding:0 16px}
+#bagage-aarde-revidd .bg-reader[hidden]{display:none}
+/* De lezer begint onder de Revidd-kop, zodat de sluitknop klikbaar blijft */
+#bagage-aarde-revidd .bg-reader{top:var(--revidd-header,0px)}
+
+#bagage-aarde-revidd .bg-reader-inner{position:relative;width:min(760px,100%);margin:0 auto;padding:64px 0 120px;text-align:left}
+#bagage-aarde-revidd .bg-reader-close{position:sticky;top:12px;float:right;z-index:2;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:10px 16px;margin-top:-48px;background:var(--black);border:1px solid rgba(244,241,233,.6);color:var(--text);font:700 13px/1.2 var(--sans);cursor:pointer}
+#bagage-aarde-revidd .bg-reader-close:hover{border-color:var(--text)}
+#bagage-aarde-revidd .bg-reader-kicker{font:700 12px/1.4 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--orange)}
+#bagage-aarde-revidd .bg-reader h1{margin:12px 0 10px;font-family:var(--serif);font-size:clamp(34px,4.6vw,56px);font-weight:400;line-height:1.04;letter-spacing:-.035em;color:var(--text)}
+#bagage-aarde-revidd .bg-reader-meta{margin:0 0 26px;font:400 14px/1.5 var(--sans);color:#8d9292}
+#bagage-aarde-revidd .bg-reader-hero{margin:0 0 28px}
+#bagage-aarde-revidd .bg-reader-hero img{display:block;width:100%;height:auto}
+#bagage-aarde-revidd .bg-reader-body{font:400 18px/1.7 var(--sans);color:rgba(244,241,233,.88)}
+#bagage-aarde-revidd .bg-reader-body p{margin:0 0 1.1em}
+#bagage-aarde-revidd .bg-reader-body h2,#bagage-aarde-revidd .bg-reader-body h3{margin:1.6em 0 .5em;font-family:var(--serif);font-weight:400;letter-spacing:-.02em;line-height:1.15;color:var(--text)}
+#bagage-aarde-revidd .bg-reader-body h2{font-size:32px}
+#bagage-aarde-revidd .bg-reader-body h3{font-size:25px}
+#bagage-aarde-revidd .bg-reader-body a{color:var(--text);text-decoration:none;border-bottom:2px solid var(--orange)}
+#bagage-aarde-revidd .bg-reader-body img,#bagage-aarde-revidd .bg-reader-body video,#bagage-aarde-revidd .bg-reader-body iframe{display:block;max-width:100%;height:auto;margin:0 auto}
+#bagage-aarde-revidd .bg-reader-body figure{margin:1.6em 0}
+#bagage-aarde-revidd .bg-reader-body figcaption{margin-top:8px;font-size:13px;color:#8d9292;text-align:center}
+#bagage-aarde-revidd .bg-reader-body blockquote{margin:1.4em 0;padding:4px 0 4px 20px;border-left:3px solid var(--orange);font-family:var(--serif);font-size:22px;line-height:1.45;color:var(--text)}
+#bagage-aarde-revidd .bg-reader-body ul,#bagage-aarde-revidd .bg-reader-body ol{margin:0 0 1.1em;padding-left:1.3em}
+#bagage-aarde-revidd .bg-reader-body hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+#bagage-aarde-revidd .bg-reader-body .kg-width-wide img,#bagage-aarde-revidd .bg-reader-body .kg-width-full img{width:100%}
+#bagage-aarde-revidd .bg-reader-foot{display:flex;flex-wrap:wrap;gap:12px;margin-top:40px;padding-top:24px;border-top:1px solid var(--line)}
+@media(max-width:640px){#bagage-aarde-revidd .bg-reader-inner{padding:56px 0 140px}#bagage-aarde-revidd .bg-reader-body{font-size:17px}}
+/* V23 — "… & Bagage stellen voor": goud, cursief en groter, zoals de partnerregel in de hero op Home */
+#bagage-aarde-revidd .eyebrow.presents{font:italic 400 clamp(1.15rem,1.7vw,1.5rem)/1.3 var(--serif);letter-spacing:.02em;text-transform:none;color:var(--gold);margin-bottom:16px}
+/* V24 — eigen thumbnail over de trailer: de speler laadt pas na een klik */
+#bagage-aarde-revidd .trailer-poster{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;width:100%;height:100%;padding:0;border:0;background:#000 center/cover no-repeat;cursor:pointer}
+#bagage-aarde-revidd .trailer-poster:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.28))}
+#bagage-aarde-revidd .trailer-poster span{position:relative;z-index:1;width:76px;height:76px;border-radius:50%;border:1px solid rgba(255,255,255,.8);background:rgba(0,0,0,.28)}
+#bagage-aarde-revidd .trailer-poster span:after{content:"";position:absolute;left:30px;top:22px;border-left:21px solid #fff;border-top:15px solid transparent;border-bottom:15px solid transparent}
+#bagage-aarde-revidd .trailer-poster:hover span{border-color:var(--orange);background:rgba(239,106,40,.18)}
+/* V25 — na de klik blijft de thumbnail (met laadcirkel) staan tot de speler gestart is, zodat de afspeelknop van Revidd niet even opflitst */
+#bagage-aarde-revidd .trailer-poster{transition:opacity .35s ease}
+#bagage-aarde-revidd .trailer-poster.is-loading{cursor:default}
+#bagage-aarde-revidd .trailer-poster.is-loading span{border:2px solid rgba(255,255,255,.25);border-top-color:#fff;background:transparent;animation:trailer-spin .8s linear infinite}
+#bagage-aarde-revidd .trailer-poster.is-loading span:after{display:none}
+#bagage-aarde-revidd .trailer-poster.is-hidden{opacity:0;pointer-events:none}
+@keyframes trailer-spin{to{transform:rotate(360deg)}}
+
+/* V26 — Partnerkeuze: terugknop bovenaan, andere partnerkeuzes onderaan,
+   nieuwsbrief zoals op Over ons, prijs zoals in de catalogus */
+#bagage-aarde-revidd .pk-back{
+  display:inline-block;margin:-24px 0 22px;
+  font:700 11px/1.4 var(--sans);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;transition:color .2s ease
+}
+#bagage-aarde-revidd .pk-back:hover{color:var(--gold)}
+#bagage-aarde-revidd .pk-andere{max-width:1180px;margin:72px auto 0;padding-top:34px;border-top:1px solid var(--line);text-align:left}
+#bagage-aarde-revidd .pk-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:24px}
+#bagage-aarde-revidd .pk-head .section-kicker,#bagage-aarde-revidd .pk-head .section-title{text-align:left;margin-bottom:0}
+#bagage-aarde-revidd .pk-all{flex:none;padding-bottom:4px;border-bottom:2px solid var(--orange);font:700 11px/1.4 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--text);text-decoration:none}
+#bagage-aarde-revidd .pk-all:hover{color:var(--gold)}
+#bagage-aarde-revidd .pk-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+#bagage-aarde-revidd .pk-item{display:block;min-width:0;color:inherit;text-decoration:none}
+#bagage-aarde-revidd .pk-visual{position:relative;aspect-ratio:16/9;overflow:hidden;background:#15191a}
+#bagage-aarde-revidd .pk-visual img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s ease,filter .25s ease}
+#bagage-aarde-revidd .pk-item:hover .pk-visual img{transform:scale(1.015);filter:brightness(1.06)}
+#bagage-aarde-revidd .pk-type{position:absolute;left:12px;top:12px;padding:5px 8px;background:var(--gold);color:#111;font:700 10px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+#bagage-aarde-revidd .pk-name{display:block;margin-top:14px;font:400 13px/1.4 var(--sans);color:var(--muted-hex)}
+#bagage-aarde-revidd .pk-title{display:block;margin-top:4px;font-size:1.5rem;line-height:1.12;letter-spacing:-.015em;color:var(--text)}
+#bagage-aarde-revidd .pk-item:hover .pk-title{color:var(--gold)}
+
+/* Nieuwsbrief en footer: over de volle breedte, lichte achtergrond (zoals op Welkom) */
+#bagage-aarde-revidd .bs-newsletter{max-width:none;margin:0;padding:72px 42px;background:var(--paper);color:#111;border-top:0}
+#bagage-aarde-revidd .bs-newsletter-inner{max-width:1180px;margin:0 auto;justify-content:center;gap:48px}
+#bagage-aarde-revidd .bs-newsletter h2{color:#111}
+#bagage-aarde-revidd .bs-newsletter p{color:var(--muted-dark)}
+#bagage-aarde-revidd footer{max-width:none;margin:0;padding:30px 42px 45px;background:var(--paper);color:var(--muted-dark);border-top:1px solid rgba(17,17,17,.12)}
+#bagage-aarde-revidd .bs-foot{max-width:1180px;margin:0 auto}
+#bagage-aarde-revidd .bs-footlinks a:hover{color:#111}
+#bagage-aarde-revidd .access-band + .bg-achtergrond{margin-top:56px}
+#bagage-aarde-revidd .bs-newsletter-inner > div{max-width:440px}
+#bagage-aarde-revidd .bs-newsletter h2{font-size:52px;line-height:1.02;letter-spacing:0;margin:0}
+#bagage-aarde-revidd .bs-newsletter p{margin:0 0 20px;line-height:1.5}
+
+@media(max-width:900px){
+  #bagage-aarde-revidd .pk-back{margin:-10px 0 18px}
+  #bagage-aarde-revidd .pk-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #bagage-aarde-revidd .bs-newsletter-inner{flex-direction:column;align-items:flex-start;gap:20px}
+  #bagage-aarde-revidd .bs-newsletter{padding-left:20px;padding-right:20px}
+  #bagage-aarde-revidd footer{padding-left:20px;padding-right:20px}
+}
+@media(max-width:640px){
+  #bagage-aarde-revidd .pk-andere{margin-top:56px}
+  #bagage-aarde-revidd .pk-head{flex-wrap:wrap}
+  #bagage-aarde-revidd .pk-row{grid-template-columns:1fr;gap:30px}
+  #bagage-aarde-revidd .bs-newsletter{padding:48px 16px}
+  #bagage-aarde-revidd footer{padding-left:16px;padding-right:16px}
+  #bagage-aarde-revidd .bs-newsletter h2{font-size:40px}
+  #bagage-aarde-revidd .bs-newsletter .rent-btn{width:auto}
+}
+
+/* V27 — drie videoblokken (volledige reeks, korte versies, shorts): 3 naast elkaar, onder elkaar op gsm */
+#bagage-aarde-revidd .section[aria-labelledby="episodes-title"] .episodes{grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:24px !important}
+@media(max-width:760px){
+  #bagage-aarde-revidd .section[aria-labelledby="episodes-title"] .episodes{grid-template-columns:1fr !important;gap:30px !important}
+  #bagage-aarde-revidd .episode-name{font-size:1.3rem !important}
+}
+
+/* V28 — lichtere achtergrond (foto van de reuzenlevensboom beter zichtbaar) */
+#bagage-aarde-revidd{
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,.38) 45%,rgba(0,0,0,.6) 100%),
+    url("https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/01929e84-afd9-4441-88c9-637113ebc549.jpg?width=1600") center top / cover fixed no-repeat !important;
+}
+#bagage-aarde-revidd .poster-overlay{background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.08) 40%,rgba(0,0,0,.22) 100%) !important}
+#bagage-aarde-revidd .promo,#bagage-aarde-revidd .tagline,#bagage-aarde-revidd .topline{text-shadow:0 1px 10px rgba(0,0,0,.6)}
+@media (max-width:768px){
+  #bagage-aarde-revidd{
+    background:
+      linear-gradient(180deg,rgba(0,0,0,.22) 0%,rgba(0,0,0,.42) 45%,rgba(0,0,0,.62) 100%),
+      url("https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/01929e84-afd9-4441-88c9-637113ebc549.jpg?width=1600") center top / cover scroll no-repeat !important;
+  }
+}
+
+/* V29 — shorts in 9:16, even hoog als de twee 16:9-blokken */
+#bagage-aarde-revidd .section[aria-labelledby="episodes-title"] .episodes{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,.3164fr) !important;align-items:start}
+#bagage-aarde-revidd .episode.is-short .episode-frame{aspect-ratio:9/16 !important}
+@media(max-width:760px){
+  #bagage-aarde-revidd .section[aria-labelledby="episodes-title"] .episodes{grid-template-columns:1fr !important}
+  #bagage-aarde-revidd .episode.is-short{justify-self:center;width:min(240px,62%) !important}
+}
+
+/* V30 — trailer op 1920×1080 renderen (geschaald naar het kader), zodat de speler de 1080p-versie kiest */
+#bagage-aarde-revidd .trailer-frame iframe{width:1920px!important;height:1080px!important}
+</style>
+
+<div class="poster">
+  <div class="poster-bg"></div><div class="poster-overlay"></div>
+  <div class="poster-inner">
+    <a class="pk-back" href="https://bagage.store1.revidd.video/nl/pages/partnerkeuze">← Alle reeksen &amp; dossiers</a>
+    <div class="topline">EEN REEKS OVER BOMEN, BOSSEN EN HET LEVEN DAT ZE DRAGEN</div>
+
+    <div class="center">
+      <div class="eyebrow presents">Bagage stelt voor</div>
+      <h1 class="title">De boom die het bos verbergt</h1>
+      <div class="tagline"><span>Eén uitzonderlijke boom als vertrekpunt,</span><span>het hele bos als verhaal.</span></div>
+      <p class="promo">Zes afleveringen, zes iconische bomen, zes bossen over de hele wereld. Elke boom is tegelijk hoofdrolspeler en decor van de biodiversiteit die hij herbergt. Ondergrondse netwerken, het &lsquo;wood wide web&rsquo;, het bos als superorganisme: een wetenschappelijke ontdekkingsreis door een wereld die we dachten te kennen.</p>
+      <div class="meta-row"><span>6 afleveringen</span><span>ca. 50 min per aflevering</span><span>Nederlandstalige versie</span><span>Natuur · Wetenschap · Ecologie</span></div>
+    </div>
+
+    <section class="section" aria-labelledby="trailer-title">
+      <h2 class="section-title" id="trailer-title">Ontdek de trailer</h2>
+      <div class="trailer-frame"><button type="button" class="trailer-poster" style="background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/528383b5-96ab-4dd2-a311-e297931b5834.jpg?width=1200')" aria-label="Speel de trailer af"><span></span></button><iframe data-src="https://embed.revidd.com/iframe/index.html?mid=3749206&platform=OTT&w=1920&h=1080&adTagUrl=&loop=true" style="border:none" width="1920" height="1080" allow="autoplay; fullscreen" allowfullscreen title="Trailer De boom die het bos verbergt"></iframe></div>
+    </section>
+
+    <section class="section" aria-labelledby="episodes-title">
+      <div class="section-kicker">Kijk zoals je wil</div>
+      <h2 class="section-title" id="episodes-title">Thuis, onderweg of al scrollend.</h2>
+      <div class="episodes">
+        <article class="episode">
+          <div class="episode-frame">
+            <a class="video-poster" href="LINK_VOLLEDIGE_REEKS" aria-label="Bekijk de volledige reeks">
+              <img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/e8f03f54-2072-4b11-b369-e7498d8eedfc.jpg?width=1200" alt="De volledige reeks">
+              <span class="episode-play" aria-hidden="true"><span></span></span>
+            </a>
+          </div>
+          <div class="episode-no">Thuis · 6 afleveringen van ca. 50 min</div><h3 class="episode-name">De volledige reeks</h3>
+        </article>
+
+        <article class="episode">
+          <div class="episode-frame">
+            <a class="video-poster" href="LINK_KORTE_VERSIES" aria-label="Bekijk de korte versies">
+              <img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/528383b5-96ab-4dd2-a311-e297931b5834.jpg?width=1200" alt="De korte versies">
+              <span class="episode-play" aria-hidden="true"><span></span></span>
+            </a>
+          </div>
+          <div class="episode-no">Onderweg · elke boom in een kortere aflevering</div><h3 class="episode-name">De korte versies</h3>
+        </article>
+
+        <article class="episode is-short">
+          <div class="episode-frame">
+            <a class="video-poster" href="LINK_SHORTS" aria-label="Bekijk de shorts">
+              <img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/a7c67e17-f209-4e74-9dc1-f8c400ae4a23.jpg?width=1200" alt="De shorts">
+              <span class="episode-play" aria-hidden="true"><span></span></span>
+            </a>
+          </div>
+          <div class="episode-no">Al scrollend</div><h3 class="episode-name">De shorts</h3>
+        </article>
+      </div>
+    </section>
+
+    <div class="starband">
+      <div class="starline">
+        <div class="star"><span class="name">6 bomen</span><span class="role">6 bossen wereldwijd</span></div>
+        <div class="star"><span class="name">Cinétévé · ARTE</span><span class="role">Oorspronkelijke productie</span></div>
+        <div class="star"><span class="name">BAGAGE</span><span class="role">Nederlandstalige versie</span></div>
+      </div>
+
+      <div class="infoblock">
+        <div class="prestige-wrap">
+          <div class="prestige-head">Reeks · Inhoud · Context</div>
+          <div class="prestige-lines">
+            <div class="prestige-line"><strong>Zes afleveringen</strong> — de reuzenlevensboom van het Pacifische regenwoud, de reuzeneucalyptus van Australië, de kapokboom van de Amazone, de berk van het Hoge Noorden, de eik van Europa en de baobab van Madagaskar.</div>
+            <div class="prestige-line"><strong>Rode draad</strong> — telkens één opmerkelijke boom, maar het is het bos als geheel dat de hoofdrol speelt: wie er leeft, hoe alles samenhangt en wat er op het spel staat.</div>
+            <div class="prestige-line"><strong>Context</strong> — wetenschappers, boswachters en lokale gemeenschappen tonen hoe bossen communiceren, zich aanpassen en ons klimaat mee bepalen.</div>
+          </div>
+        </div>
+
+        <div class="info-strip">
+          <div class="info-item"><div class="mini-title">Inhoud van de reeks</div><p class="mini-text">Zes afleveringen die samen één verhaal vormen over bomen, bossen en biodiversiteit.</p></div>
+          <div class="info-item"><div class="mini-title">Een Bagage-release</div><p class="mini-text">Deze reeks brengt Bagage in eigen beheer uit, in een volledig Nederlandstalige versie.</p></div>
+        </div>
+
+        <div class="access-band">
+          <h2 class="access-title">Bekijk de volledige reeks</h2>
+          <p class="access-copy">Zes afleveringen in één reeks. Eén betaling, geen abonnement.</p>
+          <div class="access-actions">
+            <a class="rent-btn" href="#"><span>Huur € 7,99 · 1 maand toegang</span><small>btw incl.</small></a>
+            <a class="catalog-btn" href="https://bagage.store1.revidd.video/nl/pages/catalogus">Ontdek de volledige catalogus <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+
+        <!-- ACHTERGROND — automatisch uit Ghost. Vul data-revidd-ids met de Revidd-id's van de reeks of de zes afleveringen
+             (komma-gescheiden). Leeg = dit blok blijft verborgen. -->
+        <section class="bg-achtergrond" data-revidd-ids="" aria-labelledby="bg-title" hidden>
+          <div class="section-kicker">Achtergrond</div>
+          <h2 class="section-title" id="bg-title">Lees verder</h2>
+          <div class="bg-posts"></div>
+        </section>
+
+        <!-- ANDERE PARTNERKEUZES — de eigen pagina wordt automatisch weggelaten (zie script onderaan). -->
+        <section class="pk-andere" aria-labelledby="pk-andere-title">
+          <div class="pk-head">
+            <div>
+              <div class="section-kicker">Reeksen &amp; dossiers</div>
+              <h2 class="section-title" id="pk-andere-title">Meer reeksen &amp; dossiers</h2>
+            </div>
+            <a class="pk-all" href="https://bagage.store1.revidd.video/nl/pages/partnerkeuze">Alle reeksen &amp; dossiers <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="pk-row"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <section class="bs-newsletter" aria-labelledby="bb-newsletter-title">
+    <div class="bs-newsletter-inner">
+      <h2 id="bb-newsletter-title">Blijf kijken.<br>Blijf vragen.</h2>
+      <div>
+        <p>Ontvang maandelijks onze nieuwsbrief met de laatste info over nieuwe documentaires en reeksen.</p>
+        <a class="rent-btn" href="https://bagage.ghost.io/#/portal/signup" target="_blank" rel="noopener">Inschrijven <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+</div>
+<script src="https://markmommaerts.github.io/bagage-site/reeksen.js"></script>
+<script>
+(function(){
+  var root=document.getElementById('bagage-aarde-revidd');
+  if(!root)return;
+  /* Trailer: speler op 1280×720 laten renderen en schalen naar de breedte van het kader */
+  var tf=root.querySelector('.trailer-frame');
+  if(tf){
+    var fit=function(){ tf.style.setProperty('--trailer-scale', tf.clientWidth/1920); };
+    fit();
+    if(window.ResizeObserver){ new ResizeObserver(fit).observe(tf); } else { window.addEventListener('resize', fit); }
+    /* Trailer: op computer eerst de thumbnail, de speler laadt pas na een klik.
+       Op gsm/tablet start de speler niet vanzelf en toont hij zelf de thumbnail, dus daar laden we hem meteen. */
+    var tp=tf.querySelector('.trailer-poster');
+    if(tp){
+      var load=function(){ var f=tf.querySelector('iframe'); f.src=f.getAttribute('data-src'); tp.remove(); };
+      /* Computer: na de klik de thumbnail met laadcirkel laten staan tot de speler gestart is, dan zacht laten wegvloeien */
+      var start=function(){
+        if(tp.classList.contains('is-loading')) return;
+        tp.classList.add('is-loading');
+        var f=tf.querySelector('iframe'), done=false;
+        var hide=function(){ if(done) return; done=true; tp.classList.add('is-hidden'); setTimeout(function(){ tp.remove(); },400); };
+        f.addEventListener('load',function(){ setTimeout(hide,1500); });
+        setTimeout(hide,5000);
+        f.src=f.getAttribute('data-src');
+      };
+      /* Altijd de thumbnail die nu in de mediabibliotheek bij de video staat; het vaste adres hierboven is enkel reserve */
+      var mid=(tf.querySelector('iframe').getAttribute('data-src').match(/mid=(\d+)/)||[])[1];
+      if(mid && window.fetch){
+        fetch('https://api.revidd.com/media/v1/org/public/video/'+mid).then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
+          var p=d && d.video && d.video.cover && d.video.cover.mediaPath;
+          if(p) tp.style.backgroundImage="url('https://1577787583.rsc.cdn77.org/"+p+"?width=1200')";
+        }).catch(function(){});
+      }
+      if(window.matchMedia && window.matchMedia('(pointer:coarse)').matches){ load(); } else { tp.addEventListener('click',start); }
+    }
+  }
+  /* Andere partnerkeuzes: zelfde lijst als op de pagina Partnerkeuze, zonder de pagina zelf.
+     Zet de regel 'de-boom-die-het-bos-verbergt' ook in de lijst op de andere partnerpagina's. */
+  var FALLBACK=[
+    { page:'apocalyps-wo1', name:'In Flanders Fields Museum', type:'Reeks · 5 delen', title:'Apocalyps WOI',
+      href:'https://bagage.store1.revidd.video/nl/pages/apocalyps-wo1',
+      image:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/075d02cb-ff0e-4e60-94a1-689c37ba6557.png?width=1200' },
+    { page:'goodplanet', name:'GoodPlanet Belgium', type:'Dossier · 4 reportages', title:'De aarde vanuit de hemel',
+      href:'https://bagage.store1.revidd.video/nl/pages/goodplanet',
+      image:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/5c4e1722-7270-4edd-8ae0-d44750861627.jpg?width=1200' },
+    { page:'de-boom-die-het-bos-verbergt', name:'Bagage', type:'Reeks · 6 delen', title:'De boom die het bos verbergt',
+      href:'https://bagage.store1.revidd.video/nl/pages/de-boom-die-het-bos-verbergt',
+      image:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/01929e84-afd9-4441-88c9-637113ebc549.jpg?width=1200' },
+    { page:'edvard-munch', name:'Museum De Reede', type:'Documentaire', title:'Edvard Munch',
+      href:'https://bagage.store1.revidd.video/nl/movies/edvard-munch-un-cri-dans-la-nature-6a9d5ca4b65cd631559e4698',
+      image:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/0d5f901c-5789-4e70-a73d-4d1c77cee466.jpg?width=1200' }
+  ];
+  /* Lijst uit reeksen.js (GitHub); lukt dat niet, dan de lijst hierboven */
+  var DATA=window.BAGAGE_REEKSEN;
+  var PARTNERS=(DATA&&DATA.length)?DATA.map(function(r){
+    return { page:r.page, name:r.partner?r.partner.name:'BAGAGE', type:r.type, title:r.title, href:r.href,
+             image:r.image+(r.image.indexOf('?')<0?'?width=1200':'') };
+  }):FALLBACK;
+  var pkRow=root.querySelector('.pk-andere .pk-row');
+  if(pkRow){
+    var path=location.pathname;
+    try{ if(window.parent!==window) path=window.parent.location.pathname; }catch(e){}
+    var current=path.split('/').filter(Boolean).pop()||'de-boom-die-het-bos-verbergt';
+    var others=PARTNERS.filter(function(p){ return current.indexOf(p.page)!==0; }).slice(0,3);
+    if(!others.length){ root.querySelector('.pk-andere').hidden=true; }
+    others.forEach(function(p){
+      var a=document.createElement('a'); a.className='pk-item'; a.href=p.href;
+      var v=document.createElement('div'); v.className='pk-visual';
+      var img=document.createElement('img'); img.src=p.image; img.alt=''; img.loading='lazy';
+      var t=document.createElement('span'); t.className='pk-type'; t.textContent=p.type;
+      v.appendChild(img); v.appendChild(t);
+      var n=document.createElement('span'); n.className='pk-name'; n.textContent=p.name;
+      var h=document.createElement('span'); h.className='pk-title'; h.textContent=p.title;
+      a.appendChild(v); a.appendChild(n); a.appendChild(h);
+      pkRow.appendChild(a);
+    });
+  }
+  /* Links zoals op Over ons: eigen pagina's als volledige pagina, externe sites in een nieuw tabblad */
+  root.querySelectorAll('a[href]').forEach(function(a){
+    var href=a.getAttribute('href');
+    if(href.charAt(0)==='#'||href.indexOf('mailto:')===0) return;
+    if(href.indexOf('https://bagage.store1.revidd.video/')===0){ a.target='_top'; return; }
+    a.target='_blank'; a.rel='noopener';
+  });
+})();
+</script>
+<script>
+/* Achtergrond: Ghost-berichten met de media-UID van deze titels als tag (#506950 of 506950).
+   Een klik op een bericht opent het volledige artikel hier in Bagage, in een lezer over de pagina. */
+(() => {
+  const box = document.querySelector('#bagage-aarde-revidd .bg-achtergrond');
+  if(!box) return;
+  const GHOST = 'https://bagage.ghost.io/ghost/api/content/posts/';
+  const KEY = 'ba7d6876786ccada3ce5ee5da1';
+  const SIGNUP = 'https://bagage.ghost.io/#/portal/signup';
+  /* Welke titels? data-revidd-ids = Revidd-id's van films, reeksen of seizoenen.
+     De code zoekt zelf de media-UID's op (bij een reeks: die van elke aflevering)
+     en toont de Ghost-berichten met één van die UID's als tag (#506950 of 506950). */
+  const REVIDD_API = 'https://bagage.api1.revidd.video/partner/v1/content/fetch';
+  const REVIDD_KEY = '4649e3177994e74974747df6ae98c9868791c5bcfc673faa';
+  const ids = (box.dataset.reviddIds || '').split(',').map(x => x.trim()).filter(Boolean);
+  if(!ids.length) return;
+  async function reviddItems(){
+    const items = [];
+    let skip = 0;
+    while(true){
+      const res = await fetch(REVIDD_API, { method:'POST', headers:{ 'api-key':REVIDD_KEY, 'Content-Type':'application/json' }, body:JSON.stringify({ limit:100, skip }) });
+      if(!res.ok) throw new Error('Revidd API ' + res.status);
+      const json = await res.json();
+      items.push(...json.data);
+      skip += 100;
+      if(json.data.length === 0 || skip >= json.count) break;
+    }
+    return items;
+  }
+  function mediaUids(items){
+    const byId = Object.fromEntries(items.map(i => [i.id, i]));
+    const uid = i => i && i.actualmedia && i.actualmedia[0] && i.actualmedia[0].id;
+    const out = new Set();
+    const add = id => {
+      const item = byId[id];
+      if(!item) return;
+      if(uid(item)) out.add(String(uid(item)));
+      (item.seasons || []).forEach(season => add(season.id));                         // reeks → seizoenen
+      items.filter(x => x.seasonId === id).forEach(ep => { if(uid(ep)) out.add(String(uid(ep))); });   // seizoen → afleveringen
+    };
+    ids.forEach(add);
+    return [...out];
+  }
+  const ghostUrl = uids => GHOST + '?key=' + KEY + '&limit=6&filter=' +
+    encodeURIComponent('tag:[' + uids.flatMap(u => ['hash-' + u, u]).join(',') + ']') +
+    '&fields=title,slug,html,excerpt,custom_excerpt,feature_image,feature_image_caption,published_at,reading_time,url&order=published_at%20desc';
+  const el = (t, c, txt) => { const n = document.createElement(t); if(c) n.className = c; if(txt) n.textContent = txt; return n; };
+  const date = iso => iso ? new Date(iso).toLocaleDateString('nl-BE', {day:'numeric', month:'long', year:'numeric'}) : '';
+
+  /* ---------- Lezer ---------- */
+  const reader = el('div', 'bg-reader');
+  reader.hidden = true;
+  reader.setAttribute('role', 'dialog');
+  reader.setAttribute('aria-modal', 'true');
+  reader.setAttribute('aria-label', 'Artikel');
+  const inner = el('article', 'bg-reader-inner');
+  reader.append(inner);
+  box.closest('#bagage-aarde-revidd').append(reader);
+  let lastFocus = null;
+  const close = () => {
+    reader.hidden = true;
+    document.documentElement.style.overflow = '';
+    if(lastFocus) lastFocus.focus();
+  };
+  reader.addEventListener('click', e => { if(e.target === reader) close(); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && !reader.hidden) close(); });
+
+  const open = (p, trigger) => {
+    lastFocus = trigger;
+    const btn = el('button', 'bg-reader-close', '✕ Sluiten');
+    btn.type = 'button';
+    btn.addEventListener('click', close);
+    const parts = [btn, el('div', 'bg-reader-kicker', 'Achtergrond'), el('h1', '', p.title || '')];
+    const meta = [date(p.published_at), p.reading_time ? p.reading_time + ' min leestijd' : ''].filter(Boolean).join(' · ');
+    if(meta) parts.push(el('p', 'bg-reader-meta', meta));
+    if(p.feature_image){
+      const fig = el('figure', 'bg-reader-hero'), img = el('img');
+      img.src = p.feature_image; img.alt = '';
+      fig.append(img);
+      parts.push(fig);
+    }
+    const body = el('div', 'bg-reader-body');
+    body.innerHTML = p.html || '';               // tekst komt uit onze eigen Ghost-site
+    body.querySelectorAll('a[href]').forEach(a => { a.target = '_blank'; a.rel = 'noopener'; });
+    body.querySelectorAll('script').forEach(sc => sc.remove());
+    parts.push(body);
+    const foot = el('div', 'bg-reader-foot');
+    const sub = el('a', 'catalog-btn', 'Schrijf je in op de nieuwsbrief →');
+    sub.href = SIGNUP; sub.target = '_blank'; sub.rel = 'noopener';
+    const back = el('button', 'catalog-btn', '← Terug naar de pagina');
+    back.type = 'button';
+    back.addEventListener('click', close);
+    foot.append(back, sub);
+    parts.push(foot);
+    inner.replaceChildren(...parts);
+    reader.hidden = false;
+    reader.scrollTop = 0;
+    document.documentElement.style.overflow = 'hidden';
+    btn.focus();
+  };
+
+  /* ---------- Kaarten ---------- */
+  reviddItems().then(items => {
+    const uids = mediaUids(items);
+    if(!uids.length) return null;
+    return fetch(ghostUrl(uids)).then(r => r.ok ? r.json() : Promise.reject(r.status));
+  }).then(json => {
+    const posts = (json && json.posts) || [];
+    if(!posts.length) return;
+    box.querySelector('.bg-posts').replaceChildren(...posts.slice(0, 6).map(p => {
+      const a = el('a', 'bg-post');
+      a.href = p.url;                            // reserve: zonder JavaScript naar Ghost
+      a.addEventListener('click', e => { if(p.html){ e.preventDefault(); open(p, a); } });
+      if(p.feature_image){
+        const fig = el('div', 'bg-post-img'), img = el('img');
+        img.src = p.feature_image; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+        fig.append(img); a.append(fig);
+      }
+      const body = el('div', 'bg-post-body');
+      const d = date(p.published_at);
+      if(d) body.append(el('span', 'bg-post-date', d));
+      body.append(el('h3', 'bg-post-title', p.title || ''));
+      const ex = (p.custom_excerpt || p.excerpt || '').trim();
+      if(ex) body.append(el('p', 'bg-post-excerpt', ex));
+      body.append(el('span', 'bg-post-more', 'Lees verder →'));
+      a.append(body);
+      return a;
+    }));
+    box.hidden = false;
+  }).catch(err => console.warn('Ghost', err));
+})();
+</script>
+
+<script src="https://markmommaerts.github.io/bagage-site/bagage-site.js"></script>
