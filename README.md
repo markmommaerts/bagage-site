@@ -6,3 +6,13 @@ Elke pagina laadt `bagage-site.js` via GitHub Pages:
     <script src="https://markmommaerts.github.io/bagage-site/bagage-site.js"></script>
 
 Een wijziging in dit bestand geldt na enkele minuten voor alle pagina's.
+
+## Reeksen & dossiers
+
+`reeksen.js` bevat de lijst van alle reeksen en dossiers. Home, de pagina
+Reeksen & dossiers en het blok "Meer reeksen & dossiers" op elke reekspagina
+bouwen hun kaarten uit deze lijst:
+
+    <script src="https://markmommaerts.github.io/bagage-site/reeksen.js"></script>
+
+Een nieuwe reeks: één blok toevoegen in `reeksen.js`. De uitleg staat bovenaan het bestand.
