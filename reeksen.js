@@ -18,6 +18,11 @@
    home    true = tonen op Home (maximaal 3, in volgorde van deze lijst)
    ids     Revidd-id's van de titels: links naar die titels gaan dan naar deze pagina
    anker   optioneel: ankernaam op Reeksen & dossiers (…/partnerkeuze#anker)
+   hero    optioneel, voor de grote dia bovenaan Home: { title, subtitle, tekst, image, type, beschikbaar }
+           — enkel invullen wat anders moet dan hierboven
+
+   Home-hero: zet in Revidd de tag UITGELICHT (of UITGELICHT 1, 2 … voor de volgorde) op een titel van
+   de reeks. Optioneel tag BESCHIKBAAR TOT 31/12/2027. Tag weg = dia weg.
    ========================================================= */
 window.BAGAGE_REEKSEN = [
 
