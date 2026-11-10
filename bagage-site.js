@@ -206,6 +206,42 @@
   setTimeout(bind, 1600);
   setTimeout(bind, 3000);
   window.addEventListener('pagehide', () => { if (bound) bound.removeEventListener('scroll', solid); });
+
+  /* Terugkeer naar dezelfde plek (bv. het Shorts-blok op de startpagina na de terugpijl op de Shorts-pagina).
+     Bij een klik op een link of short bewaren we de scrollpositie; de startpagina leest die bij terugkeer
+     (window.__bagageRestoreY) en wij houden ze nog even vast tot de pagina volledig opgebouwd is. */
+  const POS_KEY = 'bagageHomeScroll', BACK_KEY = 'bagageShortBack';
+  const store = (() => { try { return host.sessionStorage; } catch (e) { return null; } })();
+  try {
+    if (!hdoc.getElementById('bagage-back-watch')) {
+      const sc = hdoc.createElement('script');
+      sc.id = 'bagage-back-watch';
+      sc.textContent = "window.addEventListener('popstate',function(){try{sessionStorage.setItem('" + BACK_KEY + "',String(Date.now()))}catch(e){}});";
+      hdoc.head.appendChild(sc);
+    }
+  } catch (e) {}
+  const savePos = () => {
+    try { store && store.setItem(POS_KEY, JSON.stringify({ y: Math.round(scrollPos()), h: Math.round(frame.getBoundingClientRect().height), t: Date.now(), path: host.location.pathname })); } catch (e) {}
+  };
+  document.addEventListener('click', e => {
+    if (e.target.closest && e.target.closest('a[href], .short, [role="link"]')) savePos();
+  }, true);
+  (() => {
+    const y = window.__bagageRestoreY;
+    if (!y) return;
+    let userMoved = false;
+    const release = () => { window.__bagageMinH = 0; if (window.__bagageRelease) window.__bagageRelease(); queueFit(); };
+    const stop = () => { userMoved = true; release(); };
+    ['wheel', 'touchstart', 'keydown'].forEach(ev => { document.addEventListener(ev, stop, { once: true, passive: true }); host.addEventListener(ev, stop, { once: true, passive: true }); });
+    const t0 = Date.now();
+    const tick = () => {
+      if (userMoved || !frame.isConnected) return;
+      const s = target();
+      if (s.scrollHeight - s.clientHeight >= y - 5 && Math.abs(s.scrollTop - y) > 4) s.scrollTop = y;
+      if (Date.now() - t0 < 3000) setTimeout(tick, 50); else release();
+    };
+    tick();
+  })();
 })();
 /* Bagage site-fix (bron: bron/home_met_commentaar.html) */
 (() => {
@@ -429,7 +465,11 @@ const tg = a.getAttribute('target');
 if (tg && !/^_(top|self|parent)$/.test(tg)) return;
 let u;
 try { u = new URL(a.href, top.location.href); } catch (err) { return; }
-if (u.origin !== top.location.origin || !/^\/[a-z]{2}(\/|$)/.test(u.pathname)) return;
+if (u.origin !== top.location.origin) return;
+/* Links zonder taal (bv. /episodes/...) lieten de hele site opnieuw laden en daarna nog eens omleiden naar /nl/...:
+   taal ervoor zetten, zodat ook die links binnen de site openen (sneller) */
+if (/^\/(episodes|movies|series|shows|pages|search)(\/|$)/.test(u.pathname)) u.pathname = '/' + ((top.location.pathname.split('/')[1] || '').match(/^[a-z]{2}$/) ? top.location.pathname.split('/')[1] : 'nl') + u.pathname;
+if (!/^\/[a-z]{2}(\/|$)/.test(u.pathname)) return;
 if (u.pathname === top.location.pathname) return;
 if (top.__bagageGo && top.__bagageGo(u.pathname + u.search + u.hash)) e.preventDefault();
 });
