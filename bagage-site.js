@@ -226,11 +226,25 @@
   document.addEventListener('click', e => {
     if (e.target.closest && e.target.closest('a[href], .short, [role="link"]')) savePos();
   }, true);
+  /* Gsm (vooral iPhone): bij terugkeer naar de startpagina werden de shortskaarten soms half getekend
+     (foto kleiner bovenaan, zwart vlak eronder). Het kader verandert dan nog van hoogte en scrollpositie
+     terwijl de beelden laden. Daarom de beelden opnieuw laten tekenen zodra ze geladen zijn en nadat
+     de pagina op haar plek staat. */
+  const repaintMedia = () => requestAnimationFrame(() => {
+    document.querySelectorAll('.short img, .short video').forEach(m => { m.style.display = 'none'; void m.offsetHeight; m.style.display = ''; });
+  });
+  window.__bagageRepaintMedia = repaintMedia;
+  /* geladen beelden van shortskaarten (load-events borrelen niet op, wel te vangen in de capture-fase) */
+  document.addEventListener('load', e => { if (e.target.matches && e.target.matches('.short img')) repaintMedia(); }, true);
+  [400, 1200, 3200, 4500].forEach(t => setTimeout(() => { if (document.querySelector('.short')) repaintMedia(); }, t));
+  const onShow = () => { if (frame.isConnected && document.querySelector('.short')) repaintMedia(); };
+  host.addEventListener('pageshow', onShow);
+  window.addEventListener('pagehide', () => host.removeEventListener('pageshow', onShow));
   (() => {
     const y = window.__bagageRestoreY;
     if (!y) return;
     let userMoved = false;
-    const release = () => { window.__bagageMinH = 0; if (window.__bagageRelease) window.__bagageRelease(); queueFit(); };
+    const release = () => { window.__bagageMinH = 0; if (window.__bagageRelease) window.__bagageRelease(); queueFit(); setTimeout(repaintMedia, 120); };
     const stop = () => { userMoved = true; release(); };
     ['wheel', 'touchstart', 'keydown'].forEach(ev => { document.addEventListener(ev, stop, { once: true, passive: true }); host.addEventListener(ev, stop, { once: true, passive: true }); });
     const t0 = Date.now();
