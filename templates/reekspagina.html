@@ -596,6 +596,12 @@
 
 /* V30 — trailer op 1920×1080 renderen (geschaald naar het kader), zodat de speler de 1080p-versie kiest */
 #bagage-aarde-revidd .trailer-frame iframe{width:1920px!important;height:1080px!important}
+
+/* V31 — videoblokken: vaste verhouding via padding (Safari/iOS-webviews zoals Spark rekenden
+   height:100% binnen aspect-ratio soms niet uit, waardoor het beeld het kader maar half vulde) */
+#bagage-aarde-revidd .episode-frame{aspect-ratio:auto !important;height:0 !important;padding-top:56.25% !important}
+#bagage-aarde-revidd .episode.is-short .episode-frame{aspect-ratio:auto !important;padding-top:177.78% !important}
+#bagage-aarde-revidd .episode-frame .video-poster img{position:absolute !important;top:0 !important;left:0 !important;width:100% !important;height:100% !important;max-width:none !important;object-fit:cover !important;object-position:center !important}
 </style>
 
 <div class="poster">
