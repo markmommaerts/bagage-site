@@ -17,7 +17,7 @@
   const run = () => {
     document.querySelectorAll('h1,h2,h3,h4,p,div,span').forEach((el) => {
       if (el.children.length > 3) return;
-      if (el.textContent.replace(/\s+/g, ' ').trim() !== OUD) return;
+      if (el.textContent.replace(/\s+/g, '') !== OUD.replace(/\s+/g, '')) return;
       el.innerHTML = el.querySelector('br') ? NIEUW.join('<br>') : NIEUW.join(' ');
     });
   };
