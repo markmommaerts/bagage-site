@@ -4,8 +4,26 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-06c (tab Duiding, Lees meer, vergrootglas gsm, oude home, geen onderbalk, footer NL, links boven ©)
+   Versie: 2026-11-15 (nieuwe slogan; tab Duiding, Lees meer, vergrootglas gsm, oude home, geen onderbalk, footer NL, links boven ©)
    ========================================================= */
+/* =========================================================
+   SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
+   Zet de oude slogan "Blijf kijken. Blijf vragen." op alle geplakte pagina's om,
+   zodat niet elke pagina opnieuw geplakt moet worden.
+   ========================================================= */
+(() => {
+  const OUD = 'Blijf kijken. Blijf vragen.';
+  const NIEUW = ['Blijf lezen.', 'Blijf kijken.', 'Blijf vragen.'];
+  const run = () => {
+    document.querySelectorAll('h1,h2,h3,h4,p,div,span').forEach((el) => {
+      if (el.children.length > 3) return;
+      if (el.textContent.replace(/\s+/g, ' ').trim() !== OUD) return;
+      el.innerHTML = el.querySelector('br') ? NIEUW.join('<br>') : NIEUW.join(' ');
+    });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+})();
+
 /* =========================================================
    KADER OP MAAT (Revidd, sinds oktober 2026)
    Revidd laadt deze pagina in een iframe met een vaste hoogte en
