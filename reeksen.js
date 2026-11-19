@@ -38,15 +38,15 @@ window.BAGAGE_REEKSEN = [
     ids:['6acbbe9bf75648400cbb0473', '6a996b9cb6a6cc4adaee6a8b'] },
 
   { page:'goodplanet',
-    title:'De aarde vanuit de hemel', type:'Dossier · 4 reportages', soort:'dossier',
+    title:'De aarde vanuit de hemel', type:'Dossier · 4 documentaires', soort:'dossier',
     href:'https://bagage.store1.revidd.video/nl/pages/goodplanet',
     image:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/5c4e1722-7270-4edd-8ae0-d44750861627.jpg',
     partner:{ name:'GoodPlanet Belgium', plaats:'Brussel',
       logo:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/8d7ee51c-65e7-4484-aad9-c7fdd66b4fe0.png',
       site:'https://www.goodplanet.be/nl/' },
-    tekst:'Al bijna dertig jaar maakt GoodPlanet duurzaamheid toegankelijk. Samen met BAGAGE bundelen ze vier natuurreportages rond de blik van Yann Arthus-Bertrand.',
+    tekst:'Al bijna dertig jaar maakt GoodPlanet duurzaamheid toegankelijk. Samen met BAGAGE bundelen ze vier natuurdocumentaires rond de blik van Yann Arthus-Bertrand.',
     home:true,
-    ids:['6ab0f8ffef56438006256bae', '6ab0fc7ec29d6e96aee113a0', '6ab0f77fc29d6e96aee0f8ba', '6ab0fe6ec29d6e96aee117cf'] },
+    ids:['6afec0f2a8754e911817345d'] },
 
   { page:'edvard-munch', anker:'museum-de-reede',
     title:'Edvard Munch', type:'Documentaire', soort:'documentaire',
@@ -65,6 +65,6 @@ window.BAGAGE_REEKSEN = [
     image:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/01929e84-afd9-4441-88c9-637113ebc549.jpg',
     tekst:'Zes iconische bomen, zes bossen over de hele wereld. Telkens één opmerkelijke boom, maar het bos als geheel speelt de hoofdrol.',
     home:true,
-    ids:['6aaa9359ef56438006250b3f'] }
+    ids:['6af6df3a79f5c64d284f364c', '6aaa9359ef56438006250b3f'] }
 
 ];

@@ -21,6 +21,6 @@ jobs:
       - name: JavaScript nakijken
         run: |
           node controle/sjabloon-scripts.js
-          npx eslint -c controle/eslint.config.mjs bagage-site.js reeksen.js controle/tmp
+          npx eslint -c controle/eslint.config.mjs --no-error-on-unmatched-pattern bagage-site.js reeksen.js reekspagina.js controle/tmp
       - name: HTML van de sjablonen nakijken
         run: npx html-validate -c controle/htmlvalidate.json templates
