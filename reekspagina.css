@@ -65,13 +65,9 @@
 .bagage-reeks .set:hover{border-color:var(--gold)}
 .bagage-reeks .set-grid{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:20px}
 .bagage-reeks .set-item{position:relative;display:block;min-width:0;text-decoration:none;color:inherit}
-.bagage-reeks .set-item:hover,.bagage-reeks .set-item:focus-visible{z-index:5}
 .bagage-reeks .set-frame{position:relative;height:0;padding-top:56.25%;background:#000}
 .bagage-reeks .set-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:filter .25s ease}
 .bagage-reeks .set:hover .set-frame img{filter:brightness(1.08)}
-/* Korte inhoud bij hover: begint op het beeld en groeit naar onder zodat de hele tekst leesbaar is */
-.bagage-reeks .set-hint{position:absolute;top:0;left:0;right:0;min-height:100%;z-index:2;display:flex;align-items:center;box-sizing:border-box;padding:12px 14px;background:rgba(9,12,13,.95);border:1px solid rgba(244,241,233,.22);box-shadow:0 14px 30px rgba(0,0,0,.45);color:var(--text);font:400 14px/1.45 var(--serif);opacity:0;pointer-events:none;transition:opacity .25s ease}
-.bagage-reeks .set-item:hover .set-hint,.bagage-reeks .set-item:focus-visible .set-hint{opacity:1}
 .bagage-reeks .set-no{margin:12px 0 4px;font:700 11px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--orange)}
 .bagage-reeks .set-name{margin:0;font-size:1.25rem;font-weight:400;letter-spacing:-.01em;line-height:1.15;color:var(--text)}
 .bagage-reeks .set-desc{display:none;margin:6px 0 0;font:400 14px/1.45 var(--sans);color:var(--muted-hex)}
@@ -79,9 +75,9 @@
 .bagage-reeks .set-cta-meta{font-weight:400;color:var(--muted-hex)}
 .bagage-reeks .set-cta [aria-hidden]{margin-left:auto;color:var(--gold);font-size:18px}
 .bagage-reeks .set-cta:hover{background:rgba(232,182,84,.10)}
-@media (hover:none){
-  .bagage-reeks .set-hint{display:none}
+@media (hover:none),(max-width:760px){
   .bagage-reeks .set-desc{display:block}
+  .bagage-reeks .set-pop{display:none}
 }
 @media (max-width:1100px){.bagage-reeks .set-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:760px){
@@ -289,3 +285,23 @@
   .bagage-reeks .formats{grid-template-columns:1fr;gap:30px}
   .bagage-reeks .format.is-short{justify-self:center;width:min(240px,62%)}
 }
+
+/* ---------- Korte inhoud naast het beeld; de andere titels vervagen ---------- */
+.bagage-reeks .set-item{transition:opacity .3s ease,filter .3s ease}
+.bagage-reeks .set-grid.is-focus .set-item:not(.is-on){opacity:.15;filter:blur(2px) grayscale(.5)}
+.bagage-reeks .set-pop{position:absolute;z-index:10;box-sizing:border-box;padding:18px 20px;background:rgba(9,12,13,.97);border:1px solid rgba(244,241,233,.22);box-shadow:0 18px 40px rgba(0,0,0,.5);pointer-events:none}
+.bagage-reeks .set-pop .set-no{margin:0 0 6px}
+.bagage-reeks .set-pop .set-name{margin:0 0 10px;font-size:1.35rem}
+.bagage-reeks .set-pop p{margin:0;font:400 15px/1.55 var(--serif);color:var(--text)}
+/* ---------- Huurprijs: wat er inbegrepen is ---------- */
+.bagage-reeks .access-incl{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 22px;margin:-8px auto 24px;padding:0;list-style:none;font:700 13px/1.4 var(--sans);color:var(--text)}
+.bagage-reeks .access-incl li:before{content:"✓";margin-right:7px;color:var(--orange)}
+/* ---------- Shorts-tabblad ---------- */
+.bagage-reeks .shorts-intro{margin:0 0 18px;font:400 1.1rem/1.5 var(--serif);color:var(--text)}
+.bagage-reeks .shorts-row{display:none}
+.bagage-reeks .set-shorts.has-shorts .shorts-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(140px,180px);gap:16px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.bagage-reeks .set-shorts.has-shorts .shorts-card{display:none}
+.bagage-reeks .short-item{display:flex;flex-direction:column;gap:8px;text-decoration:none;color:var(--text)}
+.bagage-reeks .short-item .shorts-pic{width:100%}
+.bagage-reeks .short-name{font:400 1rem/1.25 var(--serif)}
+.bagage-reeks .short-item:hover .short-name{color:var(--gold)}

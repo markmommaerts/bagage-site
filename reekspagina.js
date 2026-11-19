@@ -192,12 +192,32 @@
     });
   });
 
-  /* ---------- Shorts: altijd gratis, samen op de Shorts-pagina. Adres hier centraal aanpassen
-     (later: per onderwerp filteren via data-pagina). ---------- */
-  root.querySelectorAll('a[data-link="shorts"]').forEach(a => {
-    a.href = SHORTS_PAGE + (cfg.shorts ? '?onderwerp=' + encodeURIComponent(cfg.shorts) : '');
-    if (!a.querySelector('.gratis')) (a.querySelector('.shorts-pic') || a).append(el('span', 'gratis', 'Gratis'));
-  });
+  /* ---------- Shorts: samen op de Shorts-pagina (adres hier centraal). Staan er shorts van deze reeks
+     in reeksen.js (veld shorts: media-id's van de reels), dan komen ze naast elkaar in het tabblad. ---------- */
+  const shortsUrl = uid => SHORTS_PAGE + '?' + [cfg.shorts ? 'onderwerp=' + encodeURIComponent(cfg.shorts) : '', uid ? 'short=' + encodeURIComponent(uid) : ''].filter(Boolean).join('&');
+  root.querySelectorAll('a[data-link="shorts"]').forEach(a => { a.href = shortsUrl().replace(/\?$/, ''); });
+  (async () => {
+    const row = root.querySelector('.shorts-row');
+    const entry = (window.BAGAGE_REEKSEN || []).find(r => r.page === cfg.pagina);
+    const uids = (entry && entry.shorts) || [];
+    if (!row || !uids.length) return;
+    const infos = await Promise.all(uids.map(uid => fetch('https://api.revidd.com/media/v1/org/public/video/' + encodeURIComponent(uid))
+      .then(r => r.ok ? r.json() : null).then(j => j && j.video ? { uid, v:j.video } : null).catch(() => null)));
+    const ok = infos.filter(Boolean);
+    if (!ok.length) return;
+    row.replaceChildren(...ok.map(({ uid, v }) => {
+      const a = el('a', 'short-item'); a.href = shortsUrl(uid); a.target = '_top';
+      const pic = el('span', 'shorts-pic');
+      const im = el('img'); im.alt = ''; im.loading = 'lazy';
+      im.src = v.cover && v.cover.mediaPath ? CDN + v.cover.mediaPath + '?width=400' : '';
+      const play = el('span', 'play'); play.setAttribute('aria-hidden', 'true'); play.append(el('span'));
+      pic.append(im, play);
+      a.append(pic, el('span', 'short-name', v.name || ''));
+      a.setAttribute('aria-label', 'Bekijk de short: ' + (v.name || ''));
+      return a;
+    }));
+    row.closest('.set-shorts').classList.add('has-shorts');
+  })();
 
   /* ---------- Gegevens uit Revidd: één keer ophalen, voor alles hieronder ---------- */
   const revidd = (async () => {
@@ -221,6 +241,37 @@
   const urlVan = item => STORE + item.seoSlug + '-' + item.id;
   const isGratis = eps => eps.length > 0 && eps.every(e => e.isFree && !prijs(e));
 
+  /* Korte inhoud bij hover: tekst naast het beeld (rechts, of links als er geen plaats is),
+     de andere titels vervagen. Op aanraakschermen staat de tekst gewoon onder het beeld. */
+  const kanHover = window.matchMedia('(hover: hover) and (min-width: 761px)');
+  function focusLezen(grid) {
+    if (grid.dataset.lezen) return;
+    grid.dataset.lezen = '1';
+    const box = grid.closest('.set');
+    const pop = el('div', 'set-pop'); pop.setAttribute('aria-hidden', 'true'); pop.hidden = true;
+    box.append(pop);
+    const toon = item => {
+      if (!kanHover.matches) return;
+      const desc = item.querySelector('.set-desc');
+      if (!desc) return;
+      pop.replaceChildren(el('div', 'set-no', item.querySelector('.set-no').textContent), el('h3', 'set-name', item.querySelector('.set-name').textContent), el('p', '', desc.textContent));
+      const b = box.getBoundingClientRect(), r = item.querySelector('.set-frame').getBoundingClientRect();
+      const w = Math.min(380, Math.max(280, b.width * 0.3)), gap = 18;
+      const rechts = b.right - r.right - gap >= w;
+      pop.style.width = w + 'px';
+      pop.style.left = (rechts ? r.right - b.left + gap : Math.max(8, r.left - b.left - gap - w)) + 'px';
+      pop.style.top = (r.top - b.top) + 'px';
+      pop.hidden = false;
+      grid.classList.add('is-focus');
+      grid.querySelectorAll('.set-item').forEach(x => x.classList.toggle('is-on', x === item));
+    };
+    const weg = () => { pop.hidden = true; grid.classList.remove('is-focus'); };
+    grid.addEventListener('mouseover', e => { const it = e.target.closest('.set-item'); if (it) toon(it); });
+    grid.addEventListener('mouseleave', weg);
+    grid.addEventListener('focusin', e => { const it = e.target.closest('.set-item'); if (it) toon(it); });
+    grid.addEventListener('focusout', weg);
+  }
+
   /* Eén tabblad vullen: beeld, nummer, duur, titel en korte inhoud per titel */
   function vulPaneel(pan, item, eps, w) {
     if (!pan) return;
@@ -239,7 +290,6 @@
       pic.alt = ''; pic.loading = 'lazy';
       frame.append(pic);
       const desc = (e.description || '').trim();
-      if (desc) { const h = el('span', 'set-hint', desc); h.setAttribute('aria-hidden', 'true'); frame.append(h); }
       const len = minuten(e.actualmedia && e.actualmedia[0] && e.actualmedia[0].duration);
       const nr = w.deel + ' ' + (i + 1);
       a.append(frame, el('div', 'set-no', nr + (len ? ' · ' + len : '')), el('h3', 'set-name', naam(e.title, item.title)));
@@ -248,7 +298,8 @@
       return a;
     }));
     const meta = pan.querySelector('.set-cta-meta');
-    if (meta) meta.textContent = eps.length + ' ' + (eps.length > 1 ? w.stuks : w.een) + (isGratis(eps) ? ' · gratis' : w.prijs || '');
+    if (meta) meta.textContent = eps.length + ' ' + (eps.length > 1 ? w.stuks : w.een) + (w.extra || (isGratis(eps) ? ' · gratis' : ''));
+    focusLezen(grid);
     pan.classList.remove('is-soon');
     const sec = pan.closest('.section'); if (sec) sec.hidden = false;
   }
@@ -264,11 +315,11 @@
 
     /* Tabblad 1: de volledige reeks / het volledige dossier */
     const gratis = isGratis(eps);
-    vulPaneel(root.querySelector('#pan-vol') || root.querySelector('.set'), season, eps, { ...woord, prijs: season.episodes ? ' · één huurprijs' : '' });
+    vulPaneel(root.querySelector('#pan-vol') || root.querySelector('.set'), season, eps, { ...woord, extra: gratis ? ' · gratis' : ' · één huurprijs, korte versies en shorts inbegrepen' });
 
     /* Tabblad 2: de korte versies (apart seizoen in Revidd, data-kort) */
     const kort = byId[cfg.kort];
-    if (kort) vulPaneel(root.querySelector('#pan-kort'), kort, titelsVan(items, kort), { deel:'Kort', stuks:'korte versies', een:'korte versie' });
+    if (kort) vulPaneel(root.querySelector('#pan-kort'), kort, titelsVan(items, kort), { deel:'Kort', stuks:'korte versies', een:'korte versie', extra: ' · inbegrepen bij ' + woord.het });
 
     /* Prijs en prijsvoordeel */
     const p = prijs(season);

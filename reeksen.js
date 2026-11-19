@@ -18,6 +18,8 @@
    home    true = tonen op Home (maximaal 3, in volgorde van deze lijst)
    ids     Revidd-id's van de titels: links naar die titels gaan dan naar deze pagina
    anker   optioneel: ankernaam op Reeksen & dossiers (…/partnerkeuze#anker)
+   shorts  optioneel: media-id's van de shorts (reels in de mediabibliotheek), in volgorde;
+           ze verschijnen naast elkaar in het tabblad De shorts van de reekspagina
    hero    optioneel, voor de grote dia bovenaan Home: { title, subtitle, tekst, image, type, beschikbaar }
            — enkel invullen wat anders moet dan hierboven
 
@@ -73,6 +75,7 @@ window.BAGAGE_REEKSEN = [
     image:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/6270a665-ff99-458e-ac44-0adf9df28f97.jpg',
     tekst:'Van Jeruzalem tot Moskou: iconische christelijke bouwwerken en de bouwmeesters die telkens de grenzen van de techniek verlegden, op zoek naar hoogte en licht.',
     home:false,
-    ids:['6ae5d76d7e11c8a635c0f059', '6ae5d8a67e11c8a635c0f49a'] }
+    ids:['6ae5d76d7e11c8a635c0f059', '6ae5d8a67e11c8a635c0f49a'],
+    shorts:['3746542', '3746545', '3746543', '3746544', '3746546'] }
 
 ];

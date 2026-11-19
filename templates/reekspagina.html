@@ -42,21 +42,24 @@
       <div class="kijk-tabs" role="tablist" aria-label="Kijk zoals je wil">
         <button type="button" role="tab" id="tab-vol" aria-controls="pan-vol" aria-selected="true">De volledige reeks<small>Thuis</small></button>
         <button type="button" role="tab" id="tab-kort" aria-controls="pan-kort" aria-selected="false" tabindex="-1">De korte versies<small>Onderweg</small></button>
-        <button type="button" role="tab" id="tab-shorts" aria-controls="pan-shorts" aria-selected="false" tabindex="-1">De shorts<small>Al scrollend · gratis</small></button>
+        <button type="button" role="tab" id="tab-shorts" aria-controls="pan-shorts" aria-selected="false" tabindex="-1">De shorts<small>Al scrollend</small></button>
       </div>
       <div class="set" id="pan-vol" role="tabpanel" aria-labelledby="tab-vol">
         <div class="set-grid"></div>
         <a class="set-cta" href="https://bagage.store1.revidd.video/nl/seasons/de-boom-die-het-bo-verbergt-6af6df3a79f5c64d284f364c" data-link="seizoen"><span>Bekijk de volledige reeks</span><span class="set-cta-meta"></span><span aria-hidden="true">→</span></a>
       </div>
       <div class="set is-soon" id="pan-kort" role="tabpanel" aria-labelledby="tab-kort" hidden>
-        <p class="set-soon">De korte versies komen binnenkort: elk deel in kortere afleveringen, om onderweg te kijken.</p>
+        <p class="set-soon">De korte versies komen binnenkort: elk deel in kortere afleveringen, om onderweg te kijken. Inbegrepen in de prijs van de reeks.</p>
         <div class="set-grid"></div>
         <a class="set-cta" href="https://bagage.store1.revidd.video/nl/seasons/de-boom-die-het-bo-verbergt-6af6df3a79f5c64d284f364c"><span>Bekijk de korte versies</span><span class="set-cta-meta"></span><span aria-hidden="true">→</span></a>
       </div>
       <div class="set set-shorts" id="pan-shorts" role="tabpanel" aria-labelledby="tab-shorts" hidden>
+        <p class="shorts-intro">Ontdek de reeks gratis en al scrollend via korte fragmenten.</p>
+        <!-- Zodra er shorts van deze reeks in reeksen.js staan (veld shorts), verschijnen ze hier naast elkaar. -->
+        <div class="shorts-row"></div>
         <a class="shorts-card" href="https://bagage.store1.revidd.video/nl/pages/shorts" data-link="shorts">
           <span class="shorts-pic"><img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/a7c67e17-f209-4e74-9dc1-f8c400ae4a23.jpg?width=600" alt="" loading="lazy"><span class="play" aria-hidden="true"><span></span></span></span>
-          <span class="shorts-text"><strong>De shorts</strong><span>Korte fragmenten om al scrollend te ontdekken, altijd gratis. Van de ene short ga je naar de volgende en zo ontdek je ook andere reeksen en documentaires.</span><span class="shorts-go">Bekijk de shorts <span aria-hidden="true">→</span></span></span>
+          <span class="shorts-text"><strong>De shorts</strong><span class="shorts-go">Bekijk de shorts <span aria-hidden="true">→</span></span></span>
         </a>
       </div>
     </section>
@@ -80,7 +83,10 @@
 
         <div class="access-band">
           <h2 class="access-title">Bekijk de volledige reeks</h2>
-          <p class="access-copy">Zes afleveringen in één reeks. Eén betaling, geen abonnement.</p>
+          <p class="access-copy">Eén huurprijs voor de zes afleveringen, de korte versies en de shorts. Geen abonnement.</p>
+          <ul class="access-incl" aria-label="Inbegrepen in de huurprijs">
+            <li>De volledige reeks</li><li>De korte versies</li><li>De shorts</li>
+          </ul>
           <p class="access-saving" hidden></p>
           <div class="access-actions">
             <a class="rent-btn" href="https://bagage.store1.revidd.video/nl/seasons/de-boom-die-het-bo-verbergt-6af6df3a79f5c64d284f364c" data-link="seizoen"><span>Huur de volledige reeks</span><small>btw incl.</small></a>
