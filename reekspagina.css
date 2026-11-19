@@ -305,3 +305,4 @@
 .bagage-reeks .short-item .shorts-pic{width:100%}
 .bagage-reeks .short-name{font:400 1rem/1.25 var(--serif)}
 .bagage-reeks .short-item:hover .short-name{color:var(--gold)}
+.bagage-reeks .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
