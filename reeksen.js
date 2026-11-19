@@ -65,6 +65,14 @@ window.BAGAGE_REEKSEN = [
     image:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/01929e84-afd9-4441-88c9-637113ebc549.jpg',
     tekst:'Zes iconische bomen, zes bossen over de hele wereld. Telkens één opmerkelijke boom, maar het bos als geheel speelt de hoofdrol.',
     home:true,
-    ids:['6af6df3a79f5c64d284f364c', '6aaa9359ef56438006250b3f'] }
+    ids:['6af6df3a79f5c64d284f364c', '6aaa9359ef56438006250b3f'] },
+
+  { page:'heilige-oorden',
+    title:'Heilige Oorden', type:'Reeks · aflevering 1', soort:'reeks',
+    href:'https://bagage.store1.revidd.video/nl/pages/heilige-oorden',
+    image:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/6270a665-ff99-458e-ac44-0adf9df28f97.jpg',
+    tekst:'Van Jeruzalem tot Moskou: iconische christelijke bouwwerken en de bouwmeesters die telkens de grenzen van de techniek verlegden, op zoek naar hoogte en licht.',
+    home:false,
+    ids:['6ae5d76d7e11c8a635c0f059', '6ae5d8a67e11c8a635c0f49a'] }
 
 ];

@@ -38,6 +38,9 @@
   const woord = isDossier
     ? { het:'het dossier', deel:'Documentaire', stuks:'documentaires', een:'documentaire' }
     : { het:'de reeks', deel:'Deel', stuks:'afleveringen', een:'aflevering' };
+  /* Optioneel: andere woorden voor de afleveringen, bv. data-deel="Kort" data-stuks="korte versies" */
+  if (cfg.deel) woord.deel = cfg.deel;
+  if (cfg.stuks) woord.stuks = cfg.stuks;
   const el = (t, c, txt) => { const n = document.createElement(t); if (c) n.className = c; if (txt) n.textContent = txt; return n; };
   const euro = n => n.toFixed(2).replace('.', ',') + ' €';
   const credits = n => { const c = Math.max(1, Math.round(n / CREDIT)); return c + (c === 1 ? ' credit' : ' credits'); };
@@ -188,7 +191,7 @@
   /* ---------- Shorts: altijd gratis, samen op de Shorts-pagina. Adres hier centraal aanpassen
      (later: per onderwerp filteren via data-pagina). ---------- */
   root.querySelectorAll('a[data-link="shorts"]').forEach(a => {
-    a.href = SHORTS_PAGE;
+    a.href = SHORTS_PAGE + (cfg.shorts ? '?onderwerp=' + encodeURIComponent(cfg.shorts) : '');
     if (!a.querySelector('.gratis')) a.append(el('span', 'gratis', 'Gratis'));
   });
 
@@ -217,6 +220,9 @@
     root.querySelectorAll('[data-link="seizoen"]').forEach(a => { a.href = seasonUrl; });
     syncFormats();
 
+    /* Zijn alle afleveringen gratis (en zonder huurprijs), dan is de reeks gratis te bekijken */
+    const gratis = eps.length > 0 && eps.every(e => e.isFree && !prijs(e));
+
     /* Afleveringen / documentaires als één geheel */
     const set = root.querySelector('.set');
     if (set && eps.length) {
@@ -241,13 +247,16 @@
         return a;
       }));
       const meta = set.querySelector('.set-cta-meta');
-      if (meta) meta.textContent = eps.length + ' ' + woord.stuks + ' · één huurprijs';
+      if (meta) meta.textContent = eps.length + ' ' + woord.stuks + (gratis ? ' · gratis' : ' · één huurprijs');
       set.closest('.section').hidden = false;
     }
 
     /* Prijs en prijsvoordeel */
     const p = prijs(season);
-    if (p) {
+    if (gratis) {
+      root.querySelectorAll('.rent-btn[data-link="seizoen"] > span').forEach(s => { s.textContent = 'Bekijk gratis'; });
+      root.querySelectorAll('.rent-btn[data-link="seizoen"] > small').forEach(s => { s.hidden = true; });
+    } else if (p) {
       root.querySelectorAll('.rent-btn[data-link="seizoen"] > span').forEach(s => {
         s.textContent = 'Huur ' + euro(p.price) + (p.duur ? ' · ' + p.duur : '') + ' · of ' + credits(p.price);
       });
