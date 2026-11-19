@@ -14,7 +14,7 @@
      - links met data-link="seizoen" naar het seizoen laten wijzen (huurknop, eerste videoblok, balk onder de afleveringen)
      - prijs in de huurknop uit het prijsveld in Revidd: "Huur 11,99 € · 1 maand · of 3 credits"
      - prijsvoordeel: "Huur het dossier en bespaar 3,97 €" (losse prijzen samen min de prijs van het seizoen)
-     - videoblokken zonder link (LINK_…) tonen als "Binnenkort"
+     - Kijk zoals je wil: tabbladen volledige reeks (data-seizoen), korte versies (data-kort, leeg = binnenkort) en shorts
      - Achtergrond (Ghost-artikels met de media-UID van een aflevering als tag)
      - Meer reeksen & dossiers (uit reeksen.js), nieuwsbrief-inschrijving, trailer, kop en onderbalk van Revidd
    ========================================================= */
@@ -173,26 +173,30 @@
     }
   }
 
-  /* ---------- Videoblokken: zonder link (nog LINK_…) staan ze er als "Binnenkort" ---------- */
-  const syncFormats = () => root.querySelectorAll('.format').forEach(b => {
-    const a = b.querySelector('.format-frame a');
-    if (!a) return;
-    const href = a.getAttribute('href') || '';
-    const soon = !href || /^LINK_/.test(href) || href === '#';
-    b.classList.toggle('is-soon', soon);
-    if (soon) {
-      a.removeAttribute('href');
-      a.setAttribute('aria-disabled', 'true');
-      if (!a.querySelector('.soon')) a.append(el('span', 'soon', 'Binnenkort'));
-    }
+  /* ---------- Kijk zoals je wil: tabbladen Volledige reeks · Korte versies · Shorts ---------- */
+  const tabs = [...root.querySelectorAll('.kijk-tabs [role="tab"]')];
+  const kies = t => tabs.forEach(x => {
+    const on = x === t;
+    x.setAttribute('aria-selected', on ? 'true' : 'false');
+    x.tabIndex = on ? 0 : -1;
+    const pan = root.querySelector('#' + x.getAttribute('aria-controls'));
+    if (pan) pan.hidden = !on;
   });
-  syncFormats();
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => kies(t));
+    t.addEventListener('keydown', e => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      const n = tabs[(i + d + tabs.length) % tabs.length]; kies(n); n.focus();
+    });
+  });
 
   /* ---------- Shorts: altijd gratis, samen op de Shorts-pagina. Adres hier centraal aanpassen
      (later: per onderwerp filteren via data-pagina). ---------- */
   root.querySelectorAll('a[data-link="shorts"]').forEach(a => {
     a.href = SHORTS_PAGE + (cfg.shorts ? '?onderwerp=' + encodeURIComponent(cfg.shorts) : '');
-    if (!a.querySelector('.gratis')) a.append(el('span', 'gratis', 'Gratis'));
+    if (!a.querySelector('.gratis')) (a.querySelector('.shorts-pic') || a).append(el('span', 'gratis', 'Gratis'));
   });
 
   /* ---------- Gegevens uit Revidd: één keer ophalen, voor alles hieronder ---------- */
@@ -207,49 +211,64 @@
     return items;
   })();
 
+  /* Titels van een seizoen (gesorteerd), of één losse titel */
+  const titelsVan = (items, item) => {
+    if (!item) return [];
+    if (!item.episodes) return [item];
+    const order = Object.fromEntries(item.episodes.map(e => [e.id, e.order]));
+    return items.filter(x => x.seasonId === item.id).sort((a, b) => (order[a.id] ?? 99) - (order[b.id] ?? 99));
+  };
+  const urlVan = item => STORE + item.seoSlug + '-' + item.id;
+  const isGratis = eps => eps.length > 0 && eps.every(e => e.isFree && !prijs(e));
+
+  /* Eén tabblad vullen: beeld, nummer, duur, titel en korte inhoud per titel */
+  function vulPaneel(pan, item, eps, w) {
+    if (!pan) return;
+    const url = urlVan(item);
+    pan.querySelectorAll('.set-cta').forEach(a => { a.href = url; });
+    const grid = pan.querySelector('.set-grid');
+    grid.style.setProperty('--n', Math.min(eps.length, 6));
+    const covers = eps.map(e => img(e.coverimage, 800));
+    const allSame = covers.every(c => c && c === covers[0]);
+    grid.replaceChildren(...eps.map((e, i) => {
+      const a = el('a', 'set-item'); a.href = url;
+      const frame = el('div', 'set-frame');
+      const pic = el('img');
+      const thumb = e.actualmedia && e.actualmedia[0] && e.actualmedia[0].coverUrl ? CDN + e.actualmedia[0].coverUrl + '?width=800' : '';
+      pic.src = (allSame && thumb) ? thumb : (covers[i] || thumb || img(item.coverimage, 800));
+      pic.alt = ''; pic.loading = 'lazy';
+      frame.append(pic);
+      const desc = (e.description || '').trim();
+      if (desc) { const h = el('span', 'set-hint', desc); h.setAttribute('aria-hidden', 'true'); frame.append(h); }
+      const len = minuten(e.actualmedia && e.actualmedia[0] && e.actualmedia[0].duration);
+      const nr = w.deel + ' ' + (i + 1);
+      a.append(frame, el('div', 'set-no', nr + (len ? ' · ' + len : '')), el('h3', 'set-name', naam(e.title, item.title)));
+      if (desc) a.append(el('p', 'set-desc', desc));
+      a.setAttribute('aria-label', 'Bekijk ' + naam(e.title, item.title));
+      return a;
+    }));
+    const meta = pan.querySelector('.set-cta-meta');
+    if (meta) meta.textContent = eps.length + ' ' + (eps.length > 1 ? w.stuks : w.een) + (isGratis(eps) ? ' · gratis' : w.prijs || '');
+    pan.classList.remove('is-soon');
+    const sec = pan.closest('.section'); if (sec) sec.hidden = false;
+  }
+
   revidd.then(items => {
     const byId = Object.fromEntries(items.map(i => [i.id, i]));
     const season = byId[cfg.seizoen];
     if (!season) { console.warn('Reekspagina: seizoen niet gevonden', cfg.seizoen); return; }
-    const order = Object.fromEntries((season.episodes || []).map(e => [e.id, e.order]));
-    const eps = items.filter(x => x.seasonId === season.id)
-      .sort((a, b) => (order[a.id] ?? 99) - (order[b.id] ?? 99));
-    const seasonUrl = STORE + season.seoSlug + '-' + season.id;
+    const eps = titelsVan(items, season);
 
-    /* Links naar het seizoen */
-    root.querySelectorAll('[data-link="seizoen"]').forEach(a => { a.href = seasonUrl; });
-    syncFormats();
+    /* Links naar het seizoen (of de titel) */
+    root.querySelectorAll('[data-link="seizoen"]').forEach(a => { a.href = urlVan(season); });
 
-    /* Zijn alle afleveringen gratis (en zonder huurprijs), dan is de reeks gratis te bekijken */
-    const gratis = eps.length > 0 && eps.every(e => e.isFree && !prijs(e));
+    /* Tabblad 1: de volledige reeks / het volledige dossier */
+    const gratis = isGratis(eps);
+    vulPaneel(root.querySelector('#pan-vol') || root.querySelector('.set'), season, eps, { ...woord, prijs: season.episodes ? ' · één huurprijs' : '' });
 
-    /* Afleveringen / documentaires als één geheel */
-    const set = root.querySelector('.set');
-    if (set && eps.length) {
-      const grid = set.querySelector('.set-grid');
-      grid.style.setProperty('--n', Math.min(eps.length, 6));
-      const covers = eps.map(e => img(e.coverimage, 800));
-      const allSame = covers.every(c => c && c === covers[0]);
-      grid.replaceChildren(...eps.map((e, i) => {
-        const a = el('a', 'set-item'); a.href = seasonUrl;
-        const frame = el('div', 'set-frame');
-        const pic = el('img');
-        const thumb = e.actualmedia && e.actualmedia[0] && e.actualmedia[0].coverUrl ? CDN + e.actualmedia[0].coverUrl + '?width=800' : '';
-        pic.src = (allSame && thumb) ? thumb : (covers[i] || thumb || img(season.coverimage, 800));
-        pic.alt = ''; pic.loading = 'lazy';
-        frame.append(pic);
-        const desc = (e.description || '').trim();
-        if (desc) { const h = el('span', 'set-hint', desc); h.setAttribute('aria-hidden', 'true'); frame.append(h); }
-        const len = minuten(e.actualmedia && e.actualmedia[0] && e.actualmedia[0].duration);
-        a.append(frame, el('div', 'set-no', woord.deel + ' ' + (i + 1) + (len ? ' · ' + len : '')), el('h3', 'set-name', naam(e.title, season.title)));
-        if (desc) a.append(el('p', 'set-desc', desc));
-        a.setAttribute('aria-label', 'Bekijk ' + woord.het + ': ' + naam(e.title, season.title));
-        return a;
-      }));
-      const meta = set.querySelector('.set-cta-meta');
-      if (meta) meta.textContent = eps.length + ' ' + woord.stuks + (gratis ? ' · gratis' : ' · één huurprijs');
-      set.closest('.section').hidden = false;
-    }
+    /* Tabblad 2: de korte versies (apart seizoen in Revidd, data-kort) */
+    const kort = byId[cfg.kort];
+    if (kort) vulPaneel(root.querySelector('#pan-kort'), kort, titelsVan(items, kort), { deel:'Kort', stuks:'korte versies', een:'korte versie' });
 
     /* Prijs en prijsvoordeel */
     const p = prijs(season);
@@ -260,7 +279,7 @@
       root.querySelectorAll('.rent-btn[data-link="seizoen"] > span').forEach(s => {
         s.textContent = 'Huur ' + euro(p.price) + (p.duur ? ' · ' + p.duur : '') + ' · of ' + credits(p.price);
       });
-      const los = eps.map(prijs).filter(Boolean).reduce((s, x) => s + x.price, 0);
+      const los = eps.length > 1 ? eps.map(prijs).filter(Boolean).reduce((s, x) => s + x.price, 0) : 0;
       const sav = root.querySelector('.access-saving');
       if (sav && los - p.price > 0.005) {
         sav.textContent = 'Huur ' + woord.het + ' en bespaar ' + euro(los - p.price) + '.';
@@ -269,7 +288,7 @@
     }
 
     /* Achtergrond: Ghost-artikels bij de afleveringen */
-    achtergrond(items, [season.id, ...(root.querySelector('.bg-achtergrond')?.dataset.reviddIds || '').split(',').map(x => x.trim()).filter(Boolean)]);
+    achtergrond(items, [season.id, ...(kort ? [kort.id] : []), ...(root.querySelector('.bg-achtergrond')?.dataset.reviddIds || '').split(',').map(x => x.trim()).filter(Boolean)]);
   }).catch(err => console.warn('Reekspagina', err));
 
   /* ---------- Achtergrond (Ghost) + lezer ---------- */

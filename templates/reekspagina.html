@@ -5,13 +5,14 @@
        https://markmommaerts.github.io/bagage-site/reekspagina.css  en  reekspagina.js
      Hier staat alleen de inhoud. Prijzen, afleveringen, korte inhoud en links naar het seizoen
      komen automatisch uit Revidd (data-seizoen). Nooit een bedrag in deze HTML zetten.
-     Korte versies: vervang LINK_KORTE_VERSIES door het adres in Revidd; tot dan "Binnenkort".
+     Korte versies: data-kort = id van het seizoen met de korte versies (met tag VERBORGEN, zodat het niet in catalogus of home staat); leeg = binnenkort.
+     Shorts: data-shorts = onderwerp-tag van de reels (bv. HeiligeOorden).
      Shorts: gratis, gegroepeerd op de Shorts-pagina (adres centraal in reekspagina.js).
      ========================================================= -->
 <link rel="stylesheet" href="https://markmommaerts.github.io/bagage-site/reekspagina.css">
 <div id="bagage-reeks" class="bagage-reeks"
      data-seizoen="6af6df3a79f5c64d284f364c" data-soort="reeks" data-pagina="de-boom-die-het-bos-verbergt"
-     data-nieuwsbrief="Bagage" data-label="Bron: reekspagina De boom die het bos verbergt"
+     data-nieuwsbrief="Bagage" data-label="Bron: reekspagina De boom die het bos verbergt" data-kort="" data-shorts=""
      style="--reeks-bg:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/01929e84-afd9-4441-88c9-637113ebc549.jpg?width=1600');--dim1:.18;--dim2:.38;--dim3:.6">
 
 <div class="poster">
@@ -32,34 +33,31 @@
       <div class="trailer-frame"><button type="button" class="trailer-poster" style="background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/528383b5-96ab-4dd2-a311-e297931b5834.jpg?width=1200')" aria-label="Speel de trailer af"><span></span></button><iframe data-src="https://embed.revidd.com/iframe/index.html?mid=3749984&amp;platform=OTT&amp;w=1920&amp;h=1080&amp;adTagUrl=&amp;loop=true" width="1920" height="1080" allow="autoplay; fullscreen" allowfullscreen title="Trailer De boom die het bos verbergt"></iframe></div>
     </section>
 
-    <!-- AFLEVERINGEN / DOCUMENTAIREN — automatisch uit het seizoen in Revidd (beeld, titel, duur, korte inhoud).
-         Elke klik gaat naar de reeks. Losse titels huurt de kijker via de catalogus. -->
-    <section class="section" aria-labelledby="set-title" hidden>
-      <div class="section-kicker">De volledige reeks</div>
-      <h2 class="section-title" id="set-title">Zes bomen. Zes bossen.</h2>
-      <div class="set">
+    <!-- KIJK ZOALS JE WIL — drie tabbladen, voor elke reeks en elk dossier dezelfde.
+         Volledig: automatisch uit het seizoen (data-seizoen). Korte versies: apart seizoen in Revidd met tag VERBORGEN (data-kort);
+         zolang dat leeg is staat er "binnenkort". Shorts: gratis, op de Shorts-pagina. -->
+    <section class="section kijk" aria-labelledby="kijk-title">
+      <div class="section-kicker">Kijk zoals je wil</div>
+      <h2 class="section-title" id="kijk-title">Zes bomen. Zes bossen.</h2>
+      <div class="kijk-tabs" role="tablist" aria-label="Kijk zoals je wil">
+        <button type="button" role="tab" id="tab-vol" aria-controls="pan-vol" aria-selected="true">De volledige reeks<small>Thuis</small></button>
+        <button type="button" role="tab" id="tab-kort" aria-controls="pan-kort" aria-selected="false" tabindex="-1">De korte versies<small>Onderweg</small></button>
+        <button type="button" role="tab" id="tab-shorts" aria-controls="pan-shorts" aria-selected="false" tabindex="-1">De shorts<small>Al scrollend · gratis</small></button>
+      </div>
+      <div class="set" id="pan-vol" role="tabpanel" aria-labelledby="tab-vol">
         <div class="set-grid"></div>
         <a class="set-cta" href="https://bagage.store1.revidd.video/nl/seasons/de-boom-die-het-bo-verbergt-6af6df3a79f5c64d284f364c" data-link="seizoen"><span>Bekijk de volledige reeks</span><span class="set-cta-meta"></span><span aria-hidden="true">→</span></a>
       </div>
-    </section>
-
-    <!-- KIJK ZOALS JE WIL — drie vormen, voor elke reeks en elk dossier dezelfde -->
-    <section class="section" aria-labelledby="formats-title">
-      <div class="section-kicker">Kijk zoals je wil</div>
-      <h2 class="section-title" id="formats-title">Thuis, onderweg of al scrollend.</h2>
-      <div class="formats">
-        <article class="format">
-          <div class="format-frame"><a href="https://bagage.store1.revidd.video/nl/seasons/de-boom-die-het-bo-verbergt-6af6df3a79f5c64d284f364c" data-link="seizoen" aria-label="Bekijk de volledige reeks"><img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/e8f03f54-2072-4b11-b369-e7498d8eedfc.jpg?width=1200" alt="" loading="lazy"><span class="play" aria-hidden="true"><span></span></span></a></div>
-          <div class="format-no">Thuis · 6 afleveringen van ca. 43 min</div><h3 class="format-name">De volledige reeks</h3>
-        </article>
-        <article class="format">
-          <div class="format-frame"><a href="LINK_KORTE_VERSIES" aria-label="Bekijk de korte versies"><img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/528383b5-96ab-4dd2-a311-e297931b5834.jpg?width=1200" alt="" loading="lazy"><span class="play" aria-hidden="true"><span></span></span></a></div>
-          <div class="format-no">Onderweg · elke boom in een kortere aflevering</div><h3 class="format-name">De korte versies</h3>
-        </article>
-        <article class="format is-short">
-          <div class="format-frame"><a href="https://bagage.store1.revidd.video/nl/pages/shorts" data-link="shorts" aria-label="Bekijk de shorts (gratis)"><img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/a7c67e17-f209-4e74-9dc1-f8c400ae4a23.jpg?width=600" alt="" loading="lazy"><span class="play" aria-hidden="true"><span></span></span></a></div>
-          <div class="format-no">Al scrollend</div><h3 class="format-name">De shorts</h3>
-        </article>
+      <div class="set is-soon" id="pan-kort" role="tabpanel" aria-labelledby="tab-kort" hidden>
+        <p class="set-soon">De korte versies komen binnenkort: elk deel in kortere afleveringen, om onderweg te kijken.</p>
+        <div class="set-grid"></div>
+        <a class="set-cta" href="https://bagage.store1.revidd.video/nl/seasons/de-boom-die-het-bo-verbergt-6af6df3a79f5c64d284f364c"><span>Bekijk de korte versies</span><span class="set-cta-meta"></span><span aria-hidden="true">→</span></a>
+      </div>
+      <div class="set set-shorts" id="pan-shorts" role="tabpanel" aria-labelledby="tab-shorts" hidden>
+        <a class="shorts-card" href="https://bagage.store1.revidd.video/nl/pages/shorts" data-link="shorts">
+          <span class="shorts-pic"><img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/a7c67e17-f209-4e74-9dc1-f8c400ae4a23.jpg?width=600" alt="" loading="lazy"><span class="play" aria-hidden="true"><span></span></span></span>
+          <span class="shorts-text"><strong>De shorts</strong><span>Korte fragmenten om al scrollend te ontdekken, altijd gratis. Van de ene short ga je naar de volgende en zo ontdek je ook andere reeksen en documentaires.</span><span class="shorts-go">Bekijk de shorts <span aria-hidden="true">→</span></span></span>
+        </a>
       </div>
     </section>
 
