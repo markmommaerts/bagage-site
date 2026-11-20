@@ -397,17 +397,6 @@
         sav.textContent = 'Huur ' + woord.het + ' en bespaar ' + euro(los - p.price) + '.';
         sav.hidden = false;
       }
-      /* Liever één titel? Zijn de titels ook los te huren, dan een rustige regel onder de knoppen naar het seizoen,
-         waar je elke titel apart kiest en huurt. */
-      const eenLos = eps.length > 1 && eps.every(prijs) ? prijs(eps[0]) : null;
-      const actions = root.querySelector('.access-actions');
-      if (eenLos && actions && !root.querySelector('.access-los')) {
-        const los1 = el('p', 'access-los');
-        los1.append('Liever één ' + woord.een + '? Elke ' + woord.een + ' is ook apart te huren: ' + euro(eenLos.price) + (eenLos.duur ? ' · ' + eenLos.duur : '') + '. ');
-        const a = el('a', '', 'Kies een ' + woord.een + ' →'); a.href = urlVan(season); a.target = '_top';
-        los1.append(a);
-        actions.after(los1);
-      }
     }
 
     /* Achtergrond: Ghost-artikels bij de afleveringen */
