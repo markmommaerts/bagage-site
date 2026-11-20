@@ -253,7 +253,7 @@
 .bagage-reeks .set.is-soon .set-grid,.bagage-reeks .set.is-soon .set-cta{display:none}
 .bagage-reeks .set-shorts{padding:22px}
 .bagage-reeks .shorts-card{display:flex;gap:28px;align-items:center;text-decoration:none;color:var(--text)}
-.bagage-reeks .shorts-pic{position:relative;flex:0 0 auto;width:180px;height:0;padding-top:177.78%;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,.12)}
+.bagage-reeks .shorts-pic{position:relative;display:block;flex:0 0 auto;width:180px;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,.12)}
 .bagage-reeks .shorts-pic img{position:absolute;top:0;left:0;width:100%;height:100%;max-width:none;object-fit:cover}
 .bagage-reeks .shorts-text{display:flex;flex-direction:column;gap:10px;max-width:520px;font:400 1.05rem/1.5 var(--serif);color:var(--muted-hex)}
 .bagage-reeks .shorts-text strong{font-weight:400;font-size:1.6rem;line-height:1.1;color:var(--text)}
@@ -315,3 +315,4 @@
 @media (max-width:760px){.bagage-reeks .shorts-promo.has-shorts .shorts-row{justify-content:start;grid-auto-columns:42%}}
 .bagage-reeks .shorts-pic{background-position:center;background-size:cover;background-repeat:no-repeat}
 .bagage-reeks .shorts-pic.bg img{opacity:0}
+.bagage-reeks .shorts-pic::before{content:"";display:block;padding-top:177.78%}  /* 9:16, t.o.v. de eigen breedte */
