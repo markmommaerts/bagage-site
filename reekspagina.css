@@ -2,6 +2,7 @@
    BAGAGE — REEKS- EN DOSSIERPAGINA'S (gedeelde opmaak)
    Geldt voor elke pagina met <div id="bagage-reeks" class="bagage-reeks">.
    Per pagina in de HTML: --reeks-bg (achtergrondfoto) en eventueel --dim1/2/3 (hoe donker);
+   optioneel --reeks-pos (cadrage op desktop, bv. center 60% voor een staand beeld);
    voor gsm optioneel --reeks-bg-mobiel (staand beeld) en --reeks-pos-mobiel (horizontale cadrage, bv. 40%).
    Gedrag (afleveringen, prijzen, nieuwsbrief …) staat in reekspagina.js.
    ========================================================= */
@@ -14,7 +15,7 @@
   width:100%;margin:0;padding:0;color:var(--text);font-family:var(--serif);
   background:
     linear-gradient(180deg,rgba(0,0,0,var(--dim1)) 0%,rgba(0,0,0,var(--dim2)) 48%,rgba(0,0,0,var(--dim3)) 100%),
-    var(--reeks-bg,none) center top / cover fixed no-repeat,var(--black);
+    var(--reeks-bg,none) var(--reeks-pos,center top) / cover fixed no-repeat,var(--black);
 }
 @media (max-width:768px){
   .bagage-reeks{background:
