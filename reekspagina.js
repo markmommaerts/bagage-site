@@ -376,7 +376,7 @@
 
     /* Tabblad 1: de volledige reeks / het volledige dossier */
     const gratis = isGratis(eps);
-    vulPaneel(root.querySelector('#pan-vol') || root.querySelector('.set'), season, eps, { ...woord, extra: gratis ? ' · gratis' : isDocu ? '' : ' · één huurprijs, korte versies inbegrepen' });
+    vulPaneel(root.querySelector('#pan-vol') || root.querySelector('.set'), season, eps, { ...woord, extra: gratis ? ' · gratis' : isDocu ? '' : ' · één huurprijs' + (byId[cfg.kort] ? ', korte versies inbegrepen' : '') });
 
     /* Tabblad 2: de korte versies (apart seizoen in Revidd, data-kort) */
     const kort = byId[cfg.kort];
