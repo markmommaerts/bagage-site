@@ -191,6 +191,11 @@
 .bagage-reeks .context-kicker{margin-bottom:6px;font:700 11px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--orange-dark)}
 .bagage-reeks .context-name{margin:0 0 6px;font-size:1.1rem;font-weight:400;letter-spacing:-.015em;line-height:1.15;color:#111}
 .bagage-reeks .context-copy{margin:0;font:400 14px/1.5 var(--sans);color:var(--muted-dark)}
+/* Vierkante postervakken: <div class="context-ribbon is-poster"> — beeld vult het vierkant (bv. kunstwerken) */
+.bagage-reeks .context-ribbon.is-poster .context-card{flex:0 0 250px}
+.bagage-reeks .context-ribbon.is-poster .context-image{height:auto;aspect-ratio:1/1;padding:0;background:#15191a}
+.bagage-reeks .context-ribbon.is-poster .context-image img{width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;transition:transform .35s ease}
+.bagage-reeks .context-ribbon.is-poster .context-card:hover .context-image img{transform:scale(1.03)}
 @media (max-width:900px){.bagage-reeks .context-ribbon{justify-content:flex-start}}
 
 /* ---------- Meer reeksen & dossiers ---------- */
