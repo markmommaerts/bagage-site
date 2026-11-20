@@ -20,9 +20,8 @@
 @media (max-width:768px){
   .bagage-reeks{background:
     linear-gradient(180deg,rgba(0,0,0,var(--dim1)) 0%,rgba(0,0,0,var(--dim2)) 48%,rgba(0,0,0,var(--dim3)) 100%),
-    linear-gradient(180deg,rgba(9,12,13,0) 0,rgba(9,12,13,0) 620px,var(--black) 960px) center top / 100% 960px no-repeat,
-    var(--reeks-bg-mobiel,var(--reeks-bg,none)) var(--reeks-pos-mobiel,50%) 0 / auto 960px scroll no-repeat,var(--black)}
-  /* Gsm: de foto op een vaste hoogte bovenaan (niet over de hele, zeer lange pagina uitgerekt), onderaan zacht naar zwart */
+    var(--reeks-bg-mobiel,var(--reeks-bg,none)) var(--reeks-pos-mobiel,50%) top / cover scroll no-repeat,var(--black)}
+  /* Gsm: zoals op desktop vult de foto de hele pagina (het kader in Revidd is zo hoog als de pagina) */
 }
 .bagage-reeks,.bagage-reeks *{box-sizing:border-box}
 .bagage-reeks a{color:inherit}
@@ -132,6 +131,9 @@
 .bagage-reeks .access-band{max-width:900px;margin:72px auto 0;padding:42px 28px;border:1px solid var(--line-hex);background:rgba(9,12,13,.92);box-shadow:0 18px 48px rgba(0,0,0,.28);text-align:center}
 .bagage-reeks .access-title{margin:0 0 10px;font-size:clamp(1.9rem,3.2vw,2.8rem);font-weight:400;letter-spacing:-.035em;color:var(--text)}
 .bagage-reeks .access-copy{margin:0 auto 24px;max-width:56ch;font:400 16px/1.6 var(--sans);color:var(--muted-hex)}
+.bagage-reeks .access-los{margin:18px auto 0;max-width:60ch;font:400 14px/1.6 var(--sans);color:var(--muted-hex)}
+.bagage-reeks .access-los a{color:var(--text);text-decoration:none;border-bottom:1px solid var(--orange);white-space:nowrap}
+.bagage-reeks .access-los a:hover{color:var(--gold)}
 .bagage-reeks .access-saving{margin:-12px auto 22px;font:700 14px/1.5 var(--sans);color:var(--gold)}
 .bagage-reeks .access-actions{display:flex;justify-content:center;align-items:stretch;gap:12px;flex-wrap:wrap}
 .bagage-reeks .rent-btn,.bagage-reeks .catalog-btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:48px;padding:14px 21px;text-decoration:none;font:700 14px/1.4 var(--sans);cursor:pointer;transition:background-color .2s ease,border-color .2s ease}

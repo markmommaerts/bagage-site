@@ -54,7 +54,11 @@
     const n = +m[1], w = { DAYS:['dag','dagen'], WEEKS:['week','weken'], MONTHS:['maand','maanden'], YEARS:['jaar','jaar'] }[m[2]];
     return n + ' ' + w[n === 1 ? 0 : 1];
   };
-  const prijs = item => { const t = item && (item.tvod || []).find(x => x && x.price > 0); return t ? { price:t.price, duur:duur(t.duration) } : null; };
+  /* Prijs van een titel: bij meerdere huurformules telt de hoogste (de gewone prijs, bv. 3,99 € · 1 maand) */
+  const prijs = item => {
+    const t = (item && item.tvod || []).filter(x => x && x.price > 0).sort((a, b) => b.price - a.price)[0];
+    return t ? { price:t.price, duur:duur(t.duration) } : null;
+  };
   const img = (list, width) => { const i = list && list[0]; return i && i.mediaPath ? CDN + i.mediaPath + '?width=' + width : ''; };
   const minuten = s => s ? Math.round(s / 60) + ' min' : '';
   const naam = (title, reeks) => {
@@ -146,6 +150,37 @@
     window.addEventListener('scroll', solid, { passive:true });
     view.addEventListener('scroll', solid, { passive:true });
     setTimeout(solid, 1500);
+  })();
+
+  /* ---------- Terugknop: terug naar waar de bezoeker vandaan kwam ----------
+     Kwam je via de catalogus, Welkom, zoeken … dan wordt "← Alle reeksen & dossiers" bv. "← Terug naar de catalogus"
+     en brengt de knop je terug naar die pagina, op dezelfde plek. Rechtstreeks binnengekomen (bv. vanaf de site van
+     de partner): de knop blijft "Alle reeksen & dossiers". bagage-site.js houdt bij waar je vandaan kwam. */
+  (() => {
+    const back = root.querySelector('.pk-back');
+    if (!back) return;
+    let top, van = '';
+    try { top = window.top; } catch { return; }
+    try {
+      const here = top.location.pathname;
+      const rec = JSON.parse(top.sessionStorage.getItem('bagageVan') || 'null');
+      if (rec && rec.van && rec.van.split('?')[0] !== here && (rec.naar === here || Date.now() - rec.t < 30000)) van = rec.van;
+      if (!van && top.document.referrer) {
+        const r = new URL(top.document.referrer);
+        if (r.origin === top.location.origin && r.pathname !== here) van = r.pathname + r.search;
+      }
+    } catch { return; }
+    if (!van || top.history.length < 2) return;
+    const p = van.split('?')[0];
+    const label =
+      van === '?' ? 'Terug' :
+      /\/pages\/catalogus\/?$/.test(p) ? 'Terug naar de catalogus' :
+      /\/pages\/partnerkeuze\/?$/.test(p) ? 'Alle reeksen & dossiers' :
+      /\/pages\/shorts\/?$/.test(p) ? 'Terug naar de shorts' :
+      /\/search(\/|$)/.test(p) ? 'Terug naar je zoekresultaten' :
+      /^\/[a-z]{2}\/?$/.test(p) ? 'Terug naar Welkom' : 'Terug';
+    back.textContent = '← ' + label;
+    back.addEventListener('click', e => { e.preventDefault(); top.history.back(); });
   })();
 
   /* ---------- Trailer: eerst eigen thumbnail, speler op 1920×1080 geschaald naar het kader ---------- */
@@ -361,6 +396,17 @@
       if (sav && los - p.price > 0.005) {
         sav.textContent = 'Huur ' + woord.het + ' en bespaar ' + euro(los - p.price) + '.';
         sav.hidden = false;
+      }
+      /* Liever één titel? Zijn de titels ook los te huren, dan een rustige regel onder de knoppen naar het seizoen,
+         waar je elke titel apart kiest en huurt. */
+      const eenLos = eps.length > 1 && eps.every(prijs) ? prijs(eps[0]) : null;
+      const actions = root.querySelector('.access-actions');
+      if (eenLos && actions && !root.querySelector('.access-los')) {
+        const los1 = el('p', 'access-los');
+        los1.append('Liever één ' + woord.een + '? Elke ' + woord.een + ' is ook apart te huren: ' + euro(eenLos.price) + (eenLos.duur ? ' · ' + eenLos.duur : '') + '. ');
+        const a = el('a', '', 'Kies een ' + woord.een + ' →'); a.href = urlVan(season); a.target = '_top';
+        los1.append(a);
+        actions.after(los1);
       }
     }
 

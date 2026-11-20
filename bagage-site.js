@@ -346,10 +346,16 @@ if (back && back.querySelector(':scope > img[alt="back"]') && window.__bagageSpa
 e.preventDefault(); e.stopPropagation(); history.back();
 }
 }, true);
+/* Waar kwam de bezoeker vandaan? Reekspagina's tonen daarmee een terugknop naar die pagina
+   (bv. "← Terug naar de catalogus") in plaats van altijd "Alle reeksen & dossiers". */
+const VAN_KEY = 'bagageVan';
+const zetVan = (van, naar) => { try { sessionStorage.setItem(VAN_KEY, JSON.stringify({ van, naar, t: Date.now() })); } catch (e) {} };
+addEventListener('popstate', () => zetVan('?', location.pathname));
 ['pushState', 'replaceState'].forEach(k => {
 const orig = history[k];
 history[k] = function (s, t, url) {
 try { if (url && isOldHome(new URL(url, location.href).pathname)) { location.replace('/' + lang()); return; } } catch (e) {}
+try { if (url && k === 'pushState') { const naar = new URL(url, location.href).pathname; if (naar !== location.pathname) zetVan(location.pathname + location.search, naar); } } catch (e) {}
 return orig.apply(this, arguments);
 };
 });
