@@ -313,3 +313,5 @@
 .bagage-reeks .shorts-promo .shorts-card{justify-content:center}
 .bagage-reeks .shorts-promo.has-shorts .shorts-row{justify-content:center;grid-auto-columns:minmax(150px,200px)}
 @media (max-width:760px){.bagage-reeks .shorts-promo.has-shorts .shorts-row{justify-content:start;grid-auto-columns:42%}}
+.bagage-reeks .shorts-pic{background-position:center;background-size:cover;background-repeat:no-repeat}
+.bagage-reeks .shorts-pic.bg img{opacity:0}

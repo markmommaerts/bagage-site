@@ -226,6 +226,7 @@
       const im = el('img'); im.alt = '';
       im.src = v.cover && v.cover.mediaPath ? CDN + v.cover.mediaPath + '?width=400' : '';
       const play = el('span', 'play'); play.setAttribute('aria-hidden', 'true'); play.append(el('span'));
+      im.addEventListener('load', () => { pic.style.backgroundImage = 'url("' + (im.currentSrc || im.src) + '")'; pic.classList.add('bg'); });
       pic.append(im, play);
       a.append(pic, el('span', 'short-name', v.name || ''));
       a.setAttribute('aria-label', 'Bekijk de short: ' + (v.name || ''));
