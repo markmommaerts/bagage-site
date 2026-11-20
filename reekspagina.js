@@ -158,7 +158,15 @@
         .then(d => { const p = d && d.video && d.video.cover && d.video.cover.mediaPath; if (p) tp.style.backgroundImage = "url('" + CDN + p + "?width=1200')"; })
         .catch(() => {});
       if (window.matchMedia && window.matchMedia('(pointer:coarse)').matches) {
-        frameEl.src = frameEl.getAttribute('data-src'); tp.remove();
+        /* Aanraakscherm: de speler laadt al onder onze eigen afbeelding met afspeelknop (zelfde als op desktop).
+           De tik gaat door naar de speler; zodra die de focus krijgt, verdwijnt de afbeelding. */
+        frameEl.src = frameEl.getAttribute('data-src');
+        tp.style.pointerEvents = 'none';
+        let poll = 0;
+        const weg = () => { clearInterval(poll); window.removeEventListener('blur', check); tp.classList.add('is-hidden'); setTimeout(() => tp.remove(), 400); };
+        const check = () => setTimeout(() => { if (document.activeElement === frameEl) weg(); }, 0);
+        window.addEventListener('blur', check);
+        poll = setInterval(() => { if (document.activeElement === frameEl) weg(); }, 300);
       } else {
         tp.addEventListener('click', () => {
           if (tp.classList.contains('is-loading')) return;
@@ -215,7 +223,7 @@
     row.replaceChildren(...ok.map(({ uid, v }) => {
       const a = el('a', 'short-item'); a.href = shortsUrl(uid); a.target = '_top'; a.dataset.uid = uid;
       const pic = el('span', 'shorts-pic');
-      const im = el('img'); im.alt = ''; im.loading = 'lazy';
+      const im = el('img'); im.alt = '';
       im.src = v.cover && v.cover.mediaPath ? CDN + v.cover.mediaPath + '?width=400' : '';
       const play = el('span', 'play'); play.setAttribute('aria-hidden', 'true'); play.append(el('span'));
       pic.append(im, play);
