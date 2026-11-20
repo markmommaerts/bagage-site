@@ -194,8 +194,15 @@
 
   /* ---------- Shorts: samen op de Shorts-pagina (adres hier centraal). Staan er shorts van deze reeks
      in reeksen.js (veld shorts: media-id's van de reels), dan komen ze naast elkaar in het tabblad. ---------- */
-  const shortsUrl = uid => SHORTS_PAGE + '?' + [cfg.shorts ? 'onderwerp=' + encodeURIComponent(cfg.shorts) : '', uid ? 'short=' + encodeURIComponent(uid) : ''].filter(Boolean).join('&');
+  const shortsUrl = uid => SHORTS_PAGE + '?' + [uid ? 's=' + encodeURIComponent(uid) : '', cfg.shorts ? 'onderwerp=' + encodeURIComponent(cfg.shorts) : ''].filter(Boolean).join('&');
   root.querySelectorAll('a[data-link="shorts"]').forEach(a => { a.href = shortsUrl().replace(/\?$/, ''); });
+  /* Zelfde afspraak als de startpagina: de Shorts-pagina begint bij deze short; met de terugknop
+     daar kom je terug op deze pagina, op dezelfde plek (bagage-site.js bewaart de scrollpositie). */
+  root.addEventListener('click', e => {
+    const a = e.target.closest && e.target.closest('a.short-item');
+    if (!a) return;
+    try { (window.parent !== window ? window.parent : window).sessionStorage.setItem('bagageShortsCurrent', a.dataset.uid); } catch (err) { /* geen opslag */ }
+  });
   (async () => {
     const row = root.querySelector('.shorts-row');
     const entry = (window.BAGAGE_REEKSEN || []).find(r => r.page === cfg.pagina);
@@ -206,7 +213,7 @@
     const ok = infos.filter(Boolean);
     if (!ok.length) return;
     row.replaceChildren(...ok.map(({ uid, v }) => {
-      const a = el('a', 'short-item'); a.href = shortsUrl(uid); a.target = '_top';
+      const a = el('a', 'short-item'); a.href = shortsUrl(uid); a.target = '_top'; a.dataset.uid = uid;
       const pic = el('span', 'shorts-pic');
       const im = el('img'); im.alt = ''; im.loading = 'lazy';
       im.src = v.cover && v.cover.mediaPath ? CDN + v.cover.mediaPath + '?width=400' : '';
@@ -216,7 +223,7 @@
       a.setAttribute('aria-label', 'Bekijk de short: ' + (v.name || ''));
       return a;
     }));
-    row.closest('.set-shorts').classList.add('has-shorts');
+    row.closest('.shorts-promo').classList.add('has-shorts');
   })();
 
   /* ---------- Gegevens uit Revidd: één keer ophalen, voor alles hieronder ---------- */
@@ -315,7 +322,7 @@
 
     /* Tabblad 1: de volledige reeks / het volledige dossier */
     const gratis = isGratis(eps);
-    vulPaneel(root.querySelector('#pan-vol') || root.querySelector('.set'), season, eps, { ...woord, extra: gratis ? ' · gratis' : ' · één huurprijs, korte versies en shorts inbegrepen' });
+    vulPaneel(root.querySelector('#pan-vol') || root.querySelector('.set'), season, eps, { ...woord, extra: gratis ? ' · gratis' : ' · één huurprijs, korte versies inbegrepen' });
 
     /* Tabblad 2: de korte versies (apart seizoen in Revidd, data-kort) */
     const kort = byId[cfg.kort];

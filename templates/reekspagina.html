@@ -42,7 +42,6 @@
       <div class="kijk-tabs" role="tablist" aria-label="Kijk zoals je wil">
         <button type="button" role="tab" id="tab-vol" aria-controls="pan-vol" aria-selected="true">De volledige reeks<small>Thuis</small></button>
         <button type="button" role="tab" id="tab-kort" aria-controls="pan-kort" aria-selected="false" tabindex="-1">De korte versies<small>Onderweg</small></button>
-        <button type="button" role="tab" id="tab-shorts" aria-controls="pan-shorts" aria-selected="false" tabindex="-1">De shorts<small>Al scrollend</small></button>
       </div>
       <div class="set" id="pan-vol" role="tabpanel" aria-labelledby="tab-vol">
         <div class="set-grid"></div>
@@ -53,15 +52,19 @@
         <div class="set-grid"></div>
         <a class="set-cta" href="https://bagage.store1.revidd.video/nl/seasons/de-boom-die-het-bo-verbergt-6af6df3a79f5c64d284f364c"><span>Bekijk de korte versies</span><span class="set-cta-meta"></span><span aria-hidden="true">→</span></a>
       </div>
-      <div class="set set-shorts" id="pan-shorts" role="tabpanel" aria-labelledby="tab-shorts" hidden>
-        <p class="shorts-intro">Ontdek de reeks gratis en al scrollend via korte fragmenten.</p>
-        <!-- Zodra er shorts van deze reeks in reeksen.js staan (veld shorts), verschijnen ze hier naast elkaar. -->
-        <div class="shorts-row"></div>
-        <a class="shorts-card" href="https://bagage.store1.revidd.video/nl/pages/shorts" data-link="shorts">
-          <span class="shorts-pic"><img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/a7c67e17-f209-4e74-9dc1-f8c400ae4a23.jpg?width=600" alt="" loading="lazy"><span class="play" aria-hidden="true"><span></span></span></span>
-          <span class="shorts-text"><strong>De shorts</strong><span class="shorts-go">Bekijk de shorts <span aria-hidden="true">→</span></span></span>
-        </a>
-      </div>
+    </section>
+
+    <!-- SHORTS — promotie voor de reeks (vooral op gsm; de trailer vooral op desktop).
+         De shorts komen uit reeksen.js (veld shorts) en openen op de Shorts-pagina, met die van deze reeks eerst. -->
+    <section class="section shorts-promo" aria-labelledby="shorts-title">
+      <div class="section-kicker">Shorts</div>
+      <h2 class="section-title" id="shorts-title">Ontdek de reeks via shorts.</h2>
+      <p class="shorts-intro">Gratis en al scrollend, in korte fragmenten.</p>
+      <div class="shorts-row"></div>
+      <a class="shorts-card" href="https://bagage.store1.revidd.video/nl/pages/shorts" data-link="shorts">
+        <span class="shorts-pic"><img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/a7c67e17-f209-4e74-9dc1-f8c400ae4a23.jpg?width=600" alt="" loading="lazy"><span class="play" aria-hidden="true"><span></span></span></span>
+        <span class="shorts-text"><strong>De shorts</strong><span class="shorts-go">Bekijk de shorts <span aria-hidden="true">→</span></span></span>
+      </a>
     </section>
 
     <div class="starband">
@@ -83,10 +86,10 @@
 
         <div class="access-band">
           <h2 class="access-title">Bekijk de volledige reeks</h2>
-          <p class="access-copy">Eén huurprijs voor de zes afleveringen, de korte versies en de shorts. Geen abonnement.</p>
+          <p class="access-copy">Inclusief de korte versies. Geen abonnement.</p>
           <p class="visually-hidden">Inbegrepen in de huurprijs:</p>
           <ul class="access-incl">
-            <li>De volledige reeks</li><li>De korte versies</li><li>De shorts</li>
+            <li>De volledige reeks</li><li>De korte versies</li>
           </ul>
           <p class="access-saving" hidden></p>
           <div class="access-actions">
