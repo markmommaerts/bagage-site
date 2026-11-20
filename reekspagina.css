@@ -289,10 +289,10 @@
 /* ---------- Korte inhoud naast het beeld; de andere titels vervagen ---------- */
 .bagage-reeks .set-item{transition:opacity .3s ease,filter .3s ease}
 .bagage-reeks .set-grid.is-focus .set-item:not(.is-on){opacity:.15;filter:blur(2px) grayscale(.5)}
-.bagage-reeks .set-pop{position:absolute;z-index:10;box-sizing:border-box;padding:18px 20px;background:rgba(72,74,78,.7);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(244,241,233,.22);box-shadow:0 18px 40px rgba(0,0,0,.35);pointer-events:none}
+.bagage-reeks .set-pop{position:absolute;z-index:10;box-sizing:border-box;padding:18px 20px;background:linear-gradient(160deg,rgba(66,68,72,.78) 0%,rgba(66,68,72,.55) 55%,rgba(66,68,72,.4) 100%);-webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px);border:1px solid rgba(244,241,233,.22);box-shadow:0 18px 40px rgba(0,0,0,.35);pointer-events:none}
 .bagage-reeks .set-pop .set-no{margin:0 0 6px}
 .bagage-reeks .set-pop .set-name{margin:0 0 10px;font-size:1.35rem}
-.bagage-reeks .set-pop p{margin:0;font:400 15px/1.55 var(--serif);color:var(--text)}
+.bagage-reeks .set-pop p{margin:0;font:400 15px/1.55 var(--serif);color:var(--text);text-shadow:0 1px 6px rgba(0,0,0,.6)}
 /* ---------- Huurprijs: wat er inbegrepen is ---------- */
 .bagage-reeks .access-incl{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 22px;margin:-8px auto 24px;padding:0;list-style:none;font:700 13px/1.4 var(--sans);color:var(--text)}
 .bagage-reeks .access-incl li:before{content:"✓";margin-right:7px;color:var(--orange)}

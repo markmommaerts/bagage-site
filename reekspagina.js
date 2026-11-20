@@ -285,7 +285,7 @@
     const url = urlVan(item);
     pan.querySelectorAll('.set-cta').forEach(a => { a.href = url; });
     const grid = pan.querySelector('.set-grid');
-    grid.style.setProperty('--n', Math.min(eps.length, 6));
+    grid.style.setProperty('--n', Math.min(Math.max(eps.length, 4), 6));
     const covers = eps.map(e => img(e.coverimage, 800));
     const allSame = covers.every(c => c && c === covers[0]);
     grid.replaceChildren(...eps.map((e, i) => {
