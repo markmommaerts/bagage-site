@@ -4,7 +4,9 @@
 
    Instellingen op die div:
      data-seizoen      Revidd-id van het seizoen (de reeks of het dossier dat je huurt)
-     data-soort        reeks | dossier   (bepaalt "Deel 1" of "Documentaire 1", "de reeks" of "het dossier")
+     data-soort        reeks | dossier | documentaire   (bepaalt "Deel 1" of "Documentaire 1", "de reeks" of "het dossier")
+                       documentaire = partnerpagina rond één losse documentaire (data-seizoen = id van de film in Revidd):
+                       één groot blok met beeld en korte inhoud, geen korte versies, geen prijsvoordeel
      data-nieuwsbrief  naam van de Ghost-nieuwsbrief (bv. GoodPlanet, In Flanders Fields Museum, Bagage)
      data-label        label op het nieuwe lid in Ghost (bv. Bron: partnerpagina GoodPlanet)
 
@@ -35,7 +37,10 @@
 
   const cfg = root.dataset;
   const isDossier = cfg.soort === 'dossier';
-  const woord = isDossier
+  const isDocu = cfg.soort === 'documentaire';
+  const woord = isDocu
+    ? { het:'de documentaire', deel:'Documentaire', stuks:'documentaires', een:'documentaire' }
+    : isDossier
     ? { het:'het dossier', deel:'Documentaire', stuks:'documentaires', een:'documentaire' }
     : { het:'de reeks', deel:'Deel', stuks:'afleveringen', een:'aflevering' };
   /* Optioneel: andere woorden voor de afleveringen, bv. data-deel="Kort" data-stuks="korte versies" */
@@ -254,14 +259,15 @@
     const order = Object.fromEntries(item.episodes.map(e => [e.id, e.order]));
     return items.filter(x => x.seasonId === item.id).sort((a, b) => (order[a.id] ?? 99) - (order[b.id] ?? 99));
   };
-  const urlVan = item => STORE + item.seoSlug + '-' + item.id;
+  /* seoSlug zonder map (movies/ of seasons/): zelf aanvullen */
+  const urlVan = item => STORE + ((item.seoSlug || '').includes('/') ? '' : (item.episodes ? 'seasons/' : 'movies/')) + item.seoSlug + '-' + item.id;
   const isGratis = eps => eps.length > 0 && eps.every(e => e.isFree && !prijs(e));
 
   /* Korte inhoud bij hover: tekst naast het beeld (rechts, of links als er geen plaats is),
      de andere titels vervagen. Op aanraakschermen staat de tekst gewoon onder het beeld. */
   const kanHover = window.matchMedia('(hover: hover) and (min-width: 761px)');
   function focusLezen(grid) {
-    if (grid.dataset.lezen) return;
+    if (grid.dataset.lezen || grid.closest('.is-solo')) return;
     grid.dataset.lezen = '1';
     const box = grid.closest('.set');
     const pop = el('div', 'set-pop'); pop.setAttribute('aria-hidden', 'true'); pop.hidden = true;
@@ -294,7 +300,9 @@
     const url = urlVan(item);
     pan.querySelectorAll('.set-cta').forEach(a => { a.href = url; });
     const grid = pan.querySelector('.set-grid');
-    grid.style.setProperty('--n', Math.min(Math.max(eps.length, 4), 6));
+    const solo = isDocu && eps.length === 1;           /* losse documentaire: één groot blok, tekst ernaast */
+    pan.classList.toggle('is-solo', solo);
+    grid.style.setProperty('--n', solo ? 1 : Math.min(Math.max(eps.length, 4), 6));
     const covers = eps.map(e => img(e.coverimage, 800));
     const allSame = covers.every(c => c && c === covers[0]);
     grid.replaceChildren(...eps.map((e, i) => {
@@ -307,14 +315,16 @@
       frame.append(pic);
       const desc = (e.description || '').trim();
       const len = minuten(e.actualmedia && e.actualmedia[0] && e.actualmedia[0].duration);
-      const nr = w.deel + ' ' + (i + 1);
+      const nr = solo ? w.deel : w.deel + ' ' + (i + 1);
       a.append(frame, el('div', 'set-no', nr + (len ? ' · ' + len : '')), el('h3', 'set-name', naam(e.title, item.title)));
       if (desc) a.append(el('p', 'set-desc', desc));
       a.setAttribute('aria-label', 'Bekijk ' + naam(e.title, item.title));
       return a;
     }));
     const meta = pan.querySelector('.set-cta-meta');
-    if (meta) meta.textContent = eps.length + ' ' + (eps.length > 1 ? w.stuks : w.een) + (w.extra || (isGratis(eps) ? ' · gratis' : ''));
+    const soloDuur = solo ? minuten(eps[0].actualmedia && eps[0].actualmedia[0] && eps[0].actualmedia[0].duration) : '';
+    if (meta) meta.textContent = solo ? [soloDuur, isGratis(eps) ? 'gratis' : ''].filter(Boolean).join(' · ')
+      : eps.length + ' ' + (eps.length > 1 ? w.stuks : w.een) + (w.extra || (isGratis(eps) ? ' · gratis' : ''));
     focusLezen(grid);
     pan.classList.remove('is-soon');
     const sec = pan.closest('.section'); if (sec) sec.hidden = false;
@@ -331,7 +341,7 @@
 
     /* Tabblad 1: de volledige reeks / het volledige dossier */
     const gratis = isGratis(eps);
-    vulPaneel(root.querySelector('#pan-vol') || root.querySelector('.set'), season, eps, { ...woord, extra: gratis ? ' · gratis' : ' · één huurprijs, korte versies inbegrepen' });
+    vulPaneel(root.querySelector('#pan-vol') || root.querySelector('.set'), season, eps, { ...woord, extra: gratis ? ' · gratis' : isDocu ? '' : ' · één huurprijs, korte versies inbegrepen' });
 
     /* Tabblad 2: de korte versies (apart seizoen in Revidd, data-kort) */
     const kort = byId[cfg.kort];

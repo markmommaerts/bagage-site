@@ -83,6 +83,18 @@
   .bagage-reeks .set-pop{display:none}
 }
 @media (max-width:1100px){.bagage-reeks .set-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* Losse documentaire (data-soort="documentaire"): één groot beeld met de korte inhoud ernaast */
+.bagage-reeks .set.is-solo .set-grid{grid-template-columns:1fr}
+.bagage-reeks .set.is-solo .set-item{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);grid-template-rows:auto auto 1fr;column-gap:30px;align-items:start}
+.bagage-reeks .set.is-solo .set-frame{grid-column:1;grid-row:1 / span 3}
+.bagage-reeks .set.is-solo .set-no{margin:2px 0 8px}
+.bagage-reeks .set.is-solo .set-name{font-size:clamp(1.5rem,2.4vw,2.1rem);line-height:1.08}
+.bagage-reeks .set.is-solo .set-desc{display:block;margin-top:14px;font:400 1.05rem/1.55 var(--serif);color:var(--text)}
+@media (max-width:760px){
+  .bagage-reeks .set.is-solo .set-item{display:block}
+  .bagage-reeks .set.is-solo .set-no{margin:12px 0 4px}
+  .bagage-reeks .set.is-solo .set-name{font-size:1.35rem}
+}
 @media (max-width:760px){
   .bagage-reeks .set{padding:14px 14px 0}
   .bagage-reeks .set-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 14px}

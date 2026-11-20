@@ -51,15 +51,16 @@ window.BAGAGE_REEKSEN = [
     ids:['6afec0f2a8754e911817345d'] },
 
   { page:'edvard-munch', anker:'museum-de-reede',
-    title:'Edvard Munch', type:'Documentaire', soort:'documentaire',
-    /* nog geen eigen pagina: de kaart linkt naar de documentaire zelf */
-    href:'https://bagage.store1.revidd.video/nl/movies/edvard-munch-un-cri-dans-la-nature-6a9d5ca4b65cd631559e4698',
+    title:'Edvard Munch - Een schreeuw in de natuur', type:'Documentaire', soort:'documentaire',
+    href:'https://bagage.store1.revidd.video/nl/pages/edvard-munch',
     image:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/0d5f901c-5789-4e70-a73d-4d1c77cee466.jpg',
     partner:{ name:'Museum De Reede', plaats:'Antwerpen',
       logo:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/3cecacfb-22c3-4dbc-966a-daf02ee9eca8.png',
       site:'https://museum-dereede.com/' },
     tekst:'Het Antwerpse museum voor grafiek, met werk van Goya, Rops en Munch, brengt samen met BAGAGE deze documentaire over Munch.',
-    home:false },
+    home:false,
+    ids:['6a9d5ca4b65cd631559e4698'],
+    shorts:[ /* media-id's van de Munch-shorts, zodra ze in de mediabibliotheek staan */ ] },
 
   { page:'de-boom-die-het-bos-verbergt',
     title:'De boom die het bos verbergt', type:'Reeks · 6 delen', soort:'reeks',

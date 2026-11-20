@@ -1,0 +1,160 @@
+<!-- =========================================================
+     BAGAGE — Edvard Munch - Een schreeuw in de natuur (partnerpagina, één documentaire)
+     Partner: Museum De Reede (Antwerpen)
+     Paginaadres in Revidd: …/nl/pages/edvard-munch
+     Formule: B2B-partnerpagina rond één losse documentaire — geen korte versies, wel shorts.
+     Opmaak en gedrag zijn gedeeld voor alle reeks-, dossier- en documentairepagina's:
+       https://markmommaerts.github.io/bagage-site/reekspagina.css  en  reekspagina.js
+     data-soort="documentaire": data-seizoen = Revidd-id van de film (Content ID). Prijs, duur, beeld en
+     korte inhoud komen automatisch uit Revidd. Nooit een bedrag in deze HTML zetten (prijs van 1 documentaire
+     staat op de titel in Revidd).
+     Shorts: media-id's in reeksen.js (veld shorts bij page 'edvard-munch').
+     Trailer: zodra beschikbaar MID_TRAILER vervangen door de media-id en 'hidden' bij de trailersectie weghalen.
+     ========================================================= -->
+<link rel="stylesheet" href="https://markmommaerts.github.io/bagage-site/reekspagina.css">
+<div id="bagage-reeks" class="bagage-reeks"
+     data-seizoen="6a9d5ca4b65cd631559e4698" data-soort="documentaire" data-pagina="edvard-munch"
+     data-nieuwsbrief="Bagage" data-label="Bron: partnerpagina Museum De Reede" data-kort="" data-shorts=""
+     style="--reeks-bg:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/0d5f901c-5789-4e70-a73d-4d1c77cee466.jpg?width=1600');--dim1:.18;--dim2:.38;--dim3:.6">
+
+<div class="poster">
+  <div class="poster-inner">
+    <a class="pk-back" href="https://bagage.store1.revidd.video/nl/pages/partnerkeuze">← Alle reeksen &amp; dossiers</a>
+    <div class="topline">EEN DOCUMENTAIRE OVER KUNST, ANGST EN DE KRACHT VAN DE NATUUR</div>
+
+    <div class="center">
+      <div class="presents">Museum De Reede &amp; Bagage stellen voor</div>
+      <h1 class="title">Edvard Munch</h1>
+      <div class="tagline"><span>Een schreeuw in de natuur.</span><span>De schilder van de emotie, door de ogen van het landschap.</span></div>
+      <p class="promo">De Noorse schilder Edvard Munch (1863&ndash;1944) gaf de menselijke emotie een gezicht. Zijn <em>De Schreeuw</em> groeide uit tot het beeld van existenti&euml;le angst. Deze documentaire leest zijn werk via de natuur: eerst letterlijk, in de Noorse landschappen van zijn beginjaren, daarna als spiegel van gevoelens en als beeld van de kringloop van het leven.</p>
+      <div class="meta-row"><span>Documentaire</span><span>ca. 52 min</span><span>Nederlandstalige versie</span><span>Kunst · Cultuur · Biografie</span></div>
+    </div>
+
+    <!-- TRAILER — nog niet beschikbaar. Zodra hij in Revidd staat: MID_TRAILER vervangen door de media-id en 'hidden' weghalen. -->
+    <section class="section" aria-labelledby="trailer-title" hidden>
+      <h2 class="section-title" id="trailer-title">Ontdek de trailer</h2>
+      <div class="trailer-frame"><button type="button" class="trailer-poster" style="background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/0d5f901c-5789-4e70-a73d-4d1c77cee466.jpg?width=1200')" aria-label="Speel de trailer af"><span></span></button><iframe data-src="https://embed.revidd.com/iframe/index.html?mid=MID_TRAILER&amp;platform=OTT&amp;w=1920&amp;h=1080&amp;adTagUrl=&amp;loop=true" width="1920" height="1080" allow="autoplay; fullscreen" allowfullscreen title="Trailer Edvard Munch - Een schreeuw in de natuur"></iframe></div>
+    </section>
+
+    <!-- DE DOCUMENTAIRE — één groot blok (beeld, duur, titel en korte inhoud uit Revidd), elke klik naar de documentaire -->
+    <section class="section kijk" aria-labelledby="kijk-title">
+      <div class="section-kicker">De documentaire</div>
+      <h2 class="section-title" id="kijk-title">Eén schilder. Eén schreeuw.</h2>
+      <div class="set" id="pan-vol">
+        <div class="set-grid"></div>
+        <a class="set-cta" href="https://bagage.store1.revidd.video/nl/movies/edvard-munch-un-cri-dans-la-nature-6a9d5ca4b65cd631559e4698" data-link="seizoen"><span>Bekijk de documentaire</span><span class="set-cta-meta"></span><span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
+    <!-- SHORTS — gratis promotie (vooral op gsm). Shorts uit reeksen.js (veld shorts); zolang dat leeg is: kaart naar de Shorts-pagina. -->
+    <section class="section shorts-promo" aria-labelledby="shorts-title">
+      <div class="section-kicker">Shorts</div>
+      <h2 class="section-title" id="shorts-title">Ontdek Munch via shorts.</h2>
+      <p class="shorts-intro">Gratis en al scrollend, in korte fragmenten.</p>
+      <div class="shorts-row"></div>
+      <a class="shorts-card" href="https://bagage.store1.revidd.video/nl/pages/shorts" data-link="shorts">
+        <span class="shorts-pic"><img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/a7c67e17-f209-4e74-9dc1-f8c400ae4a23.jpg?width=600" alt="" loading="lazy"><span class="play" aria-hidden="true"><span></span></span></span>
+        <span class="shorts-text"><strong>De shorts</strong><span class="shorts-go">Bekijk de shorts <span aria-hidden="true">→</span></span></span>
+      </a>
+    </section>
+
+    <div class="starband">
+      <div class="starline"><div class="star"><span class="name">Sandra Paugam</span><span class="role">Scenario en regie</span></div><div class="star"><span class="name">Cinétévé · Musée d'Orsay</span><span class="role">Oorspronkelijke productie, 2022</span></div><div class="star"><span class="name">BAGAGE</span><span class="role">Nederlandstalige versie</span></div></div>
+
+      <div class="infoblock">
+        <div class="prestige-wrap">
+          <div class="prestige-head">Documentaire · Inhoud · Context</div>
+          <div class="prestige-lines">
+            <div class="prestige-line"><strong>De schilder</strong> — Edvard Munch, een van de grondleggers van het expressionisme, met een oeuvre geworteld in het symbolisme. <em>De Schreeuw</em> (1893) is zijn bekendste werk.</div>
+            <div class="prestige-line"><strong>Rode draad</strong> — de natuur, altijd in beweging, als bron van levenskracht: met kleur en golvende lijnen vertaalde Munch er zijn levensangst in.</div>
+            <div class="prestige-line"><strong>Context</strong> — gemaakt door Cinétévé met het Musée d'Orsay en France Télévisions, bij de Parijse tentoonstelling over Munch in 2022&ndash;2023.</div>
+          </div>
+        </div>
+        <div class="info-strip">
+          <div class="info-item"><div class="mini-title">Inhoud van de documentaire</div><p class="mini-text">Eén documentaire over het leven en werk van Edvard Munch, gelezen door het prisma van de natuur.</p></div>
+          <div class="info-item"><div class="mini-title">In samenwerking met Museum De Reede</div><p class="mini-text">Het Antwerpse museum voor grafische kunst brengt deze documentaire samen met Bagage, in een volledig Nederlandstalige versie.</p></div>
+        </div>
+
+        <div class="access-band">
+          <h2 class="access-title">Bekijk de documentaire</h2>
+          <p class="access-copy">Eén huurprijs. Geen abonnement.</p>
+          <p class="visually-hidden">Inbegrepen in de huurprijs:</p>
+          <ul class="access-incl">
+            <li>De volledige documentaire</li><li>Nederlandstalige versie</li>
+          </ul>
+          <p class="access-saving" hidden></p>
+          <div class="access-actions">
+            <a class="rent-btn" href="https://bagage.store1.revidd.video/nl/movies/edvard-munch-un-cri-dans-la-nature-6a9d5ca4b65cd631559e4698" data-link="seizoen"><span>Huur de documentaire</span><small>btw incl.</small></a>
+            <a class="catalog-btn" href="https://bagage.store1.revidd.video/nl/pages/catalogus">Ontdek de volledige catalogus <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+
+        <!-- PARTNER — Museum De Reede -->
+        <section class="partner-context" aria-labelledby="partner-title">
+          <a class="partner-hero" href="https://museum-dereede.com/">
+            <img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/3cecacfb-22c3-4dbc-966a-daf02ee9eca8.png" alt="Logo Museum De Reede">
+            <span class="partner-label">In samenwerking met</span>
+            <span class="partner-name" id="partner-title">Museum De Reede</span>
+          </a>
+          <p class="partner-about">Hét museum voor grafische kunst in Antwerpen: litho's, gravures, etsen, houtsneden en tekeningen, met een bijzondere focus op Edvard Munch, Francisco Goya en Félicien Rops.</p>
+          <p class="context-intro">Zie Munch in het echt. Het museum aan de Ernest van Dijckkaai toont zijn werk op papier, met een eigen verhaal rond <em>De Schreeuw</em>.</p>
+          <div class="context-ribbon">
+            <a class="context-card" href="https://museum-dereede.com/kunstenaars/edvard-munch">
+              <div class="context-body"><div class="context-kicker">Collectie</div><h3 class="context-name">Edvard Munch</h3><p class="context-copy">Zijn werk op papier in de collectie van het museum.</p></div>
+            </a>
+            <a class="context-card" href="https://museum-dereede.com/de-schreeuw">
+              <div class="context-body"><div class="context-kicker">Verdieping</div><h3 class="context-name">De Schreeuw</h3><p class="context-copy">Het verhaal achter het bekendste beeld van Munch.</p></div>
+            </a>
+            <a class="context-card" href="https://museum-dereede.com/collectie">
+              <div class="context-body"><div class="context-kicker">Museum</div><h3 class="context-name">De collectie</h3><p class="context-copy">Goya, Rops, Munch en andere meesters van de grafiek.</p></div>
+            </a>
+            <a class="context-card" href="https://museum-dereede.com/openingstijden">
+              <div class="context-body"><div class="context-kicker">Bezoek</div><h3 class="context-name">Plan je bezoek</h3><p class="context-copy">Openingstijden, tarieven en bereikbaarheid in Antwerpen.</p></div>
+            </a>
+          </div>
+        </section>
+
+        <!-- ACHTERGROND — Ghost-artikels met de media-UID van de documentaire (966857) als tag. Zonder artikel blijft dit blok weg. -->
+        <section class="bg-achtergrond" aria-labelledby="bg-title" hidden>
+          <div class="section-kicker">Achtergrond</div>
+          <h2 class="section-title" id="bg-title">Lees verder</h2>
+          <div class="bg-posts"></div>
+        </section>
+
+        <!-- MEER REEKSEN & DOSSIERS — uit reeksen.js, zonder deze pagina -->
+        <section class="pk-andere" aria-labelledby="pk-andere-title">
+          <div class="pk-head">
+            <div>
+              <div class="section-kicker">Reeksen &amp; dossiers</div>
+              <h2 class="section-title" id="pk-andere-title">Meer reeksen &amp; dossiers</h2>
+            </div>
+            <a class="pk-all" href="https://bagage.store1.revidd.video/nl/pages/partnerkeuze">Alle reeksen &amp; dossiers <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="pk-row"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NIEUWSBRIEF — inschrijving op de Ghost-nieuwsbrief "Bagage" met het label "Bron: partnerpagina Museum De Reede".
+     Komt er een eigen editie voor Museum De Reede in Ghost: data-nieuwsbrief bovenaan aanpassen naar die naam. -->
+<section class="bs-newsletter" aria-labelledby="nb-title">
+  <div class="bs-newsletter-inner">
+    <h2 id="nb-title">Blijf kijken.<br>Blijf vragen.</h2>
+    <div>
+      <p>Ontvang de nieuwsbrief van Bagage: nieuwe documentaires, reeksen en achtergrond.</p>
+      <form class="nb-form" novalidate>
+        <input type="email" name="email" placeholder="Je e-mailadres" autocomplete="email" required aria-label="Je e-mailadres">
+        <button type="submit" class="rent-btn">Inschrijven <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="nb-status" role="status" aria-live="polite" hidden></p>
+      <p class="nb-small">Je ontvangt een mail om je inschrijving te bevestigen. Uitschrijven kan altijd.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+<script src="https://markmommaerts.github.io/bagage-site/reeksen.js"></script>
+<script src="https://markmommaerts.github.io/bagage-site/reekspagina.js"></script>
+<script src="https://markmommaerts.github.io/bagage-site/bagage-site.js"></script>
