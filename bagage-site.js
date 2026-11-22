@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-22e (home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -571,6 +571,18 @@ sc.textContent = '(' + topFix.toString() + ')()';
 doc.head.append(sc);
 }
 if (top === window) return;
+/* Revidd zet in elk kader op gsm (< 600 px) img{height:auto!important}. Beelden die hun kader moeten vullen
+   (posters, reekskaarten, shorts, afleveringen, vierkante contextkaarten) werden daardoor te laag getekend:
+   een lege strook eronder of een onvolledig beeld. Hier zetten we die terug op de volle hoogte. */
+if (!document.getElementById('bagage-img-vol')) {
+const iv = document.createElement('style');
+iv.id = 'bagage-img-vol';
+iv.textContent = '@media (max-width:599px){' +
+'#bagage-landing .poster img,#bagage-landing .partner-visual img,#bagage-landing .short img,#bagage-landing .short video,' +
+'.bagage-reeks .set-frame img,.bagage-reeks .shorts-pic img,.bagage-reeks .format-frame img,.bagage-reeks .pk-visual img,.bagage-reeks .bg-post-img img,' +
+'.bagage-reeks .context-ribbon.is-poster .context-image img{height:100%!important}}';
+document.head.append(iv);
+}
 /* Startpagina op gsm: Onze keuzes van de maand en Reeksen & dossiers naast elkaar, van rechts naar links vegen
    (de catalogus blijft onder elkaar). Staat ook in templates/home-zonder-nieuw.html. */
 if (document.getElementById('bagage-landing') && !document.getElementById('bagage-home-vegen')) {
