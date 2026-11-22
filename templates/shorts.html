@@ -4,6 +4,7 @@
      Versie 2026-11-22: sneller starten — de eerste short wordt al opgehaald terwijl de pagina
      zich opbouwt, Revidd-info wordt per short maar één keer gevraagd, de catalogus pas na de
      eerste short, de volgende short alvast klaargezet. Terug/fallback naar /nl/pages/home.
+     Posters (staand 1080×1920) staan in de lijst, zodat er nooit een zwart of leeg vlak verschijnt.
      ========================================================= -->
 <base target="_top"><style>
 /* =========================================================
@@ -115,12 +116,13 @@ uid = UID van de short in de Revidd media pool; href = de volledige aflevering.
 De titel komt uit de Revidd Media Library (tab Reels).
 ========================================================= */
 /* serie = reeks bovenaan het titelblok; ep = tekst op de kaart naar de volledige documentaire */
+/* poster = staand beeld 1080×1920 (cover van de short in Revidd): meteen zichtbaar, nog voor Revidd antwoordt */
 const SHORTS = [
-{ uid:'3746542', title:'Jeruzalem',         href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-jerusalem-6ae494d27e11c8a635c0b5a1', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 1 \u00b7 Jeruzalem' },
-{ uid:'3746545', title:'Mont Saint-Michel', href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-mont-saint-michel-6ae5d3eb7e11c8a635c0e14e', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 2 \u00b7 Mont Saint-Michel' },
-{ uid:'3746543', title:'Chartres',          href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-chartres-6ae5e0417e11c8a635c1102d', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 3 \u00b7 Chartres' },
-{ uid:'3746544', title:'Florence',          href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-florence-6ae5df357e11c8a635c10c11', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 4 \u00b7 Florence' },
-{ uid:'3746546', title:'Rusland',           href:'https://bagage.store1.revidd.video/nl/episodes/heilige-oorden-kerken-rusland-6ae5ddc5c63fd9d6c70978fb', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 5 \u00b7 Rusland' }
+{ uid:'3746542', poster:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/fc50878b-26de-41c3-8e29-1bf20ff1a96c.jpg', title:'Jeruzalem',         href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-jerusalem-6ae494d27e11c8a635c0b5a1', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 1 \u00b7 Jeruzalem' },
+{ uid:'3746545', poster:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/c3ed3996-b7a8-4618-aad7-e868f8f888e7.jpg', title:'Mont Saint-Michel', href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-mont-saint-michel-6ae5d3eb7e11c8a635c0e14e', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 2 \u00b7 Mont Saint-Michel' },
+{ uid:'3746543', poster:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/93bcde7e-d388-442d-abe1-37525a9a8cdc.jpg', title:'Chartres',          href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-chartres-6ae5e0417e11c8a635c1102d', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 3 \u00b7 Chartres' },
+{ uid:'3746544', poster:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/1c19b9f5-2e3f-4f44-afd1-0a6322a0612e.jpg', title:'Florence',          href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-florence-6ae5df357e11c8a635c10c11', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 4 \u00b7 Florence' },
+{ uid:'3746546', poster:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/95921ba4-b135-4131-96da-4ed144a445a0.jpg', title:'Rusland',           href:'https://bagage.store1.revidd.video/nl/episodes/heilige-oorden-kerken-rusland-6ae5ddc5c63fd9d6c70978fb', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 5 \u00b7 Rusland' }
 ];
 const HOME = 'https://bagage.store1.revidd.video/nl/pages/home';
 const INFO = uid => 'https://api.revidd.com/media/v1/org/public/video/' + encodeURIComponent(uid);
@@ -211,12 +213,14 @@ const list = SHORTS.map((s, k) => {
 const item = el('div', 'item');
 const fr = el('div', 'frame');
 const poster = el('div', 'poster');
+if(s.poster) poster.style.backgroundImage = 'url("' + s.poster + '")';
 fr.append(poster); item.append(fr);
 item.dataset.k = k;
 return { s:Object.assign({}, s), item, frame:fr, poster };
 });
 const clone = (x, side) => {
 const c = el('div', 'item'); const fr = el('div', 'frame'); const p = el('div', 'poster'); fr.append(p); c.append(fr);
+if(x.poster.style.backgroundImage) p.style.backgroundImage = x.poster.style.backgroundImage;
 c.dataset.clone = side; return { item:c, poster:p, of:x };
 };
 const multi = list.length > 1;

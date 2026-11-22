@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-22 (startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen)
+   Versie: 2026-11-22b (startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -318,6 +318,9 @@ bar + ' span{color:#f4f1e9!important}' +
 '[data-bagage-duiding]{font-size:0!important}[data-bagage-duiding]::after{content:"Duiding";font-size:16px}[data-bagage-lees]{font-size:0!important}[data-bagage-lees]::after{content:"Lees meer →";font-size:11px}' +
 '[data-bagage-foot=privacy],[data-bagage-foot=voorwaarden]{font-size:0!important}[data-bagage-foot=privacy]::after{content:"Privacybeleid";font-size:14px}[data-bagage-foot=voorwaarden]::after{content:"Gebruiksvoorwaarden";font-size:14px}[data-bagage-foot=weg]{display:none!important}' +
 'footer:has([data-bagage-footlinks]) a:has([data-bagage-foot]),footer:has([data-bagage-footlinks]) a[data-bagage-foot]{display:none!important}' +
+/* Shorts-pagina: meteen zwart scherm over de Revidd-kop en de vorige pagina, tot het schermvullende shortskader er staat */
+'html.bagage-shorts-open:not(:has(iframe[style*="2147483000"])) body::after{content:"";position:fixed;inset:0;background:#000;z-index:2147482999}' +
+'html.bagage-shorts-open div.fixed:has(img[alt="NavLogo"]){visibility:hidden!important}' +
 '[data-bagage-footlinks]{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin:14px 0 10px;font-size:13px}[data-bagage-footlinks] a{color:inherit;text-decoration:none}[data-bagage-footlinks] a:hover{color:#b63712!important}';
 document.head.append(st);
 const lang = () => (location.pathname.split('/')[1] || 'nl').replace(/^en$/, 'nl');
@@ -337,6 +340,14 @@ const add = (rel, href, as) => { const l = document.createElement('link'); l.rel
 ['https://api.revidd.com', 'https://bagage.api1.revidd.video', 'https://1612954996.rsc.cdn77.org', 'https://1577787583.rsc.cdn77.org'].forEach(h => add('preconnect', h));
 const v = document.createElement('video');
 if (!v.canPlayType('application/vnd.apple.mpegurl')) add('prefetch', 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js', 'script');
+};
+let shortsTimer = 0;
+const shortsMode = path => {
+const on = /^\/[a-z]{2}\/pages\/shorts\/?$/.test(path);
+document.documentElement.classList.toggle('bagage-shorts-open', on);
+clearTimeout(shortsTimer);
+/* vangnet: lukt het kader niet, na 8 s het zwarte scherm weg */
+if (on) shortsTimer = setTimeout(() => { if (!document.querySelector('iframe[style*="2147483000"]')) document.documentElement.classList.remove('bagage-shorts-open'); }, 8000);
 };
 let homeBusy = 0;
 const fixOldHome = () => { if (!isOldHome(location.pathname) || homeBusy) return; homeBusy = 1; setTimeout(() => { homeBusy = 0; }, 1500); goHome(true); };
@@ -370,6 +381,7 @@ addEventListener('popstate', () => zetVan('?', location.pathname));
 const orig = history[k];
 history[k] = function (s, t, url) {
 try { if (url && isOldHome(new URL(url, location.href).pathname)) { const r = orig.apply(this, arguments); setTimeout(fixOldHome, 0); return r; } } catch (e) {}
+try { if (url) shortsMode(new URL(url, location.href).pathname); } catch (e) {}
 try { if (url && k === 'pushState') { const naar = new URL(url, location.href).pathname; if (naar !== location.pathname) zetVan(location.pathname + location.search, naar); } } catch (e) {}
 return orig.apply(this, arguments);
 };
@@ -428,6 +440,7 @@ if (grid) grid.parentNode.insertBefore(box, grid); else head.parentNode.insertBe
 };
 let shTimer = 0, lbTimer = 0;
 const labels = () => {
+if (document.documentElement.classList.contains('bagage-shorts-open') !== /^\/[a-z]{2}\/pages\/shorts\/?$/.test(location.pathname)) shortsMode(location.pathname);
 document.documentElement.classList.toggle('bagage-geen-zoek', !/^\/[a-z]{2}\/(pages\/(catalogus|partnerkeuze)|search)\/?$/.test(location.pathname));
 if (isOldHome(location.pathname)) { fixOldHome(); return; }
 /* Revidd hergebruikt de tabknoppen: bij elke wijziging opnieuw kijken welke knop 'Nieuwsbrief' is */
