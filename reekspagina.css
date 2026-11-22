@@ -338,12 +338,12 @@
 .bagage-reeks .shorts-pic::before{content:"";display:block;padding-top:177.78%}  /* 9:16, t.o.v. de eigen breedte */
 /* Gsm: afleveringen en documentaires in de tabbladen (volledige reeks/dossier, korte versies) naast elkaar,
    van rechts naar links vegen i.p.v. onder elkaar — maakt de pagina een stuk korter.
-   De volgende kaart piept rechts binnen, zodat duidelijk is dat er meer is. */
+   De volgende kaart piept rechts binnen, zodat duidelijk is dat er meer is. De korte beschrijving staat er altijd volledig. */
 @media (max-width:760px){
   .bagage-reeks .set:not(.is-solo) .set-grid{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;gap:14px;
     overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;
     margin-right:-14px;padding-right:14px;scroll-padding-left:0}
   .bagage-reeks .set:not(.is-solo) .set-grid::-webkit-scrollbar{display:none}
   .bagage-reeks .set:not(.is-solo) .set-item{scroll-snap-align:start}
-  .bagage-reeks .set:not(.is-solo) .set-desc{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .bagage-reeks .set:not(.is-solo) .set-desc{display:block;overflow:visible}
 }
