@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-15 (nieuwe slogan; tab Duiding, Lees meer, vergrootglas gsm, oude home, geen onderbalk, footer NL, links boven ©)
+   Versie: 2026-11-22 (startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -312,7 +312,7 @@ bar + ' span{color:#f4f1e9!important}' +
 /* Duiding (Ghost-artikel bij een titel): sluitknop in Bagage-oranje, tab 'Nieuwsbrief' heet 'Duiding' */
 'button[aria-label="Close article"]{background:#ef6a28!important;color:#fff!important}' +
 /* Onderbalk van Revidd op gsm (Home, Zoeken, Profiel) weg: overbodig en leidde naar de oude startpagina */
-'div.fixed.bottom-0.left-0.w-full.shadow-md:has(img[alt="Home"]){display:none!important}' +
+'div.fixed.bottom-0.left-0.w-full.shadow-md:has(img[alt="Home"]),#bagage-bottombar{display:none!important}' +
 /* Vergrootglas rechtsboven op gsm alleen op Catalogus, Reeksen & dossiers en Zoeken  */
 '@media(max-width:820px){html.bagage-geen-zoek div.fixed:has(img[alt="NavLogo"]) *:has(> img[alt="searchIcon"]),html.bagage-geen-zoek div.fixed:has(img[alt="NavLogo"]) img[alt="searchIcon"]{visibility:hidden!important;pointer-events:none!important}}' +
 '[data-bagage-duiding]{font-size:0!important}[data-bagage-duiding]::after{content:"Duiding";font-size:16px}[data-bagage-lees]{font-size:0!important}[data-bagage-lees]::after{content:"Lees meer →";font-size:11px}' +
@@ -321,24 +321,39 @@ bar + ' span{color:#f4f1e9!important}' +
 '[data-bagage-footlinks]{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin:14px 0 10px;font-size:13px}[data-bagage-footlinks] a{color:inherit;text-decoration:none}[data-bagage-footlinks] a:hover{color:#b63712!important}';
 document.head.append(st);
 const lang = () => (location.pathname.split('/')[1] || 'nl').replace(/^en$/, 'nl');
-const isOldHome = p => /^\/(en|nl)\/home\/?$/.test(p);
-window.__bagageGo = url => {
-try { const r = window.next && window.next.router; if (r && typeof r.push === 'function') { r.push(url); window.__bagageSpa = 1; return true; } } catch (e) {}
+/* De echte startpagina is /nl/pages/home. Revidds eigen startpagina (/nl, /nl/home) toont een oude kopie. */
+const homeUrl = () => '/' + lang() + '/pages/home';
+const isOldHome = p => /^\/((en|nl)(\/home)?)?\/?$/.test(p);
+window.__bagageGo = (url, replace) => {
+try { const r = window.next && window.next.router; const f = r && (replace ? r.replace : r.push); if (typeof f === 'function') { f.call(r, url); window.__bagageSpa = 1; return true; } } catch (e) {}
 return false;
 };
+const goHome = replace => { if (!window.__bagageGo(homeUrl(), replace)) { if (replace) location.replace(homeUrl()); else location.href = homeUrl(); } };
+/* Shorts sneller starten: verbindingen met Revidd en het videonetwerk alvast openen en hls.js (Android, desktop)
+   in de cache zetten zodra een link naar de Shorts-pagina in beeld komt of aangeraakt wordt. */
+window.__bagageWarmShorts = () => {
+if (window.__bagageWarm) return; window.__bagageWarm = 1;
+const add = (rel, href, as) => { const l = document.createElement('link'); l.rel = rel; l.href = href; if (as) l.as = as; if (rel === 'preconnect') l.crossOrigin = 'anonymous'; document.head.append(l); };
+['https://api.revidd.com', 'https://bagage.api1.revidd.video', 'https://1612954996.rsc.cdn77.org', 'https://1577787583.rsc.cdn77.org'].forEach(h => add('preconnect', h));
+const v = document.createElement('video');
+if (!v.canPlayType('application/vnd.apple.mpegurl')) add('prefetch', 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js', 'script');
+};
+let homeBusy = 0;
+const fixOldHome = () => { if (!isOldHome(location.pathname) || homeBusy) return; homeBusy = 1; setTimeout(() => { homeBusy = 0; }, 1500); goHome(true); };
+fixOldHome();
 document.addEventListener('click', e => {
 const t = e.target;
 if (!t.closest) return;
 const home = t.closest(bar + ' button');
 if (home && home.querySelector('img[alt="Home"]')) {
 e.preventDefault(); e.stopPropagation();
-if (!window.__bagageGo('/' + lang())) location.href = '/' + lang();
+goHome();
 return;
 }
 const logoBox = t.closest('a, [class*="cursor-pointer"]');
 if ((t.matches && t.matches('img[alt="NavLogo"]')) || (logoBox && logoBox.querySelector('img[alt="NavLogo"]'))) {
 e.preventDefault(); e.stopImmediatePropagation();
-if (!window.__bagageGo('/' + lang())) location.href = '/' + lang();
+goHome();
 return;
 }
 const back = t.closest('button');
@@ -354,13 +369,13 @@ addEventListener('popstate', () => zetVan('?', location.pathname));
 ['pushState', 'replaceState'].forEach(k => {
 const orig = history[k];
 history[k] = function (s, t, url) {
-try { if (url && isOldHome(new URL(url, location.href).pathname)) { location.replace('/' + lang()); return; } } catch (e) {}
+try { if (url && isOldHome(new URL(url, location.href).pathname)) { const r = orig.apply(this, arguments); setTimeout(fixOldHome, 0); return r; } } catch (e) {}
 try { if (url && k === 'pushState') { const naar = new URL(url, location.href).pathname; if (naar !== location.pathname) zetVan(location.pathname + location.search, naar); } } catch (e) {}
 return orig.apply(this, arguments);
 };
 });
 const PAGES = [
-['Welkom', '', 'De startpagina van Bagage, met nieuwe titels en shorts', 'welkom home start startpagina begin bagage nieuw nieuwe'],
+['Welkom', '/pages/home', 'De startpagina van Bagage, met nieuwe titels en shorts', 'welkom home start startpagina begin bagage nieuw nieuwe'],
 ['Catalogus', '/pages/catalogus', 'Alle documentaires en reeksen, per thema', 'catalogus aanbod overzicht alle documentaires documentaire reeksen reeks films film thema themas kunst cultuur geschiedenis natuur filosofie religie mens samenleving bestemmingen reizen reis'],
 ['Reeksen & dossiers', '/pages/partnerkeuze', 'Reeksen, dossiers en documentaires rond één onderwerp, met partners en eigen selecties', 'reeksen reeks dossiers dossier partner partners partnerkeuze museum musea organisatie organisaties selectie verdieping'],
 ['Prijzen & FAQ', '/pages/prijzen-faq', 'Prijzen, toegang en veelgestelde vragen', 'prijs prijzen kost kosten tarief tarieven abonnement betalen betaling gratis huren kopen faq vragen vraag veelgestelde hulp help account inloggen registreren'],
@@ -414,7 +429,7 @@ if (grid) grid.parentNode.insertBefore(box, grid); else head.parentNode.insertBe
 let shTimer = 0, lbTimer = 0;
 const labels = () => {
 document.documentElement.classList.toggle('bagage-geen-zoek', !/^\/[a-z]{2}\/(pages\/(catalogus|partnerkeuze)|search)\/?$/.test(location.pathname));
-if (isOldHome(location.pathname)) { location.replace('/' + lang()); return; }
+if (isOldHome(location.pathname)) { fixOldHome(); return; }
 /* Revidd hergebruikt de tabknoppen: bij elke wijziging opnieuw kijken welke knop 'Nieuwsbrief' is */
 document.querySelectorAll('button[value]').forEach(b => {
 const on = /^nieuwsbrief$/i.test(b.textContent.trim());
@@ -495,6 +510,11 @@ sc.textContent = '(' + topFix.toString() + ')()';
 doc.head.append(sc);
 }
 if (top === window) return;
+/* Shorts opwarmen (zie __bagageWarmShorts) */
+const isShortsLink = a => a && /\/pages\/shorts(\/|\?|$)/.test(a.getAttribute('href') || '');
+const warm = () => { try { top.__bagageWarmShorts && top.__bagageWarmShorts(); } catch (err) { /* geen toegang */ } };
+['pointerdown', 'touchstart', 'mouseover'].forEach(ev => document.addEventListener(ev, e => { if (isShortsLink(e.target.closest && e.target.closest('a[href]'))) warm(); }, { passive: true, capture: true }));
+setTimeout(() => { if ([...document.querySelectorAll('a[href]')].some(isShortsLink) || document.querySelector('.short')) warm(); }, 1500);
 document.addEventListener('click', e => {
 if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 const a = e.target.closest && e.target.closest('a[href]');

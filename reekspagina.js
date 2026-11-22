@@ -18,7 +18,7 @@
      - prijsvoordeel: "Huur het dossier en bespaar 3,97 €" (losse prijzen samen min de prijs van het seizoen)
      - Kijk zoals je wil: tabbladen volledige reeks (data-seizoen), korte versies (data-kort, leeg = binnenkort) en shorts
      - Achtergrond (Ghost-artikels met de media-UID van een aflevering als tag)
-     - Meer reeksen & dossiers (uit reeksen.js), nieuwsbrief-inschrijving, trailer, kop en onderbalk van Revidd
+     - Meer reeksen & dossiers (uit reeksen.js), nieuwsbrief-inschrijving, trailer, kop van Revidd
    ========================================================= */
 (() => {
   const root = document.getElementById('bagage-reeks');
@@ -69,7 +69,7 @@
     return t;
   };
 
-  /* ---------- Kop en onderbalk van Revidd (zolang deze pagina open staat) ---------- */
+  /* ---------- Kop van Revidd (zolang deze pagina open staat); geen onderbalk meer op gsm ---------- */
   (() => {
     let host;
     try { host = window.parent && window.parent !== window ? window.parent.document : document; } catch { return; }
@@ -80,11 +80,6 @@
       style.id = 'bagage-reeks-chrome';
       style.textContent =
         'div:has(> button > img[src*="ic-back"]){display:none!important}' +
-        '#bagage-bottombar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;justify-content:space-around;align-items:center;' +
-        'padding:10px 0 calc(10px + env(safe-area-inset-bottom));background:#000;color:#fff;font:12px/1.2 Arial,Helvetica,sans-serif;border-top:1px solid #272d2f}' +
-        '#bagage-bottombar button{appearance:none;background:none;border:0;color:#aaa8a2;display:flex;flex-direction:column;align-items:center;gap:4px;font:inherit;cursor:pointer;padding:0 12px}' +
-        '#bagage-bottombar img{height:20px;width:20px}' +
-        '@media (max-width:639px){#bagage-bottombar{display:flex}}' +
         '.bagage-head{transition:background-color .3s ease}' +
         '.bagage-head.bagage-head-solid{background-color:rgba(9,12,13,.94)!important}' +
         '.MuiDrawer-paper div.cursor-pointer:has(> p.rd-menu__item:empty){display:none!important}';
@@ -95,28 +90,11 @@
         const isLogo = (t.matches && t.matches('img[alt="NavLogo"]')) || (box && box.querySelector('img[alt="NavLogo"]'));
         if (!isLogo) return;
         e.preventDefault(); e.stopPropagation();
-        view.location.href = '/' + lang();
+        const home = '/' + lang() + '/pages/home';
+        if (!(view.__bagageGo && view.__bagageGo(home))) view.location.href = home;
       };
       host.addEventListener('click', onLogo, true);
-      let bar = host.getElementById('bagage-bottombar');
-      if (!bar) {
-        bar = host.createElement('nav');
-        bar.id = 'bagage-bottombar';
-        bar.setAttribute('aria-label', 'Snelmenu');
-        bar.innerHTML =
-          '<button type="button" data-go="home"><img src="/icons/home.svg" alt=""><span>Home</span></button>' +
-          '<button type="button" data-go="search"><img src="/icons/search-icon.svg" alt=""><span>Zoeken</span></button>' +
-          '<button type="button" data-go="profile"><img src="/icons/profile_inactive.svg" alt=""><span>Profiel</span></button>';
-        bar.addEventListener('click', e => {
-          const btn = e.target.closest('button'); if (!btn) return;
-          const go = btn.dataset.go;
-          if (go === 'home') view.location.href = '/' + lang();
-          if (go === 'profile') view.location.href = '/' + lang() + '/settings?s';
-          if (go === 'search') { const icon = host.querySelector('img[alt="searchIcon"]'); if (icon) icon.click(); }
-        });
-        host.body.append(bar);
-      }
-      const cleanup = () => { style.remove(); bar.remove(); host.removeEventListener('click', onLogo, true); };
+      const cleanup = () => { style.remove(); host.removeEventListener('click', onLogo, true); };
       window.addEventListener('pagehide', cleanup);
       window.addEventListener('unload', cleanup);
     }
