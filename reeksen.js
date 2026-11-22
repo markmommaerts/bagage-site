@@ -20,6 +20,9 @@
    anker   optioneel: ankernaam op Reeksen & dossiers (…/partnerkeuze#anker)
    shorts  optioneel: media-id's van de shorts (reels in de mediabibliotheek), in volgorde;
            ze verschijnen naast elkaar in het tabblad De shorts van de reekspagina
+   kaders  optioneel: beelden voor de vierkante contextkaarten van de partner (bv. Collectie · Verdieping ·
+           Museum · Bezoek), in volgorde, zonder ?width=…; leeg ('') = huidig beeld laten staan.
+           Formaat: 1000 × 1000 px JPEG (Image Processor: 1:1 · Contextkaart)
    hero    optioneel, voor de grote dia bovenaan Home: { title, subtitle, tekst, image, type, beschikbaar }
            — enkel invullen wat anders moet dan hierboven
 

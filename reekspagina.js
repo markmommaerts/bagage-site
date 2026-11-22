@@ -218,6 +218,17 @@
     });
   });
 
+  /* ---------- Contextkaarten van de partner: beelden uit reeksen.js (veld kaders), zodat een nieuw beeld
+     geen nieuwe plakbeurt van de pagina vraagt ---------- */
+  (() => {
+    const entry = (window.BAGAGE_REEKSEN || []).find(r => r.page === cfg.pagina);
+    const kaders = (entry && entry.kaders) || [];
+    root.querySelectorAll('.context-image img').forEach((im, i) => {
+      const url = kaders[i];
+      if (url) im.src = url.replace(/\?.*$/, '') + '?width=1000';
+    });
+  })();
+
   /* ---------- Shorts: samen op de Shorts-pagina (adres hier centraal). Staan er shorts van deze reeks
      in reeksen.js (veld shorts: media-id's van de reels), dan komen ze naast elkaar in het tabblad. ---------- */
   const shortsUrl = uid => SHORTS_PAGE + '?' + [uid ? 's=' + encodeURIComponent(uid) : '', cfg.shorts ? 'onderwerp=' + encodeURIComponent(cfg.shorts) : ''].filter(Boolean).join('&');
