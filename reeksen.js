@@ -63,7 +63,12 @@ window.BAGAGE_REEKSEN = [
     tekst:'Het Antwerpse museum voor grafiek, met werk van Goya, Rops en Munch, brengt samen met BAGAGE deze documentaire over Munch.',
     home:false,
     ids:['6a9d5ca4b65cd631559e4698'],
-    shorts:[ /* media-id's van de Munch-shorts, zodra ze in de mediabibliotheek staan */ ] },
+    shorts:[ /* media-id's van de Munch-shorts, zodra ze in de mediabibliotheek staan */ ],
+    kaders:[ /* Collectie · Verdieping · Museum · Bezoek */
+      'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/6aa75838-7b1a-4444-8f25-0a16a9817009.jpg',
+      'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/36713eea-7af4-44ac-825b-81add13b73da.jpg',
+      'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/0bf44417-f743-42b1-a85e-1f3b0ee1350d.jpg',
+      'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/8f068759-c4d2-489d-b66b-afa701820b08.jpg' ] },
 
   { page:'de-boom-die-het-bos-verbergt',
     title:'De boom die het bos verbergt', type:'Reeks · 6 delen', soort:'reeks',
