@@ -233,6 +233,19 @@
      in reeksen.js (veld shorts: media-id's van de reels), dan komen ze naast elkaar in het tabblad. ---------- */
   const shortsUrl = uid => SHORTS_PAGE + '?' + [uid ? 's=' + encodeURIComponent(uid) : '', cfg.shorts ? 'onderwerp=' + encodeURIComponent(cfg.shorts) : ''].filter(Boolean).join('&');
   root.querySelectorAll('a[data-link="shorts"]').forEach(a => { a.href = shortsUrl().replace(/\?$/, ''); });
+  /* Kaart "De shorts" (pagina zonder eigen shorts): altijd een staand 9:16-beeld. Liggende of 2:3-beelden
+     werden in het staande kader zwaar bijgesneden en op iPhone soms als strook bovenaan getekend.
+     Eigen beeld per pagina: veld shortsBeeld in reeksen.js (staand, 1080×1920). */
+  (() => {
+    const entry = (window.BAGAGE_REEKSEN || []).find(r => r.page === cfg.pagina);
+    const STAAND = 'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/fc50878b-26de-41c3-8e29-1bf20ff1a96c.jpg';
+    root.querySelectorAll('a.shorts-card .shorts-pic').forEach(pic => {
+      const im = pic.querySelector('img');
+      if (!im) return;
+      im.addEventListener('load', () => { pic.style.backgroundImage = 'url("' + (im.currentSrc || im.src) + '")'; pic.classList.add('bg'); });
+      im.src = ((entry && entry.shortsBeeld) || STAAND).replace(/\?.*$/, '') + '?width=600';
+    });
+  })();
   /* Zelfde afspraak als de startpagina: de Shorts-pagina begint bij deze short; met de terugknop
      daar kom je terug op deze pagina, op dezelfde plek (bagage-site.js bewaart de scrollpositie). */
   root.addEventListener('click', e => {
