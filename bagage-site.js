@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-22d (uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-22e (home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -571,6 +571,14 @@ sc.textContent = '(' + topFix.toString() + ')()';
 doc.head.append(sc);
 }
 if (top === window) return;
+/* Startpagina op gsm: Onze keuzes van de maand en Reeksen & dossiers naast elkaar, van rechts naar links vegen
+   (de catalogus blijft onder elkaar). Staat ook in templates/home-zonder-nieuw.html. */
+if (document.getElementById('bagage-landing') && !document.getElementById('bagage-home-vegen')) {
+const hs = document.createElement('style');
+hs.id = 'bagage-home-vegen';
+hs.textContent = '@media(max-width:820px){#bagage-landing #selectie .posters,#bagage-landing .partner-row{grid-template-columns:none;grid-auto-flow:column;gap:14px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-right:-16px;padding-right:16px}#bagage-landing #selectie .posters{grid-auto-columns:66%}#bagage-landing .partner-row{grid-auto-columns:82%}#bagage-landing #selectie .posters::-webkit-scrollbar,#bagage-landing .partner-row::-webkit-scrollbar{display:none}#bagage-landing #selectie .card,#bagage-landing .partner-card{scroll-snap-align:start}#bagage-landing #selectie .mobile-desc{display:block;overflow:visible}}';
+document.head.append(hs);
+}
 /* Shorts opwarmen (zie __bagageWarmShorts) */
 const isShortsLink = a => a && /\/pages\/shorts(\/|\?|$)/.test(a.getAttribute('href') || '');
 const warm = () => { try { top.__bagageWarmShorts && top.__bagageWarmShorts(); } catch (err) { /* geen toegang */ } };
