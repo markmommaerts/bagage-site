@@ -1,0 +1,476 @@
+<!-- =========================================================
+     BAGAGE — Shortspagina
+     Paginaadres in Revidd: …/nl/pages/shorts
+     Versie 2026-11-22: sneller starten — de eerste short wordt al opgehaald terwijl de pagina
+     zich opbouwt, Revidd-info wordt per short maar één keer gevraagd, de catalogus pas na de
+     eerste short, de volgende short alvast klaargezet. Terug/fallback naar /nl/pages/home.
+     ========================================================= -->
+<base target="_top"><style>
+/* =========================================================
+BAGAGE — SHORTSPAGINA (november 2026)
+Eigen pagina met alleen de shorts, schermvullend zoals TikTok/Reels.
+Omhoog vegen = volgende short, doorlopend. Onderaan: sluiten · volledige documentaire · geluid.
+De pagina legt haar kader over het volledige scherm (ook over de Revidd-kop).
+========================================================= */
+html,body{margin:0!important;padding:0!important;height:100%!important;overflow:hidden!important;background:#000}
+#bagage-shorts{
+--orange:#ef6a28;--orange-hover:#f4844c;--ink:#f4f1e9;
+position:fixed;inset:0;background:#000;color:var(--ink);font-family:Arial,Helvetica,sans-serif;overflow:hidden
+}
+#bagage-shorts *,#bagage-shorts *::before,#bagage-shorts *::after{box-sizing:border-box}
+#bagage-shorts button{font:inherit}
+#bagage-shorts a{color:inherit;text-decoration:none}
+#bagage-shorts [hidden]{display:none!important}
+#bagage-shorts a:focus-visible,#bagage-shorts button:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+
+/* lijst van shorts onder elkaar, één per scherm */
+#bagage-shorts .feed{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#bagage-shorts .feed::-webkit-scrollbar{display:none}
+#bagage-shorts .item{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;display:flex;justify-content:center;align-items:flex-start}
+/* 9:16, volle breedte, niets afgesneden; video bovenaan, voortgangslijn er direct onder */
+#bagage-shorts .frame{position:relative;
+width:min(100vw,calc((100vh - 76px) * .5625));height:min(calc(100vh - 76px),177.78vw);
+width:min(100vw,calc((100dvh - 76px) * .5625));height:min(calc(100dvh - 76px),177.78vw)
+}
+#bagage-shorts .poster{position:absolute;inset:0;background:#111 center/contain no-repeat;opacity:.8}
+#bagage-shorts .box{position:absolute;inset:0;z-index:1}
+#bagage-shorts .box video{display:block;width:100%;height:100%;object-fit:contain;background:transparent}
+#bagage-shorts .progress{position:absolute;left:0;right:0;bottom:-3px;height:3px;background:rgba(255,255,255,.25)}
+#bagage-shorts .progress i{display:block;width:0;height:100%;background:var(--orange)}
+#bagage-shorts .paused{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.55);display:none;pointer-events:none}
+#bagage-shorts .paused::before{content:"";position:absolute;left:25px;top:20px;border-style:solid;border-width:12px 0 12px 19px;border-color:transparent transparent transparent #fff}
+#bagage-shorts .box.is-paused .paused{display:block}
+#bagage-shorts .box iframe{display:block;width:100%;height:100%;border:0;background:#000}
+
+/* bediening: één laag over de video (gsm én computer), verschijnt en verdwijnt samen.
+Bovenaan: terug + Bagage-logo. Rechts: iconen met label. Onderaan: titel, reeks en een kaart naar de volledige documentaire. */
+#bagage-shorts .ui{position:absolute;inset:0;z-index:3;pointer-events:none;transition:opacity .45s ease,visibility 0s linear 0s}
+#bagage-shorts .ui a,#bagage-shorts .ui button{pointer-events:auto}
+#bagage-shorts .ui::before,#bagage-shorts .ui::after{content:"";position:absolute;left:0;right:0;pointer-events:none}
+#bagage-shorts .ui::before{top:0;height:300px;background:linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.4) 60%,rgba(0,0,0,0))}
+#bagage-shorts .ui::after{bottom:0;height:34%;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.45))}
+#bagage-shorts.ui-hidden .ui{opacity:0;visibility:hidden;transition:opacity .8s ease,visibility 0s linear .8s}
+#bagage-shorts.ui-hidden .ui *{pointer-events:none}
+#bagage-shorts .top{position:absolute;z-index:1;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 0 calc(14px + env(safe-area-inset-left,0px))}
+#bagage-shorts .round{display:grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:rgba(20,20,20,.42);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;cursor:pointer}
+#bagage-shorts .round svg{width:22px;height:22px}
+#bagage-shorts .early-back{position:absolute;z-index:5;top:calc(14px + env(safe-area-inset-top,0px));left:calc(14px + env(safe-area-inset-left,0px))}
+#bagage-shorts .side{position:absolute;z-index:1;right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(34px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:20px}
+#bagage-shorts .act{display:flex;flex-direction:column;align-items:center;gap:5px;width:58px;padding:0;border:0;background:none;color:#fff;cursor:pointer;font-family:Inter,Arial,Helvetica,sans-serif;font-size:11px;font-weight:600;letter-spacing:.02em}
+#bagage-shorts .act svg{width:27px;height:27px}
+#bagage-shorts .act:hover svg,#bagage-shorts .round:hover svg{color:var(--orange-hover)}
+#bagage-shorts .sound .on{display:none}
+#bagage-shorts .sound[aria-pressed="true"] .on{display:inline}
+#bagage-shorts .sound[aria-pressed="true"] .off{display:none}
+#bagage-shorts .info{position:absolute;z-index:1;left:calc(16px + env(safe-area-inset-left,0px));right:16px;top:calc(66px + env(safe-area-inset-top,0px));font-family:Inter,Arial,Helvetica,sans-serif}
+#bagage-shorts .kicker{color:var(--orange-hover);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+#bagage-shorts .ttl{margin:4px 0 12px;font-family:Georgia,"Times New Roman",serif;font-size:24px;font-weight:400;line-height:1.15;color:#fff}
+#bagage-shorts .prog{display:flex;align-items:center;gap:11px;max-width:330px;padding:7px 10px 7px 7px;border-radius:8px;background:rgba(20,20,20,.5);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14)}
+#bagage-shorts .prog:hover{border-color:var(--orange)}
+#bagage-shorts .thumb{flex:none;width:64px;height:40px;border-radius:4px;background:#333 center/cover no-repeat}
+#bagage-shorts .pt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+#bagage-shorts .pt small{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+#bagage-shorts .pt b{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bagage-shorts .prog > svg{flex:none;width:18px;height:18px;color:rgba(255,255,255,.8)}
+#bagage-shorts .toast{position:absolute;z-index:4;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 16px;border-radius:6px;background:rgba(20,20,20,.8);font-size:13px;pointer-events:none;opacity:0;transition:opacity .3s}
+#bagage-shorts .toast.on{opacity:1}
+
+/* computer: pijlen rechts */
+#bagage-shorts .nav{display:none}
+/* Gsm: echt schermvullend zoals TikTok. De video vult het hele scherm; bediening en voortgangslijn liggen over het beeld. */
+@media(max-width:820px){
+#bagage-shorts .frame{width:100%;height:100%}
+#bagage-shorts .box video{object-fit:cover}
+#bagage-shorts .poster{background-size:cover}
+#bagage-shorts .progress{bottom:env(safe-area-inset-bottom,0px);z-index:4;height:2px;transition:opacity .45s ease}
+#bagage-shorts.ui-hidden .progress{opacity:.45}
+}
+@media(min-width:821px){
+#bagage-shorts .item{align-items:center;padding-bottom:76px}
+#bagage-shorts .nav{position:absolute;right:24px;top:50%;z-index:3;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px}
+#bagage-shorts .nav button{width:44px;height:44px;border:1px solid rgba(255,255,255,.4);background:rgba(0,0,0,.5);color:#fff;font-size:18px;cursor:pointer}
+#bagage-shorts .nav button:hover{border-color:var(--orange)}
+#bagage-shorts .ttl{font-size:21px}
+#bagage-shorts .side{bottom:40px}
+}
+@media(prefers-reduced-motion:reduce){#bagage-shorts .feed{scroll-behavior:auto}}
+</style>
+
+<section id="bagage-shorts" lang="nl" aria-label="Shorts">
+<div class="feed"></div>
+<div class="nav">
+<button type="button" data-dir="-1" aria-label="Vorige short">&uarr;</button>
+<button type="button" data-dir="1" aria-label="Volgende short">&darr;</button>
+</div>
+</section>
+
+<script>
+(() => {
+const root = document.getElementById('bagage-shorts');
+if(!root) return;
+
+/* =========================================================
+SHORTS — dezelfde lijst als op de startpagina.
+uid = UID van de short in de Revidd media pool; href = de volledige aflevering.
+De titel komt uit de Revidd Media Library (tab Reels).
+========================================================= */
+/* serie = reeks bovenaan het titelblok; ep = tekst op de kaart naar de volledige documentaire */
+const SHORTS = [
+{ uid:'3746542', title:'Jeruzalem',         href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-jerusalem-6ae494d27e11c8a635c0b5a1', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 1 \u00b7 Jeruzalem' },
+{ uid:'3746545', title:'Mont Saint-Michel', href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-mont-saint-michel-6ae5d3eb7e11c8a635c0e14e', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 2 \u00b7 Mont Saint-Michel' },
+{ uid:'3746543', title:'Chartres',          href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-chartres-6ae5e0417e11c8a635c1102d', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 3 \u00b7 Chartres' },
+{ uid:'3746544', title:'Florence',          href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-florence-6ae5df357e11c8a635c10c11', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 4 \u00b7 Florence' },
+{ uid:'3746546', title:'Rusland',           href:'https://bagage.store1.revidd.video/nl/episodes/heilige-oorden-kerken-rusland-6ae5ddc5c63fd9d6c70978fb', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 5 \u00b7 Rusland' }
+];
+const HOME = 'https://bagage.store1.revidd.video/nl/pages/home';
+const INFO = uid => 'https://api.revidd.com/media/v1/org/public/video/' + encodeURIComponent(uid);
+const EMBED = (uid, w, h) => 'https://embed.revidd.com/iframe/index.html?mid=' + encodeURIComponent(uid) + '&platform=OTT&w=' + w + '&h=' + h + '&loop=true';
+const HLS_JS = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js';
+const CURRENT_KEY = 'bagageShortsCurrent'; // welke short het laatst openstond (voor de terugpijl)
+
+const el = (tag, cls, text) => { const e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; };
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+/* ---------- Kader over het volledige scherm leggen (ook over de Revidd-kop) ---------- */
+const frame = (() => { try{ return window.frameElement; }catch(e){ return null; } })();
+let host = null;
+try{ if(frame) host = window.parent; }catch(e){}
+const coverScreen = () => {
+if(!frame) return;
+const st = {
+position:'fixed', top:'0', left:'0', right:'0', bottom:'0', width:'100%', height:'100%',
+'min-height':'0', 'max-height':'none', margin:'0', border:'0', 'z-index':'2147483000', background:'#000'
+};
+Object.entries(st).forEach(([k, v]) => { if(frame.style.getPropertyValue(k) !== v || frame.style.getPropertyPriority(k) !== 'important') frame.style.setProperty(k, v, 'important'); });
+try{ host.document.documentElement.style.setProperty('overflow', 'hidden', 'important'); host.document.body.style.setProperty('overflow', 'hidden', 'important'); }catch(e){}
+};
+coverScreen();
+if(frame){
+/* Revidd zet soms zelf een hoogte op het kader: meteen terugzetten */
+const mo = new MutationObserver(coverScreen);
+mo.observe(frame, { attributes:true, attributeFilter:['style', 'height', 'class'] });
+[300, 1000, 2500].forEach(t => setTimeout(coverScreen, t));
+window.addEventListener('pagehide', () => {
+mo.disconnect();
+try{ host.document.documentElement.style.removeProperty('overflow'); host.document.body.style.removeProperty('overflow'); }catch(e){}
+});
+}
+const store = (() => { try{ return (host || window).sessionStorage; }catch(e){ return null; } })();
+
+/* ---------- Opbouw ---------- */
+const feed = root.querySelector('.feed');
+/* bedieningslaag: schuift samen met de video mee naar de short in beeld */
+const ICON = {
+back:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',
+full:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="1.5" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M10 8.5v5l4.5-2.5z" fill="currentColor"/><path d="M7 20.5h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+share:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7.5 7.5L12 3l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M8 11H6a1 1 0 00-1 1v8a1 1 0 001 1h12a1 1 0 001-1v-8a1 1 0 00-1-1h-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>',
+sound:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><g class="off" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M16 9.5l5 5M21 9.5l-5 5"/></g><g class="on" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"><path d="M16 8.5a5 5 0 010 7"/><path d="M18.5 6a8.5 8.5 0 010 12"/></g></svg>',
+chev:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'
+};
+const ui = el('div', 'ui');
+ui.innerHTML =
+'<div class="top"><button class="round close" type="button" aria-label="Terug">' + ICON.back + '</button></div>' +
+'<div class="side">' +
+'<a class="act full" target="_top" href="' + HOME + '">' + ICON.full + '<span>Volledig</span></a>' +
+'<button class="act share" type="button">' + ICON.share + '<span>Delen</span></button>' +
+'<button class="act sound" type="button" aria-label="Geluid aan" aria-pressed="false">' + ICON.sound + '<span>Geluid</span></button>' +
+'</div>' +
+'<div class="info"><div class="kicker"></div><h2 class="ttl"></h2>' +
+'<a class="prog" target="_top" href="' + HOME + '"><span class="thumb"></span><span class="pt"><small>Volledige documentaire</small><b></b></span>' + ICON.chev + '</a></div>';
+const toast = el('div', 'toast');
+root.append(toast);
+/* terugknop meteen tonen; de echte knop zit in de bediening, die pas verschijnt als de eerste short klaarstaat */
+const earlyBack = el('button', 'round early-back');
+earlyBack.type = 'button'; earlyBack.setAttribute('aria-label', 'Terug'); earlyBack.innerHTML = ICON.back;
+earlyBack.addEventListener('click', () => close());
+root.append(earlyBack);
+const cta = ui.querySelector('.prog');
+const fullBtn = ui.querySelector('.full');
+const soundBtn = ui.querySelector('.sound');
+const fillUI = x => {
+ui.querySelector('.kicker').textContent = x.s.serie || '';
+ui.querySelector('.ttl').textContent = x.s.title;
+ui.querySelector('.pt b').textContent = x.s.ep || x.s.title;
+cta.href = fullBtn.href = x.s.href;
+const bg = x.poster.style.backgroundImage;
+ui.querySelector('.thumb').style.backgroundImage = bg || '';
+};
+let toastTimer = 0;
+const say = t => { toast.textContent = t; toast.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('on'), 1800); };
+ui.querySelector('.share').addEventListener('click', () => {
+if(current < 0) return;
+const x = list[current];
+let url = location.href;
+try{ const u = new URL((host || window).location.href); u.searchParams.set('s', x.s.uid); url = u.toString(); }catch(e){}
+const data = { title:'Bagage \u00b7 ' + x.s.title, text:x.s.title + ' (' + (x.s.serie || 'Bagage') + ')', url };
+if(navigator.share) navigator.share(data).catch(() => {});
+else if(navigator.clipboard) navigator.clipboard.writeText(url).then(() => say('Link gekopieerd'), () => say(url));
+else say(url);
+});
+const list = SHORTS.map((s, k) => {
+const item = el('div', 'item');
+const fr = el('div', 'frame');
+const poster = el('div', 'poster');
+fr.append(poster); item.append(fr);
+item.dataset.k = k;
+return { s:Object.assign({}, s), item, frame:fr, poster };
+});
+const clone = (x, side) => {
+const c = el('div', 'item'); const fr = el('div', 'frame'); const p = el('div', 'poster'); fr.append(p); c.append(fr);
+c.dataset.clone = side; return { item:c, poster:p, of:x };
+};
+const multi = list.length > 1;
+const cloneLast = multi ? clone(list[list.length - 1], 'last') : null;
+const cloneFirst = multi ? clone(list[0], 'first') : null;
+if(multi) feed.append(cloneLast.item);
+list.forEach(x => feed.append(x.item));
+if(multi) feed.append(cloneFirst.item);
+
+/* Revidd-info per short: één keer ophalen, gedeeld door titel/beeld en speler */
+const infos = {};
+const infoOf = uid => {
+if(!infos[uid]) infos[uid] = fetch(INFO(uid)).then(r => { if(!r.ok) throw new Error('info ' + r.status); return r.json(); })
+.catch(e => { delete infos[uid]; throw e; });
+return infos[uid];
+};
+/* Startpunt: ?s=<uid> in de link, of de laatst bekeken short (terugpijl).
+   Volgorde: laatst bekeken short (sessie), dan ?s= in het adres van de pagina, dan ?s= van het kader. */
+const startUid = (() => {
+let q = null;
+try{ q = store && store.getItem(CURRENT_KEY); }catch(e){}
+if(!q) try{ q = new URLSearchParams((host || window).location.search).get('s'); }catch(e){}
+if(!q) try{ q = new URLSearchParams(location.search).get('s'); }catch(e){}
+return q;
+})();
+const startK = Math.max(0, list.findIndex(x => x.s.uid === startUid));
+/* de startshort eerst, de rest daarna */
+const order = list.map((x, k) => k).sort((a, b) => (a === startK ? -1 : b === startK ? 1 : 0));
+
+/* titel en stilstaand beeld uit Revidd */
+order.map(k => list[k]).forEach(x => {
+infoOf(x.s.uid).then(j => {
+if(!j) return;
+const name = j.video && (j.video.name || '').trim();
+if(name) x.s.title = name;
+if(current >= 0 && list[current] === x) fillUI(x);
+const p = j.video && j.video.cover && j.video.cover.mediaPath;
+const imgCdn = String((j.cdn_v1 && j.cdn_v1.imageCdn && j.cdn_v1.imageCdn.url) || '1577787583.rsc.cdn77.org').replace(/^https?:\/\//, '').replace(/\/+$/, '');
+if(p){
+const bg = 'url("https://' + imgCdn + '/' + p + '")';
+x.poster.style.backgroundImage = bg;
+[cloneFirst, cloneLast].forEach(c => { if(c && c.of === x) c.poster.style.backgroundImage = bg; });
+if(current >= 0 && list[current] === x) fillUI(x);
+}
+}).catch(() => {});
+});
+
+/* reeks- en afleveringstitel van de volledige documentaire uit de Revidd-catalogus (id = laatste deel van href).
+   Pas na de eerste short (of na 4 s): anders vecht deze zware vraag met het opstarten van de video. */
+let catalogDone = false;
+const loadCatalog = async () => {
+if(catalogDone) return; catalogDone = true;
+try{
+const items = []; let skip = 0;
+while(true){
+const r = await fetch('https://bagage.api1.revidd.video/partner/v1/content/fetch', { method:'POST', headers:{ 'api-key':'4649e3177994e74974747df6ae98c9868791c5bcfc673faa', 'Content-Type':'application/json' }, body:JSON.stringify({ limit:100, skip }) });
+if(!r.ok) return;
+const j = await r.json(); items.push(...j.data); skip += 100;
+if(!j.data.length || skip >= j.count) break;
+}
+const byId = Object.fromEntries(items.map(i => [i.id, i]));
+list.forEach(x => {
+const m = /([0-9a-f]{24})\/?$/.exec(x.s.href || '');
+const ep = m && byId[m[1]];
+if(!ep) return;
+const season = ep.seasonId && byId[ep.seasonId];
+const serie = (season && season.title) || '';
+let t = (ep.title || '').trim();
+const pre = serie.split(':')[0].trim();
+if(pre) t = t.replace(new RegExp('^' + pre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*[-\u2013:\u00b7]\\s*', 'i'), '');
+if(serie) x.s.serie = serie;
+if(t) x.s.ep = t;
+if(current >= 0 && list[current] === x) fillUI(x);
+});
+}catch(e){}
+};
+setTimeout(loadCatalog, 4000);
+
+/* ---------- Speler: één gedeelde video die meeschuift ---------- */
+const video = el('video');
+video.playsInline = true; video.setAttribute('playsinline', ''); video.loop = true; video.muted = true; video.preload = 'auto';
+const box = el('div', 'box');
+const bar = el('div', 'progress'); const fill = el('i'); bar.append(fill);
+box._paused = el('span', 'paused');
+box.append(video, bar, box._paused, ui);
+let current = -1, muted = true, hls = null, hlsLoading = null, useIframe = false;
+const streams = {};
+const nativeHls = !!video.canPlayType('application/vnd.apple.mpegurl');
+const loadHlsJs = () => {
+if(window.Hls) return Promise.resolve(window.Hls);
+if(!hlsLoading) hlsLoading = new Promise((ok, ko) => { const sc = document.createElement('script'); sc.src = HLS_JS; sc.onload = () => ok(window.Hls); sc.onerror = ko; document.head.append(sc); });
+return hlsLoading;
+};
+/* ondertekende streamlink bij Revidd ophalen (dezelfde weg als de Revidd-speler) */
+const streamUrl = uid => {
+if(!streams[uid]) streams[uid] = infoOf(uid).then(j => fetch(j.deliveryUrl)).then(r => r.text()).then(t => JSON.parse(atob(t)).url)
+.catch(e => { delete streams[uid]; throw e; });
+return streams[uid];
+};
+/* meteen beginnen: streamlink van de startshort en (behalve op iPhone/Safari) hls.js, nog vóór het kader klaarstaat */
+streamUrl(list[startK].s.uid).catch(() => {});
+if(!nativeHls) loadHlsJs().catch(() => {});
+/* volgende short alvast klaarzetten zodra er een speelt */
+const prefetchNext = () => { if(current < 0 || !multi) return; const n = list[(current + 1) % list.length]; streamUrl(n.s.uid).catch(() => {}); };
+const syncSound = () => {
+soundBtn.setAttribute('aria-pressed', String(!muted));
+soundBtn.setAttribute('aria-label', muted ? 'Geluid aan' : 'Geluid uit');
+video.muted = muted;
+};
+soundBtn.addEventListener('click', () => { muted = !muted; syncSound(); if(video.paused) video.play().catch(() => {}); });
+/* ---------- Bediening laten verschijnen en verdwijnen (gsm) ---------- */
+const mobile = window.matchMedia('(max-width: 820px)');
+const HIDE_AFTER = 3000;
+let hideTimer = 0;
+const uiVisible = () => !root.classList.contains('ui-hidden');
+const showUI = () => {
+root.classList.remove('ui-hidden');
+clearTimeout(hideTimer);
+hideTimer = setTimeout(() => { if(!useIframe && !video.paused) root.classList.add('ui-hidden'); }, HIDE_AFTER);
+};
+ui.addEventListener('pointerdown', showUI);
+document.addEventListener('mousemove', () => { if(!mobile.matches) showUI(); }, { passive:true });
+/* tik op het beeld: bediening verborgen -> alleen tonen; zichtbaar -> pauze/verder */
+video.addEventListener('click', () => {
+if(mobile.matches && !uiVisible()){ showUI(); return; }
+video.paused ? video.play().catch(() => {}) : video.pause();
+});
+video.addEventListener('play', () => { box.classList.remove('is-paused'); showUI(); });
+video.addEventListener('playing', () => { loadCatalog(); prefetchNext(); });
+video.addEventListener('pause', () => { box.classList.add('is-paused'); root.classList.remove('ui-hidden'); clearTimeout(hideTimer); });
+video.addEventListener('timeupdate', () => { if(video.duration) fill.style.width = (video.currentTime / video.duration * 100) + '%'; });
+
+function iframeIn(x){
+box.replaceChildren();
+x.frame.append(box);
+const r = box.getBoundingClientRect();
+const w = Math.round(r.width), h = Math.round(r.height);
+const f = el('iframe');
+f.title = 'Short: ' + x.s.title;
+f.allow = 'autoplay; fullscreen; picture-in-picture; encrypted-media';
+f.setAttribute('allowfullscreen', '');
+f.src = EMBED(x.s.uid, w, h); // w en h = echte grootte, anders zoomt Revidd verkeerd
+box.append(f, ui);
+}
+function playIn(x, k){
+x.frame.append(box);
+if(!box.contains(video)) box.replaceChildren(video, bar, box._paused, ui);
+box.classList.remove('is-paused');
+fill.style.width = '0';
+video.pause();
+if(hls){ hls.destroy(); hls = null; }
+video.removeAttribute('src'); video.load();
+video.muted = muted;
+const start = () => video.play().catch(() => {
+/* geluid geweigerd door de browser: zonder geluid verder */
+muted = true; syncSound(); video.play().catch(() => box.classList.add('is-paused'));
+});
+const fallback = () => { if(current !== k) return; useIframe = true; soundBtn.hidden = true; iframeIn(x); };
+Promise.all([streamUrl(x.s.uid), nativeHls ? null : loadHlsJs()]).then(([url, Hls]) => {
+if(current !== k) return;
+if(nativeHls){ video.src = url; start(); return; }
+if(!Hls || !Hls.isSupported()) throw new Error('geen HLS');
+hls = new Hls({ capLevelToPlayerSize:true, startFragPrefetch:true });
+hls.loadSource(url); hls.attachMedia(video);
+hls.on(Hls.Events.MANIFEST_PARSED, start);
+hls.on(Hls.Events.ERROR, (e, d) => { if(d.fatal){ hls.destroy(); hls = null; fallback(); } });
+}).catch(fallback);
+}
+let ready = false; // pas na de eerste sprong naar de startshort reageren op scrollen
+function rememberShort(uid){
+try{ store && store.setItem(CURRENT_KEY, uid); }catch(e){}
+/* ook in het adres zetten (?s=), zodat de terugpijl van de aflevering op deze short uitkomt */
+try{
+const w = host || window;
+const u = new URL(w.location.href);
+if(u.searchParams.get('s') !== uid){ u.searchParams.set('s', uid); w.history.replaceState(w.history.state, '', u.toString()); }
+}catch(e){}
+}
+function activate(k){
+if(!ready || k < 0 || k >= list.length || k === current) return;
+current = k;
+const x = list[k];
+fillUI(x);
+if(earlyBack.isConnected) earlyBack.remove();
+rememberShort(x.s.uid);
+showUI();
+useIframe ? iframeIn(x) : playIn(x, k);
+}
+
+/* ---------- Scrollen: doorlopend, de short in beeld speelt ---------- */
+const go = k => {
+let t;
+if(k >= list.length) t = multi ? cloneFirst.item : list[0].item;
+else if(k < 0) t = multi ? cloneLast.item : list[list.length - 1].item;
+else t = list[k].item;
+feed.scrollTo({ top:t.offsetTop, behavior:reducedMotion.matches ? 'auto' : 'smooth' });
+};
+const jumpTo = k => { feed.scrollTop = list[k].item.offsetTop; activate(k); };
+[cta, fullBtn].forEach(a => a.addEventListener('click', () => { if(current >= 0) rememberShort(list[current].s.uid); }));
+if('IntersectionObserver' in window){
+const io = new IntersectionObserver(es => es.forEach(e => {
+if(e.isIntersecting && !e.target.dataset.clone) activate(+e.target.dataset.k);
+}), { root:feed, threshold:.6 });
+list.forEach(x => io.observe(x.item));
+}
+let settle = 0;
+feed.addEventListener('scroll', () => {
+clearTimeout(settle);
+settle = setTimeout(() => {
+if(!ready) return;
+const h = feed.clientHeight || 1;
+/* op een kopie beland: zonder animatie naar de echte short */
+if(multi && feed.scrollTop <= cloneLast.item.offsetTop + h * .4) return jumpTo(list.length - 1);
+if(multi && feed.scrollTop >= cloneFirst.item.offsetTop - h * .4) return jumpTo(0);
+const k = Math.round(feed.scrollTop / h) - (multi ? 1 : 0);
+if(k >= 0 && k < list.length) activate(k);
+}, 120);
+}, { passive:true });
+root.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => go(current + (+b.dataset.dir))));
+document.addEventListener('keydown', e => {
+if(e.key === 'ArrowDown' || e.key === 'PageDown'){ e.preventDefault(); go(current + 1); }
+else if(e.key === 'ArrowUp' || e.key === 'PageUp'){ e.preventDefault(); go(current - 1); }
+else if(e.key === ' ' && !useIframe && !(e.target.closest && e.target.closest('button, a'))){ e.preventDefault(); video.paused ? video.play().catch(() => {}) : video.pause(); }
+else if(e.key === 'm' || e.key === 'M'){ soundBtn.click(); }
+else if(e.key === 'Escape'){ close(); }
+});
+
+/* ---------- Sluiten: terug naar waar de kijker vandaan kwam ---------- */
+function close(){
+try{ store && store.removeItem(CURRENT_KEY); }catch(e){}
+const w = host || window;
+let fromSite = false;
+try{ fromSite = !!document.referrer && new URL(document.referrer).host === location.host; }catch(e){}
+try{ if(w.history.length > 1 && (fromSite || host)){ w.history.back(); return; } }catch(e){}
+w.location.href = HOME;
+}
+ui.querySelector('.close').addEventListener('click', close);
+
+/* bij terugkeer via de browsercache weer verder spelen */
+window.addEventListener('pageshow', e => { if(e.persisted){ coverScreen(); if(!useIframe) video.play().catch(() => {}); } });
+
+/* ---------- Startpunt (startK, zie hoger) ---------- */
+/* pas springen als het kader schermvullend staat (Revidd geeft het eerst een andere hoogte) */
+let tries = 0;
+const start = () => {
+coverScreen();
+const h = feed.clientHeight, vh = (host || window).innerHeight || window.innerHeight;
+if((h < vh * .9 || h < 200) && tries++ < 40) return setTimeout(start, 50);
+ready = true;
+jumpTo(startK);
+};
+requestAnimationFrame(() => setTimeout(start, 30));
+/* bij draaien of andere schermgrootte: op dezelfde short blijven */
+window.addEventListener('resize', () => { if(ready && current >= 0) feed.scrollTop = list[current].item.offsetTop; });
+})();
+</script>
+<script src="https://markmommaerts.github.io/bagage-site/bagage-site.js?v=3"></script>
