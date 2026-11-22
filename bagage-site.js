@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-22c (vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-22d (uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -360,6 +360,12 @@ bar + ' span{color:#f4f1e9!important}' +
 '[data-bagage-duiding]{font-size:0!important}[data-bagage-duiding]::after{content:"Duiding";font-size:16px}[data-bagage-lees]{font-size:0!important}[data-bagage-lees]::after{content:"Lees meer →";font-size:11px}' +
 '[data-bagage-foot=privacy],[data-bagage-foot=voorwaarden]{font-size:0!important}[data-bagage-foot=privacy]::after{content:"Privacybeleid";font-size:14px}[data-bagage-foot=voorwaarden]::after{content:"Gebruiksvoorwaarden";font-size:14px}[data-bagage-foot=weg]{display:none!important}' +
 'footer:has([data-bagage-footlinks]) a:has([data-bagage-foot]),footer:has([data-bagage-footlinks]) a[data-bagage-foot]{display:none!important}' +
+/* Uitklapmenu onder het rasterpictogram (overige menu-items, naast Kijklijst): op elke pagina een bleke
+   achtergrond met donkere tekst en oranje bij hover. Stond eerder alleen in de code van Prijzen & FAQ,
+   daarom was het menu op andere pagina's soms zwart met onleesbare items. */
+'div.fixed:has(img[alt="NavLogo"]) [class*="absolute"]:has(a,p,li),.MuiPopover-paper,.MuiMenu-paper,.MuiMenu-list{background-color:#f7f4ee!important;background-image:none!important;border:1px solid #ddd6c8!important;box-shadow:0 8px 24px rgba(26,26,24,.12)!important}' +
+'div.fixed:has(img[alt="NavLogo"]) [class*="absolute"]:has(a,p,li) *,.MuiPopover-paper *,.MuiMenu-paper *{background-color:transparent!important;color:#1a1a18!important}' +
+'div.fixed:has(img[alt="NavLogo"]) [class*="absolute"]:has(a,p,li) a:hover,div.fixed:has(img[alt="NavLogo"]) [class*="absolute"]:has(a,p,li) [class*="cursor-pointer"]:hover,.MuiMenuItem-root:hover{background-color:#ef6a28!important;color:#111!important}' +
 /* Shorts-pagina: meteen zwart scherm over de Revidd-kop en de vorige pagina, tot het schermvullende shortskader er staat */
 'html.bagage-shorts-open:not(:has(iframe[style*="2147483000"])) body::after{content:"";position:fixed;inset:0;background:#000;z-index:2147482999}' +
 'html.bagage-shorts-open div.fixed:has(img[alt="NavLogo"]){visibility:hidden!important}' +
