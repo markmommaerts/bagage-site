@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-22b (startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-22c (vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -151,6 +151,48 @@
     e.preventDefault();
     target().scrollTop += e.deltaY * unit;
   }, { passive: false });
+
+  /* Aanraken (iPad liggend, tablets, computers met aanraakscherm): in de computerweergave scrolt Revidd
+     in een eigen blok en Safari geeft vegen boven het kader daar niet aan door. Dan schuiven we zelf,
+     met uitlopen na het loslaten. Scrolt het venster zelf (gsm, iPad staand), dan blijft alles zoals het was. */
+  let tY = 0, tX = 0, tDir = '', tEl = null, tLast = 0, tVel = 0, tAnim = 0;
+  const stopGlide = () => { if (tAnim) cancelAnimationFrame(tAnim); tAnim = 0; };
+  document.addEventListener('touchstart', e => {
+    stopGlide();
+    if (e.touches.length !== 1) { tEl = null; return; }
+    tEl = scroller();                                   // null = het venster scrolt zelf: niets doen
+    tY = e.touches[0].clientY; tX = e.touches[0].clientX; tDir = ''; tVel = 0; tLast = e.timeStamp;
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (!tEl || e.touches.length !== 1) return;
+    const y = e.touches[0].clientY, x = e.touches[0].clientX;
+    const dy = tY - y, dx = tX - x;
+    if (!tDir) {
+      if (Math.abs(dy) < 4 && Math.abs(dx) < 4) return;
+      tDir = Math.abs(dy) > Math.abs(dx) ? 'v' : 'h';   // horizontaal (posterrijen) blijft gewoon
+      if (tDir === 'v' && ownScroller(e.target, dy)) tDir = 'eigen';
+    }
+    if (tDir !== 'v') return;
+    e.preventDefault();
+    tEl.scrollTop += dy;
+    const dt = Math.max(1, e.timeStamp - tLast);
+    tVel = 0.8 * (dy / dt) + 0.2 * tVel;                // px per ms
+    tY = y; tX = x; tLast = e.timeStamp;
+  }, { passive: false });
+  document.addEventListener('touchend', e => {
+    if (!tEl || tDir !== 'v') return;
+    if (e.timeStamp - tLast > 100) tVel = 0;            // eerst stilgehouden: geen uitloop
+    const el = tEl;
+    let v = tVel, prev = performance.now();
+    const step = now => {
+      const dt = now - prev; prev = now;
+      el.scrollTop += v * dt;
+      v *= Math.pow(0.95, dt / 16);
+      tAnim = Math.abs(v) > 0.02 ? requestAnimationFrame(step) : 0;
+    };
+    if (Math.abs(v) > 0.05) tAnim = requestAnimationFrame(step);
+  }, { passive: true });
+  document.addEventListener('touchcancel', () => { tEl = null; }, { passive: true });
 
   /* Toetsenbord, zolang de focus in het kader staat */
   document.addEventListener('keydown', e => {
