@@ -1,0 +1,1294 @@
+<base target="_top"><script>
+(() => {
+try {
+const fe = window.frameElement;
+if (!fe) return;
+const host = window.parent, st = host.sessionStorage;
+const saved = JSON.parse(st.getItem('bagageHomeScroll') || 'null');
+const back = +(st.getItem('bagageShortBack') || 0);
+const nav = host.performance.getEntriesByType && host.performance.getEntriesByType('navigation')[0];
+const navBack = !!(nav && (nav.type === 'back_forward' || nav.type === 'reload') && Date.now() - host.performance.timeOrigin < 20000);
+if (!saved || !saved.y || saved.path !== host.location.pathname || Date.now() - saved.t > 30 * 60 * 1000) return;
+if (!((back && back >= saved.t && Date.now() - back < 20000) || navBack)) return;
+st.removeItem('bagageHomeScroll');
+window.__bagageRestoreY = saved.y;
+window.__bagageMinH = saved.h || 0;
+if (saved.h) ['height', 'min-height', 'max-height'].forEach(k => fe.style.setProperty(k, saved.h + 'px', 'important'));
+let sc = null;
+for (let el = fe.parentElement; el && el !== host.document.body; el = el.parentElement) {
+const oy = host.getComputedStyle(el).overflowY;
+if (oy !== 'visible' && oy !== 'clip' && el.scrollHeight > el.clientHeight + 1) { sc = el; break; }
+}
+const box = sc || host.document.scrollingElement || host.document.documentElement;
+box.scrollTop = saved.y;
+const y = saved.y, minY = y - 40;
+const desc = Object.getOwnPropertyDescriptor(host.Element.prototype, 'scrollTop');
+const keepH = () => { if (window.__bagageMinH) ['height', 'min-height', 'max-height'].forEach(k => {
+if (fe.style.getPropertyValue(k) !== saved.h + 'px' || fe.style.getPropertyPriority(k) !== 'important') fe.style.setProperty(k, saved.h + 'px', 'important'); }); };
+const mo = new host.MutationObserver(keepH);
+if (saved.h) mo.observe(fe, { attributes: true, attributeFilter: ['style', 'height'] });
+Object.defineProperty(box, 'scrollTop', { configurable: true,
+get() { return desc.get.call(this); },
+set(v) { if (+v < minY) return; desc.set.call(this, v); } });
+const origTo = box.scrollTo, origBy = box.scroll;
+box.scrollTo = function (a, b) { const t = (a && typeof a === 'object') ? a.top : b; if (t !== undefined && +t < minY) return; return origTo.apply(this, arguments); };
+box.scroll = function (a, b) { const t = (a && typeof a === 'object') ? a.top : b; if (t !== undefined && +t < minY) return; return origBy.apply(this, arguments); };
+let released = false;
+window.__bagageRelease = () => {
+if (released) return; released = true;
+mo.disconnect();
+delete box.scrollTop; delete box.scrollTo; delete box.scroll;
+};
+['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(ev => host.addEventListener(ev, () => window.__bagageRelease(), { once: true, passive: true, capture: true }));
+setTimeout(() => window.__bagageRelease(), 3000);
+} catch (e) {}
+})();
+</script>
+<style>div.fixed.w-full.py-6{display:none!important}</style><style>#bagage-landing{--bg:#f7f4ee;--bg-2:#efeae0;--ink:#1a1a18;--ink-soft:#55534f;--ink-faint:#8a867e;--rule:#ddd6c8;--orange:#ef6a28;--orange-dark:#b63712;--gold:#e8b654;--paper:#f4f1e9;--serif:Georgia,"Times New Roman",serif;width:100%;margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;overflow:hidden}#bagage-landing *,#bagage-landing *::before,#bagage-landing *::after{box-sizing:border-box}#bagage-landing a{color:inherit;text-decoration:none}#bagage-landing button{font:inherit}#bagage-landing img{display:block;max-width:100%}#bagage-landing [hidden]{display:none!important}#bagage-landing a:focus-visible,#bagage-landing button:focus-visible{outline:2px solid var(--orange);outline-offset:3px}#bagage-landing .shell{width:min(1400px,calc(100% - 64px));margin-inline:auto}#bagage-landing .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}#bagage-landing .kicker{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange-dark)}#bagage-landing .cta{display:inline-flex;align-items:center;gap:10px;min-height:46px;padding:13px 20px;background:var(--orange);color:#111;font-size:14px;font-weight:700;transition:background-color .2s ease}#bagage-landing .cta:hover{background:#f4844c}#bagage-landing .cta-line{display:inline-flex;align-items:center;gap:8px;padding-bottom:4px;border-bottom:2px solid var(--orange);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}#bagage-landing .cta-line:hover{color:var(--orange-dark)}#bagage-landing .ico{width:10px;height:12px;flex:none;display:block}#bagage-landing .ico-arrow{display:inline-block;width:.7em;height:.7em;margin-left:.3em;vertical-align:-.02em;overflow:visible}#bagage-landing .tag{display:inline-flex;align-items:center;padding:6px 9px;background:var(--gold);color:#111;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}#bagage-landing .price{display:inline-flex;align-items:center;padding:5px 9px;border:1px solid #9a968e;color:inherit;font-size:12px}#bagage-landing .band{padding:88px 0}#bagage-landing .band-2{background:var(--bg-2)}#bagage-landing .head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding-top:22px;margin-bottom:40px;border-top:1px solid var(--ink)}#bagage-landing .head .kicker{display:block;margin-bottom:12px}#bagage-landing .head h2{margin:0;font-family:var(--serif);font-size:clamp(32px,3.6vw,48px);font-weight:400;line-height:1.05;letter-spacing:-.03em}#bagage-landing .head p{max-width:560px;margin:12px 0 0;color:var(--ink-soft);font-size:16px;line-height:1.5}#bagage-landing .hero{position:relative;display:grid;background:#090c0d;color:#f4f1e9}#bagage-landing .hero-slide{grid-area:1/1;position:relative;display:flex;min-height:clamp(480px,39.6vw,760px);opacity:0;visibility:hidden;transition:opacity .9s ease-in-out,visibility 0s linear .9s;background:#000 center bottom/cover no-repeat}#bagage-landing .hero-slide.active{opacity:1;visibility:visible;transition:opacity .9s ease-in-out,visibility 0s}#bagage-landing .hero-slide.munch{background-position:center 62%}#bagage-landing .hero-slide::after{content:"";position:absolute;inset:0;background: linear-gradient(90deg,rgba(9,12,13,.7) 0%,rgba(9,12,13,.42) 32%,rgba(9,12,13,0) 66%),linear-gradient(0deg,#090c0d 0%,rgba(9,12,13,.94) 4%,rgba(9,12,13,.68) 12%,rgba(9,12,13,.28) 22%,rgba(9,12,13,0) 36%)}#bagage-landing .hero-slide .shell{position:relative;z-index:2;display:flex;align-items:flex-end}#bagage-landing .hero-copy{width:min(650px,100%);padding:calc(72px + var(--revidd-header,0px)) 0 64px}#bagage-landing .partner-kicker{display:block;color:var(--gold);font-family:var(--serif);font-size:18px;font-style:italic;line-height:1.25;text-shadow:0 1px 12px rgba(0,0,0,.45)}#bagage-landing .hero-title{margin:18px 0 25px;font-family:var(--serif);font-size:clamp(54px,7vw,110px);font-weight:400;line-height:.9;letter-spacing:-.05em}#bagage-landing .hero-subtitle{margin:-12px 0 25px;font-family:var(--serif);font-size:clamp(28px,3.2vw,50px);line-height:1;letter-spacing:-.035em}#bagage-landing .hero p{max-width:570px;margin:0 0 16px;color:#f4f1e9;font-size:18px;line-height:1.55;text-shadow:0 1px 8px rgba(0,0,0,.45)}#bagage-landing .hero .meta{text-shadow:0 1px 6px rgba(0,0,0,.55)}#bagage-landing .hero .price{border-color:#6c7172}#bagage-landing .meta{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:20px 0 28px;font-size:13px}#bagage-landing .hero-controls{position:absolute;left:50%;bottom:18px;z-index:5;transform:translateX(-50%);display:flex;align-items:center;gap:6px}#bagage-landing .hero-dot{appearance:none;position:relative;width:34px;height:24px;padding:0;border:0;background:none;cursor:pointer}#bagage-landing .hero-dot::before{content:"";position:absolute;left:6px;right:6px;top:11px;height:2px;border-radius:2px;background:rgba(255,255,255,.34);transition:background-color .35s ease}#bagage-landing .hero-dot.active::before{background:var(--orange)}#bagage-landing .hero-toggle{appearance:none;display:grid;place-items:center;width:28px;height:28px;margin-left:6px;padding:0;border:1px solid rgba(255,255,255,.45);border-radius:50%;background:rgba(0,0,0,.35);color:#fff;cursor:pointer}#bagage-landing .hero-toggle .ico{width:8px;height:10px}#bagage-landing .manifest{padding:24px 0 88px;background:#090c0d;color:#f4f1e9}#bagage-landing .manifest-inner{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;padding:0}#bagage-landing .manifest h2{margin:0;font-family:var(--serif);font-size:clamp(32px,3.6vw,48px);font-weight:400;line-height:1.05;letter-spacing:-.03em}#bagage-landing .manifest p{margin:0 0 18px;max-width:640px;color:#c8c6c0;font-size:18px;line-height:1.6}#bagage-landing .manifest .cta-line:hover{color:var(--gold)}#bagage-landing .posters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:56px 28px}#bagage-landing .posters.wide{grid-template-columns:repeat(3,minmax(0,1fr))}#bagage-landing .card{display:flex;flex-direction:column;min-width:0}#bagage-landing .poster{display:block;position:relative;overflow:hidden;aspect-ratio:2/3;background:#ddd6c8}#bagage-landing .card.wide .poster{aspect-ratio:16/10}#bagage-landing .card.skel .poster{background:linear-gradient(100deg,#e4ddcf 40%,#efe9dd 50%,#e4ddcf 60%) 0 0/300% 100%;animation:bgskel 1.4s linear infinite}#bagage-landing .card.skel .title{display:block;width:62%;height:15px;margin-top:8px;background:#e4ddcf}@keyframes bgskel{to{background-position:-150% 0}}#bagage-landing .poster img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease,filter .3s ease}#bagage-landing .poster:hover img{transform:scale(1.02)}#bagage-landing .hover{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:20px;padding:32px 26px;background:rgba(247,244,238,.9);color:var(--ink);opacity:0;transition:opacity .3s ease}#bagage-landing .hover p{margin:0;font-family:var(--serif);font-size:15px;line-height:1.55;text-wrap:pretty;display:-webkit-box;-webkit-line-clamp:9;-webkit-box-orient:vertical;overflow:hidden}#bagage-landing .card.wide .hover p{-webkit-line-clamp:5;max-width:520px}#bagage-landing .hover span{flex:none;font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--orange-dark)}#bagage-landing .poster:hover .hover,#bagage-landing .poster:focus-visible .hover{opacity:1}#bagage-landing .poster .partner{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:9px 12px 10px;border-top:2px solid var(--gold);background:rgba(9,12,13,.94);color:#f4f1e9;pointer-events:none;transition:opacity .3s ease}#bagage-landing .poster .partner small{display:block;color:#b9b4aa;font-size:8px;letter-spacing:.18em}#bagage-landing .poster .partner b{display:block;color:#f4f1e9;margin-top:2px;font-size:10px;letter-spacing:.08em;line-height:1.25}#bagage-landing .poster:hover .partner,#bagage-landing .poster:focus-visible .partner{opacity:0}#bagage-landing .kindline{display:flex;align-items:baseline;flex-wrap:wrap;gap:7px;min-height:17px;margin-top:16px}#bagage-landing .kindline .kind{color:var(--orange-dark);font-size:11px;font-weight:700;letter-spacing:.12em}#bagage-landing .kindline .separator{color:#a8a397;font-size:10px}#bagage-landing .kindline em{color:var(--ink-faint);font-size:11px;font-style:normal;letter-spacing:.02em}#bagage-landing .card .title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;height:calc(2 * 1.15em);margin-top:8px;font-family:var(--serif);font-size:21px;line-height:1.15}#bagage-landing .card.wide .title{font-size:24px}#bagage-landing .card .title:hover{color:var(--orange-dark)}#bagage-landing .card .theme{display:flex;align-items:center;width:100%;height:42px;margin-top:14px;padding:0 14px;overflow:hidden;background:var(--gold);color:#111;font-size:10px;font-weight:700;letter-spacing:.08em;line-height:1.45;text-transform:uppercase}#bagage-landing .card .price{align-self:flex-start;height:32px;margin-top:10px;padding:0 12px}#bagage-landing .card:not(:has(.price))::after{content:"";display:block;height:42px}#bagage-landing .card:not(:has(.theme)) .title{margin-bottom:56px}#bagage-landing .mobile-desc{display:none;margin:10px 0 0;color:var(--ink-soft);font-size:13px;line-height:1.45}#bagage-landing .topics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}#bagage-landing .topic{display:flex;flex-direction:column;min-width:0}#bagage-landing .topic-img{display:block;aspect-ratio:4/5;overflow:hidden;background:#ddd6c8 center/cover no-repeat;transition:filter .3s ease}#bagage-landing .topic strong{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 0 0;margin-top:12px;border-top:1px solid var(--rule);font-size:12px;font-weight:700;letter-spacing:.1em;line-height:1.3;text-transform:uppercase;transition:border-color .3s ease}#bagage-landing .topic-credit{display:block;margin-top:5px;font-size:10px;line-height:1.3;color:var(--ink-faint);letter-spacing:.02em}#bagage-landing .topic-credit+strong{margin-top:8px}#bagage-landing .credit-note{margin:18px 0 0;font-size:10px;color:var(--ink-faint);letter-spacing:.02em}#bagage-landing .topic:hover .topic-img{filter:brightness(1.06) saturate(1.05)}#bagage-landing .topic:hover strong{border-color:var(--orange);color:var(--orange-dark)}#bagage-landing .topic-cultuur .topic-img{background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/4a75384e-934a-4bd2-8b2b-3ff50335607d.jpg?width=700')}#bagage-landing .topic-geschiedenis .topic-img{background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/1752d688-c22e-4beb-b183-d3133bd9085a.jpg?width=700')}#bagage-landing .topic-natuur .topic-img{background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/de5e13ed-4b23-4388-903a-ef235236d82c.jpg?width=700')}#bagage-landing .topic-filosofie .topic-img{background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/99cdbada-ec44-4721-8168-8d392847bcdd.jpg?width=700')}#bagage-landing .topic-human .topic-img{background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/945ec9b9-c7b1-41f3-94e2-3067d7eb7ca0.jpg?width=700')}#bagage-landing .topic-bestemmingen .topic-img{background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/5063a85c-ef78-4c14-8e78-a7c3c63b4d25.jpg?width=700')}#bagage-landing .shorts-controls{display:flex;align-items:center;gap:8px}#bagage-landing .shorts-controls button{height:36px;padding:0 14px;border:1px solid rgba(26,26,24,.25);background:transparent;color:inherit;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}#bagage-landing .shorts-controls .shorts-nav{width:36px;padding:0;font-size:20px;letter-spacing:0;line-height:1}#bagage-landing .shorts-controls.no-sound .shorts-sound{display:none}#bagage-landing .shorts-controls button:hover{border-color:var(--orange)}#bagage-landing .shorts-track{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 4*20px)/5);gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none}#bagage-landing .shorts-track::-webkit-scrollbar{display:none}#bagage-landing .short{position:relative;height:0;padding-top:177.78%;overflow:hidden;background:#1a1a18 center/cover no-repeat;scroll-snap-align:start;cursor:pointer}#bagage-landing .short video,#bagage-landing .short img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}#bagage-landing .short.bg img{opacity:0}#bagage-landing .short-progress{position:absolute;left:0;right:0;top:0;z-index:3;height:3px;background:rgba(255,255,255,.3)}#bagage-landing .short-progress i{display:block;width:0;height:100%;background:var(--orange)}#bagage-landing .short::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(5,7,8,.8) 0%,rgba(5,7,8,.3) 26%,rgba(5,7,8,0) 46%);pointer-events:none}#bagage-landing .short.has-video::after{background:linear-gradient(0deg,rgba(5,7,8,.9) 0%,rgba(5,7,8,.6) 18%,rgba(5,7,8,0) 38%)}#bagage-landing .short:not(.playing) img,#bagage-landing .short:not(.playing) video{filter:saturate(.8) brightness(.9)}#bagage-landing .short-copy{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:18px 16px 16px;color:#f4f1e9}#bagage-landing .short-copy h3{margin:0 0 10px;font-family:var(--serif);font-size:18px;font-weight:400;line-height:1.2}#bagage-landing .short-link{display:inline-flex;align-items:center;gap:6px;padding-bottom:3px;border-bottom:2px solid var(--orange);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}#bagage-landing .short-demo{position:absolute;left:12px;top:14px;z-index:2;padding:4px 7px;background:rgba(0,0,0,.45);color:#fff;font-size:9px;letter-spacing:.14em}#bagage-landing .short-play{position:absolute;left:50%;top:44%;z-index:2;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.55);display:grid;place-items:center;pointer-events:none;transition:background-color .2s ease}#bagage-landing .short-play::before{content:"";margin-left:4px;border-style:solid;border-width:10px 0 10px 16px;border-color:transparent transparent transparent #fff}#bagage-landing .short:hover .short-play{background:var(--orange);border-color:var(--orange)}#bagage-landing .short-viewer{position:fixed;inset:0;z-index:1000;background:#000;color:#f4f1e9}#bagage-landing .short-viewer[hidden]{display:none}#bagage-landing .sv-bar{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;pointer-events:none}#bagage-landing .sv-bar>*{pointer-events:auto}#bagage-landing .sv-bar button,#bagage-landing .sv-nav button{height:36px;padding:0 14px;border:1px solid rgba(255,255,255,.4);background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}#bagage-landing .sv-bar button:hover,#bagage-landing .sv-nav button:hover{border-color:var(--orange)}#bagage-landing .sv-dock{display:none}#bagage-landing .sv-dock button{display:grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid rgba(255,255,255,.45);border-radius:50%;background:rgba(0,0,0,.5);color:#fff;cursor:pointer}#bagage-landing .sv-dock-sound .ico-on{display:none}#bagage-landing .sv-dock-sound[aria-pressed="true"] .ico-on{display:inline}#bagage-landing .sv-dock-sound[aria-pressed="true"] .ico-off{display:none}#bagage-landing .sv-feed{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}#bagage-landing .sv-feed::-webkit-scrollbar{display:none}#bagage-landing .sv-item{height:100%;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column}#bagage-landing .sv-stage{position:relative;flex:1 1 auto;min-height:0;display:flex;justify-content:center;align-items:center;padding-top:56px}#bagage-landing .sv-poster{position:absolute;top:56px;left:50%;transform:translateX(-50%);height:min(calc(100% - 56px),177.78vw);aspect-ratio:9/16;background:#000 center/cover no-repeat;opacity:.5}#bagage-landing .sv-box{position:relative;height:min(100%,177.78vw);aspect-ratio:9/16;max-width:100%;overflow:hidden;background:#000}#bagage-landing .sv-stage iframe{position:relative;display:block;width:100%;height:100%;border:0;background:#000}#bagage-landing .sv-foot{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 12px calc(14px + env(safe-area-inset-bottom,0px))}#bagage-landing .sv-foot h3{margin:0;font-family:var(--serif);font-size:18px;font-weight:400;text-align:center}#bagage-landing .sv-cta{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:12px 18px;background:var(--orange);color:#111;font-size:14px;font-weight:700;white-space:nowrap}#bagage-landing .sv-cta:hover{background:#f4844c}#bagage-landing .sv-box video{display:block;width:100%;height:100%;object-fit:cover;background:#000}#bagage-landing .sv-progress{position:absolute;left:0;right:0;bottom:0;z-index:2;height:3px;background:rgba(255,255,255,.25)}#bagage-landing .sv-progress i{display:block;width:0;height:100%;background:var(--orange)}#bagage-landing .sv-paused{position:absolute;left:50%;top:50%;z-index:2;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.55);display:none;pointer-events:none}#bagage-landing .sv-paused::before{content:"";position:absolute;left:25px;top:20px;border-style:solid;border-width:12px 0 12px 19px;border-color:transparent transparent transparent #fff}#bagage-landing .sv-stage.is-paused .sv-paused{display:block}#bagage-landing .sv-nav{display:none}@media(max-width:820px){#bagage-landing .sv-bar{display:none}#bagage-landing .sv-dock{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;justify-content:center;align-items:center;gap:14px;padding:10px 12px calc(14px + env(safe-area-inset-bottom,0px))}#bagage-landing .sv-item{position:relative}#bagage-landing .sv-stage{padding-top:0;align-items:flex-start}#bagage-landing .sv-poster{top:0;left:0;transform:none;width:100%;height:min(100%,177.78vw);aspect-ratio:auto}#bagage-landing .sv-box{width:100%;height:min(100%,177.78vw);aspect-ratio:auto;max-width:none;overflow:visible}#bagage-landing .sv-box video{object-fit:contain}#bagage-landing .sv-poster{background-size:contain}#bagage-landing .sv-stage iframe{height:100%}#bagage-landing .sv-foot{display:none}#bagage-landing .sv-cta{min-height:44px;padding:10px 16px;font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.35)}#bagage-landing .sv-progress{bottom:-3px}}@media(min-width:821px){#bagage-landing .short-viewer{background:rgba(9,12,13,.92)}#bagage-landing .sv-stage iframe{width:auto;height:100%;max-width:100%;aspect-ratio:9/16}#bagage-landing .sv-nav{position:absolute;right:24px;top:50%;z-index:3;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px}#bagage-landing .sv-nav button{width:44px;height:44px;padding:0;font-size:18px;letter-spacing:0}}#bagage-landing .partner-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px 28px}#bagage-landing .partner-card{display:flex;flex-direction:column;min-width:0}#bagage-landing .partner-visual{position:relative;aspect-ratio:16/10;overflow:hidden;background:#ddd6c8}#bagage-landing .partner-visual img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}#bagage-landing .partner-card:hover .partner-visual img{transform:scale(1.02)}#bagage-landing .partner-type{position:absolute;left:14px;top:14px;padding:6px 9px;background:var(--gold);color:#111;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}#bagage-landing .partner-by{display:flex;align-items:center;gap:12px;margin-top:16px}#bagage-landing .partner-logo{flex:none;width:52px;height:52px;padding:7px;display:grid;place-items:center;overflow:hidden;border:1px solid var(--rule);background:#fff}#bagage-landing .partner-logo img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}#bagage-landing .partner-by span{font-size:14px;line-height:1.35}#bagage-landing .partner-by small{display:block;color:var(--ink-faint);font-size:12px}#bagage-landing .partner-card h3{margin:14px 0 0;font-family:var(--serif);font-size:26px;font-weight:400;line-height:1.1;letter-spacing:-.02em}#bagage-landing .partner-card:hover h3{color:var(--orange-dark)}#bagage-landing .newsletter{padding:88px 0}#bagage-landing .partners + .newsletter{padding-top:8px}#bagage-landing .newsletter-inner{display:flex;justify-content:center;align-items:center;gap:56px;padding:16px 0}#bagage-landing .newsletter-inner>div{max-width:440px}#bagage-landing .newsletter h2{margin:0;font-family:var(--serif);font-size:48px;font-weight:400;line-height:1.02}#bagage-landing .newsletter p{margin:0 0 20px;color:var(--ink-soft);line-height:1.5}#bagage-landing .site-footer{padding:56px 0 48px;border-top:1px solid var(--rule);background:var(--bg);font-size:13px}#bagage-landing .foot{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px}#bagage-landing .foot-brand{grid-column:2;display:flex;flex-direction:column;align-items:center;text-align:center}#bagage-landing .foot-brand img{height:auto;max-height:56px;width:auto;filter:invert(1)}#bagage-landing .foot-brand p{margin:10px 0 0;color:var(--ink-soft)}#bagage-landing .foot-info{grid-column:3;justify-self:end;display:flex;flex-direction:column;align-items:center}#bagage-landing .foot-info p{margin:0 0 6px}#bagage-landing .footlinks{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin-top:18px}#bagage-landing .footlinks a{color:var(--ink-soft)}#bagage-landing .footlinks a:hover{color:var(--orange-dark)}@media(max-width:1100px){#bagage-landing .topics{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 14px}#bagage-landing .shorts-track{grid-auto-columns:calc((100% - 3*20px)/3.6)}}@media(max-width:900px){#bagage-landing .shell{width:calc(100% - 32px)}#bagage-landing .hero-slide::after{background:linear-gradient(0deg,rgba(9,12,13,.92) 0%,rgba(9,12,13,.55) 45%,rgba(9,12,13,.15) 100%)}#bagage-landing .manifest-inner{grid-template-columns:1fr;gap:20px}#bagage-landing .posters{grid-template-columns:repeat(2,minmax(0,1fr));gap:44px 18px}#bagage-landing .posters.wide{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}#bagage-landing .posters.wide::-webkit-scrollbar{display:none}#bagage-landing .posters.wide>.card{scroll-snap-align:start}#bagage-landing .partner-row{grid-template-columns:repeat(2,minmax(0,1fr))}#bagage-landing .newsletter-inner{flex-direction:column;align-items:flex-start;gap:20px;padding:0}}@media(max-width:820px){#bagage-landing .hover{display:none}#bagage-landing .mobile-desc{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}#bagage-landing .card .title{font-size:17px}#bagage-landing .card.wide .title{font-size:20px}#bagage-landing .card .theme{height:40px;padding:0 10px}#bagage-landing .card:not(:has(.price))::after{display:none}#bagage-landing .card:not(:has(.theme)) .title{margin-bottom:0}#bagage-landing .shorts-track{grid-auto-columns:calc((100% - 2*14px)/2.6);gap:14px}#bagage-landing .shorts-nav{display:none}}@media(max-width:600px){#bagage-landing .hero-slide{min-height:540px}#bagage-landing .hero-copy{padding:calc(48px + var(--revidd-header,0px)) 0 64px}#bagage-landing .hero-title{font-size:clamp(44px,13vw,54px)}#bagage-landing .hero-subtitle{font-size:26px;margin-top:-8px}#bagage-landing .partner-kicker{font-size:16px}#bagage-landing .hero p{font-size:16px}#bagage-landing .band{padding:56px 0}#bagage-landing .manifest{padding-bottom:56px}#bagage-landing .newsletter{padding:56px 0}#bagage-landing .head{flex-wrap:wrap;margin-bottom:28px}#bagage-landing .posters{gap:36px 12px}#bagage-landing .posters.wide{grid-auto-columns:88%}#bagage-landing .card .theme{font-size:9px}#bagage-landing .topics{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 10px}#bagage-landing .shorts-track{grid-auto-columns:calc((100% - 12px)/1.7);gap:12px}#bagage-landing .partner-row{grid-template-columns:1fr}#bagage-landing .newsletter h2{font-size:38px}#bagage-landing .foot{grid-template-columns:1fr;justify-items:center}#bagage-landing .foot-brand,#bagage-landing .foot-info{grid-column:1;justify-self:center}}#bagage-landing .hero-text{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}</style>
+
+<div id="bagage-landing" class="licht" lang="nl">
+
+<h1 class="sr-only">BAGAGE — documentaires en reeksen over kunst, geschiedenis, natuur en samenleving</h1>
+
+<section class="hero" aria-roledescription="carrousel" aria-label="Uitgelichte programma’s">
+
+<article class="hero-slide active" data-id="6acbbe9bf75648400cbb0473" aria-roledescription="dia" aria-label="1 van 3"
+style="background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/075d02cb-ff0e-4e60-94a1-689c37ba6557.png?width=1600')">
+<div class="shell">
+<div class="hero-copy">
+<span class="partner-kicker">In samenwerking met In Flanders Fields Museum</span>
+<h2 class="hero-title">Apocalyps<br>WOI</h2>
+<p>De Eerste Wereldoorlog opnieuw zichtbaar gemaakt via gerestaureerde archiefbeelden, internationale bronnen en heldere historische duiding.</p>
+<div class="meta">
+<span class="tag">Geschiedenis</span>
+<span>5-delige reeks</span>
+<span aria-hidden="true">·</span>
+<span>Beschikbaar tot 31/12/2027</span>
+<span class="price">11,99 € · 3 credits</span>
+</div>
+<a class="cta" href="https://bagage.store1.revidd.video/nl/pages/apocalyps-wo1"><svg class="ico" viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0v12l10-6z" fill="currentColor"/></svg> Meer informatie</a>
+</div>
+</div>
+</article>
+
+<article class="hero-slide" data-id="6aaa9359ef56438006250b3f" aria-roledescription="dia" aria-label="2 van 3"
+style="background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/0de2325f-9534-490a-9981-2753c0e5c24c.jpg?width=1600')">
+<div class="shell">
+<div class="hero-copy">
+<h2 class="hero-title">De boom die<br>het bos verbergt</h2>
+<p>Ontdek deze kolossen die boven het woud uittornen en dieren, mythen en natuurbehoud in één indrukwekkend ecosysteem verbinden.</p>
+<div class="meta">
+<span class="tag">Natuur</span>
+<span>6-delige reeks</span>
+<span aria-hidden="true">·</span>
+<span>Beschikbaar van 01/01/2027 tot 30/06/2027</span>
+<span class="price">11,99 € · 3 credits</span>
+</div>
+<a class="cta" href="https://bagage.store1.revidd.video/nl/movies/de-reuzenlevensboom-6aaa9359ef56438006250b3f"><svg class="ico" viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0v12l10-6z" fill="currentColor"/></svg> Meer informatie</a>
+</div>
+</div>
+</article>
+
+<article class="hero-slide munch" data-id="6a9d5ca4b65cd631559e4698" aria-roledescription="dia" aria-label="3 van 3"
+style="background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/0d5f901c-5789-4e70-a73d-4d1c77cee466.jpg?width=1600')">
+<div class="shell">
+<div class="hero-copy">
+<span class="partner-kicker">In samenwerking met Museum De Reede</span>
+<h2 class="hero-title">Edvard Munch</h2>
+<div class="hero-subtitle">Een schreeuw in de natuur</div>
+<p>Edvard Munch verbeeldt liefde, verlies en angst in een intens oeuvre, met De Schreeuw als bekendste en meest indringende werk.</p>
+<div class="meta">
+<span class="tag">Kunst &amp; cultuur</span>
+<span>1 documentaire</span>
+<span aria-hidden="true">·</span>
+<span>Beschikbaar tot 30/09/2027</span>
+<span class="price">3,99 € · 1 credit</span>
+</div>
+<a class="cta" href="https://bagage.store1.revidd.video/nl/movies/edvard-munch-un-cri-dans-la-nature-6a9d5ca4b65cd631559e4698"><svg class="ico" viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0v12l10-6z" fill="currentColor"/></svg> Meer informatie</a>
+</div>
+</div>
+</article>
+
+<div class="hero-controls">
+<button class="hero-dot active" type="button" aria-label="Toon Apocalyps WOI" aria-current="true"></button>
+<button class="hero-dot" type="button" aria-label="Toon De boom die het bos verbergt"></button>
+<button class="hero-dot" type="button" aria-label="Toon Edvard Munch"></button>
+<button class="hero-toggle" type="button" aria-label="Pauzeer de carrousel"><svg class="ico" viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0h3.5v12H0zM6.5 0H10v12H6.5z" fill="currentColor"/></svg></button>
+</div>
+
+</section>
+<script>if(screen.width<760)document.querySelectorAll('#bagage-landing .hero-slide').forEach(function(s){s.style.backgroundImage=s.style.backgroundImage.replace('?width=1600','?width='+(screen.width*devicePixelRatio>1000?1100:800))});</script>
+
+<section class="manifest" aria-label="Welkom bij Bagage">
+<div class="shell manifest-inner">
+<h2>Welkom bij Bagage</h2>
+<div>
+<p>Een onafhankelijk platform voor documentaires en reeksen over cultuur, geschiedenis, natuur, wetenschap en mensen. Geen eindeloze catalogus, maar een zorgvuldige selectie verhalen die context geven, nieuwsgierig maken en langer mogen bijblijven.</p>
+<a class="cta-line" href="https://bagage.store1.revidd.video/nl/pages/over-ons">Over BAGAGE <span aria-hidden="true">→</span></a>
+</div>
+</div>
+</section>
+
+<main>
+
+<section class="rail band band-2" id="nieuw">
+<div class="shell">
+<div class="head">
+<div>
+<h2>Nieuw op Bagage</h2>
+</div>
+</div>
+<div class="posters wide"><article class="card wide skel" aria-hidden="true"><span class="poster"></span><div class="kindline"></div><span class="title"></span></article><article class="card wide skel" aria-hidden="true"><span class="poster"></span><div class="kindline"></div><span class="title"></span></article><article class="card wide skel" aria-hidden="true"><span class="poster"></span><div class="kindline"></div><span class="title"></span></article></div>
+</div>
+</section>
+
+<section class="rail band" id="themas">
+<div class="shell">
+<div class="head">
+<div>
+<h2>Ontdek onze verhalen</h2>
+</div>
+<a class="cta-line" href="https://bagage.store1.revidd.video/nl/pages/catalogus">Volledige catalogus <span aria-hidden="true">→</span></a>
+</div>
+<div class="topics">
+<a class="topic topic-cultuur" href="https://bagage.store1.revidd.video/nl/pages/catalogus?thema=kunst-cultuur"><span class="topic-img"></span><span class="topic-credit">Foto: Dan Farrell</span><strong>Kunst &amp; cultuur</strong></a>
+<a class="topic topic-geschiedenis" href="https://bagage.store1.revidd.video/nl/pages/catalogus?thema=geschiedenis"><span class="topic-img"></span><span class="topic-credit">Foto: Peter Herrmann</span><strong>Geschiedenis</strong></a>
+<a class="topic topic-natuur" href="https://bagage.store1.revidd.video/nl/pages/catalogus?thema=natuur"><span class="topic-img"></span><span class="topic-credit">Foto: Anita Austvika</span><strong>Natuur</strong></a>
+<a class="topic topic-filosofie" href="https://bagage.store1.revidd.video/nl/pages/catalogus?thema=filosofie-religie"><span class="topic-img"></span><span class="topic-credit">Foto: Giammarco Boscaro</span><strong>Filosofie &amp; religie</strong></a>
+<a class="topic topic-human" href="https://bagage.store1.revidd.video/nl/pages/catalogus?thema=mens-samenleving"><span class="topic-img"></span><span class="topic-credit">Foto: Vong Vathanak</span><strong>Mens &amp; samenleving</strong></a>
+<a class="topic topic-bestemmingen" href="https://bagage.store1.revidd.video/nl/pages/catalogus?thema=bestemmingen"><span class="topic-img"></span><span class="topic-credit">Foto: Markus Krisetya</span><strong>Bestemmingen</strong></a>
+</div>
+<p class="credit-note">Beeldselectie: Bagage · foto’s met dank aan de vermelde fotografen</p>
+</div>
+</section>
+
+<section class="rail band band-2" id="selectie" hidden>
+<div class="shell">
+<div class="head">
+<div>
+<h2>Onze keuzes van de maand</h2>
+</div>
+</div>
+<div class="posters"></div>
+</div>
+</section>
+
+</main>
+
+<section class="partners band band-2" id="partners" aria-labelledby="partners-title">
+<div class="shell">
+<div class="head">
+<div>
+<h2 id="partners-title">Reeksen &amp; dossiers</h2>
+<p>Musea en organisaties werken vanuit hun eigen expertise met BAGAGE een reeks, dossier of documentaire uit. Daarnaast stelt BAGAGE zelf reeksen en dossiers samen, rond verhalen die het verdienen om uitgediept te worden.</p>
+</div>
+<a class="cta-line" href="https://bagage.store1.revidd.video/nl/pages/partnerkeuze">Alle reeksen &amp; dossiers <span aria-hidden="true">→</span></a>
+</div>
+<div class="partner-row">
+<a class="partner-card" href="https://bagage.store1.revidd.video/nl/pages/apocalyps-wo1">
+<div class="partner-visual">
+<img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/075d02cb-ff0e-4e60-94a1-689c37ba6557.png?width=1200" alt="" loading="lazy" decoding="async">
+<span class="partner-type">Reeks · 5 delen</span>
+</div>
+<div class="partner-by">
+<span class="partner-logo"><img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/bfffc150-63be-45ce-8373-ee92c0bafcb1.png" alt="" loading="lazy"></span>
+<span>In Flanders Fields Museum<small>stelt samen met BAGAGE voor</small></span>
+</div>
+<h3>Apocalyps WOI</h3>
+</a>
+<a class="partner-card" href="https://bagage.store1.revidd.video/nl/pages/goodplanet">
+<div class="partner-visual">
+<img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/5c4e1722-7270-4edd-8ae0-d44750861627.jpg?width=1200" alt="" loading="lazy" decoding="async">
+<span class="partner-type">Dossier · 4 documentaires</span>
+</div>
+<div class="partner-by">
+<span class="partner-logo"><img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/8d7ee51c-65e7-4484-aad9-c7fdd66b4fe0.png" alt="" loading="lazy"></span>
+<span>GoodPlanet Belgium<small>stelt samen met BAGAGE voor</small></span>
+</div>
+<h3>De aarde vanuit de hemel</h3>
+</a>
+<a class="partner-card" href="https://bagage.store1.revidd.video/nl/movies/edvard-munch-un-cri-dans-la-nature-6a9d5ca4b65cd631559e4698">
+<div class="partner-visual">
+<img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/0d5f901c-5789-4e70-a73d-4d1c77cee466.jpg?width=1200" alt="" loading="lazy" decoding="async">
+<span class="partner-type">Documentaire</span>
+</div>
+<div class="partner-by">
+<span class="partner-logo"><img src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/3cecacfb-22c3-4dbc-966a-daf02ee9eca8.png" alt="" loading="lazy"></span>
+<span>Museum De Reede<small>stelt samen met BAGAGE voor</small></span>
+</div>
+<h3>Edvard Munch</h3>
+</a>
+</div>
+</div>
+</section>
+
+<section class="rail band" id="shorts" hidden aria-label="Shorts">
+<div class="shell">
+<div class="head">
+<div>
+<h2>Shorts</h2>
+</div>
+<div class="shorts-controls">
+<button class="shorts-sound" type="button" aria-pressed="false">Geluid aan</button>
+<button class="shorts-nav" type="button" data-dir="-1" aria-label="Vorige shorts">‹</button>
+<button class="shorts-nav" type="button" data-dir="1" aria-label="Volgende shorts">›</button>
+</div>
+</div>
+<div class="shorts-track"></div>
+</div>
+<div class="short-viewer" role="dialog" aria-modal="true" aria-label="Shorts" hidden>
+<div class="sv-bar">
+<button class="sv-close" type="button">✕ Sluiten</button>
+<button class="sv-sound" type="button" aria-pressed="false">Geluid aan</button>
+</div>
+<div class="sv-feed"></div>
+<div class="sv-dock">
+<button class="sv-dock-close" type="button" aria-label="Sluiten"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></button>
+<a class="sv-cta sv-dock-cta" target="_top" href="https://bagage.store1.revidd.video/nl/pages/catalogus">Bekijk de volledige documentaire →</a>
+<button class="sv-dock-sound" type="button" aria-label="Geluid aan" aria-pressed="false"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><g class="ico-off" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 9l5 6M21 9l-5 6"/></g><g class="ico-on" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"><path d="M16 8.5a5 5 0 010 7"/><path d="M18.5 6a8.5 8.5 0 010 12"/></g></svg></button>
+</div>
+<div class="sv-nav">
+<button type="button" data-dir="-1" aria-label="Vorige short">↑</button>
+<button type="button" data-dir="1" aria-label="Volgende short">↓</button>
+</div>
+</div>
+</section>
+
+<section class="newsletter band band-2" id="over">
+<div class="shell">
+<div class="newsletter-inner">
+<h2>Blijf kijken.<br>Blijf vragen.</h2>
+<div>
+<p>Ontvang maandelijks onze nieuwsbrief met de laatste info over nieuwe documentaires en reeksen.</p>
+<a class="cta" href="https://bagage.ghost.io/">Inschrijven <span aria-hidden="true">→</span></a>
+</div>
+</div>
+</div>
+</section>
+
+<footer class="site-footer">
+<div class="shell foot">
+<div class="foot-brand">
+<a href="https://bagage.store1.revidd.video/nl"><img class="foot-logo" src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/413eada8-4b04-4f80-9222-4259ff74c867.png" alt="Bagage" loading="lazy"></a>
+<div class="footlinks">
+<a href="https://bagage.store1.revidd.video/privacy-policy">Privacybeleid</a>
+<a href="https://bagage.store1.revidd.video/terms-of-use">Gebruiksvoorwaarden</a>
+</div>
+<p>© <span class="foot-year">2026</span> Bagage. Alle rechten voorbehouden.</p>
+</div>
+</div>
+</footer>
+
+</div>
+
+<script src="https://markmommaerts.github.io/bagage-site/reeksen.js"></script>
+<script>
+/* Blok "Reeksen & dossiers" uit de gedeelde lijst reeksen.js (de kaarten met home:true, max. 3).
+   Lukt dat niet, dan blijven de kaarten in de HTML staan. */
+(() => {
+const DATA = window.BAGAGE_REEKSEN;
+const row = document.querySelector('#bagage-landing .partner-row');
+if(!row || !Array.isArray(DATA)) return;
+const list = DATA.filter(r => r.home).slice(0, 3);
+if(!list.length) return;
+const W = u => u + (u.includes('?') ? '' : '?width=1200');
+const LOGO_BAGAGE = 'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/413eada8-4b04-4f80-9222-4259ff74c867.png';
+const mk = (t, c, txt) => { const n = document.createElement(t); if(c) n.className = c; if(txt != null) n.textContent = txt; return n; };
+row.replaceChildren(...list.map(r => {
+const p = r.partner;
+const a = mk('a', 'partner-card'); a.href = r.href; a.target = '_top';
+const vis = mk('div', 'partner-visual');
+const img = mk('img'); img.src = W(r.image); img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+vis.append(img, mk('span', 'partner-type', r.type));
+const by = mk('div', 'partner-by');
+const logo = mk('span', 'partner-logo');
+const li = mk('img'); li.src = p ? p.logo : LOGO_BAGAGE; li.alt = ''; li.loading = 'lazy';
+if(!p) li.style.filter = 'invert(1)';
+logo.append(li);
+const nm = mk('span', '', p ? p.name : 'BAGAGE');
+nm.append(mk('small', '', p ? 'stelt samen met BAGAGE voor' : 'eigen selectie'));
+by.append(logo, nm);
+a.append(vis, by, mk('h3', '', r.title));
+return a;
+}));
+})();
+</script>
+<script>
+(() => {
+const root = document.getElementById('bagage-landing');
+if(!root) return;
+
+const API_URL = 'https://bagage.api1.revidd.video/partner/v1/content/fetch';
+const API_KEY = '4649e3177994e74974747df6ae98c9868791c5bcfc673faa';
+const STORE = 'https://bagage.store1.revidd.video/nl/';
+
+const NEW_COUNT = 3;
+const PICK_TAG = 'KEUZE';
+const PICK_MAX = 4;
+const PICK_FALLBACK = ['6a9aa185b65cd631559e27e6', '6a9aa1e4b65cd631559e29ed', '6a9a999135b2b1dd0fd9c7c0'];
+
+const SHORTS = [
+{ uid:'3746542', title:'Jeruzalem',         href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-jerusalem-6ae494d27e11c8a635c0b5a1' },
+{ uid:'3746545', title:'Mont Saint-Michel', href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-mont-saint-michel-6ae5d3eb7e11c8a635c0e14e' },
+{ uid:'3746543', title:'Chartres',          href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-chartres-6ae5e0417e11c8a635c1102d' },
+{ uid:'3746544', title:'Florence',          href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-florence-6ae5df357e11c8a635c10c11' },
+{ uid:'3746546', title:'Rusland',           href:'https://bagage.store1.revidd.video/nl/episodes/heilige-oorden-kerken-rusland-6ae5ddc5c63fd9d6c70978fb' }
+];
+const SHORT_EMBED = (uid, w, h) => 'https://embed.revidd.com/iframe/index.html?mid=' + encodeURIComponent(uid) + '&platform=OTT&w=' + w + '&h=' + h + '&loop=true';
+const HLS_JS = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js';
+const SHORTS_PAGE = 'https://bagage.store1.revidd.video/nl/pages/shorts';
+const SHORTS_PAGE_FROM = 820;
+const SHORT_INFO = uid => 'https://api.revidd.com/media/v1/org/public/video/' + encodeURIComponent(uid);
+const SHORT_DEMO_COUNT = 8;
+const SHORT_DEMO_SECONDS = 6;   // 'speelduur' van een voorbeeldshort zonder video
+
+const THEME_TAGS = {
+'GESCHIEDENIS':'Geschiedenis', 'NATUUR':'Natuur',
+'SAMENLEVING':'Mens & samenleving', 'MENS & SAMENLEVING':'Mens & samenleving',
+'WETENSCHAP & TECHNOLOGIE':'Wetenschap & technologie', 'WETENSCHAP EN TECHNOLOGIE':'Wetenschap & technologie',
+'WETENSCHAP':'Wetenschap & technologie', 'TECHNOLOGIE':'Wetenschap & technologie',
+'ARCHITECTUUR':'Kunst & cultuur', 'KUNST':'Kunst & cultuur', 'MUZIEK':'Kunst & cultuur',
+'LITERATUUR':'Kunst & cultuur', 'FILM':'Kunst & cultuur',
+'FILOSOFIE':'Filosofie & religie', 'RELIGIE':'Filosofie & religie',
+'ETEN & DRINKEN':'Mens & samenleving', 'ETEN EN DRINKEN':'Mens & samenleving',
+'TRADITIES & RITUELEN':'Mens & samenleving', 'TRADITIES EN RITUELEN':'Mens & samenleving'
+};
+/* Vaste prijzen (november 2026): documentaire 3,99 € of 1 credit, reeks of dossier 11,99 € of 3 credits */
+const PRICE_DOC = '3,99 € · 1 credit', PRICE_SET = '11,99 € · 3 credits', PRICE_FREE = 'Gratis';
+const PRICE_TAG = /^(?:PRIJS\s*:?\s*)?€?\s*(\d+(?:[.,]\d{1,2})?)\s*(?:€|EUR|EURO)?\s*(?:\/\s*(.+))?$/;
+const PARTNER_TAG = /^(?:PARTNER|I\.?S\.?M\.?|IN SAMENWERKING MET)(?:\s*[:\-–]\s*|\s+)(.+)$/;
+const PARTNER_LABEL = 'IN SAMENWERKING MET';
+
+/* Reekspagina's: tag PAGINA: <naam> (+ HOOFDTITEL op de lange docu) of id in SERIES_PAGES */
+const PAGE_TAG = /^PAGINA\s*[:\-–]\s*(.+)$/;
+const LEAD_TAG = 'HOOFDTITEL';
+const SERIES_PAGES = {
+'apocalyps-wo1': ['6acbbe9bf75648400cbb0473', '6a996b9cb6a6cc4adaee6a8b'],
+'goodplanet':    ['6ab0f8ffef56438006256bae', '6ab0fc7ec29d6e96aee113a0', '6ab0f77fc29d6e96aee0f8ba', '6ab0fe6ec29d6e96aee117cf']
+};
+/* Aangevuld met de id's uit reeksen.js */
+(window.BAGAGE_REEKSEN || []).forEach(r => { if(r.page && r.ids && r.ids.length) SERIES_PAGES[r.page] = [...new Set([...(SERIES_PAGES[r.page] || []), ...r.ids])]; });
+/* Niet tonen in catalogus en Nieuw, bv. korte afleveringen die ook als lange documentaire bestaan.
+   Revidd-tag VERBORGEN op de reeks of het seizoen, of het id in HIDE_IDS. De afleveringen blijven
+   bereikbaar via hun eigen link en via Shorts. */
+const HIDE_TAG = 'VERBORGEN';
+const HIDE_IDS = ['6ae5d8a67e11c8a635c0f49a', '6ae5d76d7e11c8a635c0f059', '6ab516e2ef564380062683da', '6ab24dddc29d6e96aee16645', '6ab24fd7ef5643800625cd36']; // Heilige Oorden (reeks + seizoen korte afleveringen); de lange docu 6adfb326 blijft
+const tagList = i => ((i && i.tags) || []).flatMap(t => String((t && t.name) || t).split(/[;|]/)).map(s => s.trim().toUpperCase());
+const isHidden = (i, items) => [i.id, ...(i.seasons || []).map(s => s.id)]
+  .some(id => HIDE_IDS.includes(id) || tagList(items.find(x => x.id === id)).includes(HIDE_TAG));
+const DETAIL_LINK = /\/(?:movies|seasons|series|episodes)\/[^/?#]*-([0-9a-f]{24})(?:[/?#]|$)/;
+let pageOf = () => '';
+const pageHref = page => STORE + 'pages/' + page;
+const toPage = href => { const m = (href || '').match(DETAIL_LINK); const p = m && pageOf(m[1]); return p ? pageHref(p) : href; };
+function linkToPages(scope){
+scope.querySelectorAll('a[href]').forEach(a => { const to = toPage(a.getAttribute('href')); if(to !== a.getAttribute('href')) a.href = to; });
+}
+function onePerPage(list){
+const lead = {};
+list.forEach(i => { if(i.page && i.lead && !lead[i.page]) lead[i.page] = i; });
+const done = new Set();
+return list.flatMap(i => {
+if(!i.page || !lead[i.page]) return [i];
+if(done.has(i.page)) return [];
+done.add(i.page); return [lead[i.page]];
+});
+}
+
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const el = (tag, className, text) => {
+const node = document.createElement(tag);
+if(className) node.className = className;
+if(text != null) node.textContent = String(text);
+return node;
+};
+const PLAY_ICON = '<svg class="ico" viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0v12l10-6z" fill="currentColor"/></svg>';
+
+function fixLinks(scope){
+scope.querySelectorAll('a[href]').forEach(a => {
+const href = a.getAttribute('href');
+if(href === '#'){ a.hidden = true; return; }
+if(href.startsWith('mailto:')) return;
+if(/^https?:/.test(href) && !href.startsWith('https://bagage.store1.revidd.video/')){
+a.target = '_blank';
+a.rel = 'noopener';
+} else {
+a.target = '_top';
+}
+});
+}
+fixLinks(root);
+root.querySelectorAll('.topic strong').forEach(s => s.insertAdjacentHTML('beforeend', '<svg class="ico-arrow" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 10 10 2M3.5 2H10v6.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/></svg>'));
+
+root.querySelectorAll('.foot-year').forEach(y => { y.textContent = new Date().getFullYear(); });
+try{
+const navLogo = window.parent.document.querySelector('img[alt="NavLogo"]');
+const footLogo = root.querySelector('.foot-logo');
+if(navLogo && footLogo && navLogo.src) footLogo.src = navLogo.src;
+}catch(e){}
+
+const setActive = (slides, index) => {
+slides.forEach((slide, i) => {
+const active = i === index;
+slide.classList.toggle('active', active);
+slide.toggleAttribute('inert', !active);
+slide.setAttribute('aria-hidden', String(!active));
+});
+};
+
+/* Carrousel. reset() leest de dia's opnieuw in (na het automatisch opbouwen uit Revidd). */
+const heroCtl = (() => {
+const hero = root.querySelector('.hero');
+const toggle = hero.querySelector('.hero-toggle');
+const controls = hero.querySelector('.hero-controls');
+const INTERVAL = 9000;
+const ICON_PAUSE = '<svg class="ico" viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0h3.5v12H0zM6.5 0H10v12H6.5z" fill="currentColor"/></svg>';
+let slides = [], dots = [], current = 0, timer = null, userPaused = false, focusPaused = false;
+
+const show = index => {
+if(!slides.length) return;
+current = (index + slides.length) % slides.length;
+setActive(slides, current);
+dots.forEach((dot, i) => {
+const active = i === current;
+dot.classList.toggle('active', active);
+active ? dot.setAttribute('aria-current', 'true') : dot.removeAttribute('aria-current');
+});
+};
+const running = () => slides.length > 1 && !userPaused && !focusPaused && !document.hidden;
+const schedule = () => {
+clearInterval(timer);
+timer = running() ? setInterval(() => show(current + 1), INTERVAL) : null;
+};
+const updateToggle = () => {
+toggle.setAttribute('aria-label', userPaused ? 'Speel de carrousel af' : 'Pauzeer de carrousel');
+toggle.innerHTML = userPaused ? PLAY_ICON : ICON_PAUSE;
+};
+const bind = () => {
+slides = [...hero.querySelectorAll('.hero-slide')];
+dots = [...hero.querySelectorAll('.hero-dot')];
+dots.forEach((dot, i) => dot.addEventListener('click', () => { show(i); schedule(); }));
+controls.hidden = slides.length < 2;
+show(0);
+schedule();
+};
+
+toggle.addEventListener('click', () => { userPaused = !userPaused; updateToggle(); schedule(); });
+hero.addEventListener('focusin', e => {
+if(e.target.matches(':focus-visible') && e.target !== toggle){ focusPaused = true; schedule(); }
+});
+hero.addEventListener('focusout', e => { if(!hero.contains(e.relatedTarget)){ focusPaused = false; schedule(); } });
+document.addEventListener('visibilitychange', schedule);
+
+if(reducedMotion.matches) userPaused = true;
+updateToggle();
+bind();
+return { reset:bind };
+})();
+
+/* HERO AUTOMATISCH — Revidd-tag UITGELICHT op een film, reeks, seizoen of aflevering.
+   Volgorde: UITGELICHT 1, UITGELICHT 2 … (zonder nummer: achteraan, nieuwste eerst). Max. HERO_MAX dia's.
+   Optioneel: tag "BESCHIKBAAR TOT 31/12/2027" (of "BESCHIKBAAR VAN … TOT …") verschijnt als regel.
+   Hoort de titel bij een reeks of dossier uit reeksen.js, dan komen titel, tekst, beeld, partner en
+   label uit reeksen.js (veld hero:{…} kan die per stuk overschrijven) en linkt de dia naar die pagina.
+   Geen enkele titel getagd, of Revidd onbereikbaar: de vaste dia's hierboven blijven staan. */
+const HERO_TAG = /^UITGELICHT(?:\s*[:\-–#]?\s*(\d+))?$/;
+const HERO_MAX = 5;
+function buildHero(items, episodesBySeason){
+const R = window.BAGAGE_REEKSEN || [];
+const byPage = Object.fromEntries(R.map(r => [r.page, r]));
+const W = screen.width < 760 ? (screen.width * devicePixelRatio > 1000 ? 1100 : 800) : 1600;
+const big = u => u ? u.replace(/\?width=\d+$/, '') + '?width=' + W : '';
+const picked = {};
+items.forEach(it => {
+let order = null, avail = '', partnerRaw = '';
+tagNames(it.tags).forEach(n => {
+const raw = n.trim().replace(/^\(\s*|\s*\)$/g, '');
+const key = raw.toLocaleUpperCase('nl');
+const m = key.match(HERO_TAG);
+if(m) order = m[1] ? +m[1] : 999;
+else if(key.match(PARTNER_TAG)) partnerRaw = raw.slice(raw.length - key.match(PARTNER_TAG)[1].length).trim();
+else if(/^BESCHIKBAAR\b/.test(key)){ const t = raw.toLocaleLowerCase('nl'); avail = t.charAt(0).toLocaleUpperCase('nl') + t.slice(1); }
+});
+if(order === null) return;
+const info = describe(it, items, episodesBySeason);
+const r = byPage[info.page];
+const h = (r && r.hero) || {};
+const key = info.page || it.id;
+const slide = {
+id:it.id, order, published:info.published,
+title:h.title || (r ? r.title : info.title),
+subtitle:h.subtitle || '',
+text:h.tekst || (r && r.tekst) || info.description,
+image:big(h.image || (r ? r.image : (imageUrl(it.coverimage) || imageUrl(it.coverImagePortrait)))),
+partner:r ? (r.partner ? r.partner.name : '') : (partnerRaw || info.partner),
+theme:info.themes[0] || '',
+kind:h.type || (r ? r.type : (info.kind === 'REEKS' ? 'Reeks' : 'Documentaire') + (info.length ? ' · ' + info.length : '')),
+avail:h.beschikbaar || avail,
+price:r && info.price !== PRICE_FREE ? PRICE_SET : info.price,
+href:r ? r.href : info.href
+};
+if(!picked[key] || order < picked[key].order) picked[key] = slide;
+});
+const list = Object.values(picked).sort((a, b) => a.order - b.order || b.published - a.published).slice(0, HERO_MAX);
+if(!list.length) return;
+const hero = root.querySelector('.hero');
+const controls = hero.querySelector('.hero-controls');
+hero.querySelectorAll('.hero-slide').forEach(s => s.remove());
+controls.querySelectorAll('.hero-dot').forEach(d => d.remove());
+const toggle = controls.querySelector('.hero-toggle');
+list.forEach((s, n) => {
+const art = el('article', 'hero-slide');
+art.dataset.id = s.id;
+art.setAttribute('aria-roledescription', 'dia');
+art.setAttribute('aria-label', (n + 1) + ' van ' + list.length);
+if(s.image) art.style.backgroundImage = "url('" + s.image + "')";
+const shell = el('div', 'shell'), copy = el('div', 'hero-copy');
+if(s.partner) copy.append(el('span', 'partner-kicker', 'In samenwerking met ' + s.partner));
+copy.append(el('h2', 'hero-title', s.title));
+if(s.subtitle) copy.append(el('div', 'hero-subtitle', s.subtitle));
+if(s.text) copy.append(el('p', 'hero-text', s.text));
+const meta = el('div', 'meta');
+if(s.theme) meta.append(el('span', 'tag', s.theme));
+if(s.kind) meta.append(el('span', '', s.kind));
+if(s.avail){ const d = el('span', '', '·'); d.setAttribute('aria-hidden', 'true'); meta.append(d, el('span', '', s.avail)); }
+if(s.price) meta.append(el('span', 'price', s.price));
+copy.append(meta);
+const cta = el('a', 'cta'); cta.href = s.href; cta.target = '_top';
+cta.innerHTML = PLAY_ICON; cta.append(' Meer informatie');
+copy.append(cta);
+shell.append(copy); art.append(shell);
+hero.insertBefore(art, controls);
+const dot = el('button', 'hero-dot'); dot.type = 'button'; dot.setAttribute('aria-label', 'Toon ' + s.title);
+controls.insertBefore(dot, toggle);
+});
+heroCtl.reset();
+}
+
+async function fetchAll(){
+const items = [];
+let skip = 0;
+while(true){
+const res = await fetch(API_URL, {
+method:'POST',
+headers:{ 'api-key':API_KEY, 'Content-Type':'application/json' },
+body:JSON.stringify({ limit:100, skip })
+});
+if(!res.ok) throw new Error('Revidd API ' + res.status);
+const json = await res.json();
+items.push(...json.data);
+skip += 100;
+if(json.data.length === 0 || skip >= json.count) break;
+}
+return items;
+}
+
+const imageUrl = images => {
+const img = images && images[0];
+return img && img.mediaPath ? 'https://' + img.cdnDomainName + '/' + img.mediaPath + '?width=800' : '';
+};
+const minutes = seconds => Math.round(seconds / 60) + ' min';
+
+function tagNames(tags){
+const names = [];
+let open = null;
+(tags || []).forEach(tag => {
+const name = (tag.name || '').trim();
+if(open !== null){
+open += ',' + name;
+if(name.includes(')')){ names.push(open); open = null; }
+} else if(name.includes('(') && !name.includes(')')){
+open = name;
+} else {
+names.push(name);
+}
+});
+if(open !== null) names.push(open);
+return names;
+}
+
+function buildPageMap(items){
+const byId = Object.fromEntries(items.map(i => [i.id, i]));
+const parent = {};
+items.forEach(s => (s.seasons || []).forEach(se => { parent[se.id] = s.id; }));
+const own = {};
+Object.entries(SERIES_PAGES).forEach(([p, ids]) => ids.forEach(id => { own[id] = p; }));
+items.forEach(i => tagNames(i.tags).forEach(n => {
+const m = n.trim().match(PAGE_TAG);
+if(m) own[i.id] = m[1].trim().toLocaleLowerCase('nl').replace(/^\/?(?:[a-z]{2}\/)?(?:pages\/)?/, '').replace(/\s+/g, '-');
+}));
+const memo = {};
+const find = (id, depth) => {
+if(!id || depth > 4) return '';
+if(id in memo) return memo[id];
+const it = byId[id];
+return memo[id] = own[id] || (it && (find(it.seasonId, depth + 1) || find(it.seriesId, depth + 1))) || find(parent[id], depth + 1) || '';
+};
+pageOf = id => find(id, 0);
+}
+
+function describe(item, items, episodesBySeason){
+const isSeries = item.type === 'RELATIONSHIP';
+const seasonIds = item.seasons
+? [...item.seasons].sort((a, b) => (a.order || 0) - (b.order || 0)).map(s => s.id)
+: [item.id];
+const seasons = item.seasons ? items.filter(x => seasonIds.includes(x.id)) : [];
+const linkItem = (item.seasons && items.find(x => x.id === seasonIds[0])) || item;
+const episodes = seasonIds.flatMap(id => episodesBySeason[id] || []);
+
+const themes = new Set(), keys = new Set();
+let price = '', partner = '';
+tagNames([...(item.tags || []), ...seasons.flatMap(s => s.tags || [])]).forEach(name => {
+const key = name.toLocaleUpperCase('nl').replace(/^\(\s*|\s*\)$/g, '');
+keys.add(key);
+const p = key.match(PRICE_TAG);
+if(p){ price = isSeries ? PRICE_SET : PRICE_DOC; return; } // prijstag = betalend; label volgt de vaste prijzen
+if(key === 'BETALEND'){ price = price || (isSeries ? PRICE_SET : PRICE_DOC); return; }
+if(key === 'GRATIS'){ price = price || PRICE_FREE; return; }
+const m = key.match(PARTNER_TAG);
+if(m){ const n = m[1].trim(); partner = n.includes(' ') ? n : n.replace(/-/g, ' '); return; }
+if(THEME_TAGS[key]) themes.add(THEME_TAGS[key]);
+});
+if(!price && item.isFree === false) price = isSeries ? PRICE_SET : PRICE_DOC;
+if(!price) price = PRICE_FREE; // niet betalend = Gratis, overal hetzelfde
+
+let length = '';
+if(isSeries){
+const d = episodes.map(e => e.actualmedia?.[0]?.duration).filter(Boolean);
+const avg = d.length ? minutes(d.reduce((a, b) => a + b, 0) / d.length) : '';
+length = [avg, episodes.length + (episodes.length === 1 ? ' aflevering' : ' afleveringen')].filter(Boolean).join(' · ');
+} else if(item.actualmedia?.[0]?.duration){
+length = minutes(item.actualmedia[0].duration);
+}
+
+const page = pageOf(item.id);
+if(price && page && keys.has(LEAD_TAG) && price === PRICE_DOC) price = PRICE_SET; // alleen de HOOFDTITEL van een reeks- of dossierpagina
+return {
+id:item.id,
+title:item.title.trim(),
+description:(item.description || '').trim(),
+href:page ? pageHref(page) : STORE + linkItem.seoSlug + '-' + linkItem.id,
+page,
+lead:keys.has(LEAD_TAG),
+poster:imageUrl(item.coverImagePortrait) || imageUrl(item.coverimage),
+wide:imageUrl(item.coverimage) || imageUrl(item.coverImagePortrait),
+kind:isSeries ? 'REEKS' : 'DOCUMENTAIRE',
+length, price, partner,
+themes:[...themes],
+keys,
+published:Date.parse(item.publishOn || item.createdAt) || 0
+};
+}
+
+function card(info, wide){
+const article = el('article', 'card' + (wide ? ' wide' : ''));
+const image = wide ? info.wide : info.poster;
+
+const poster = el('a', 'poster');
+poster.href = info.href;
+poster.target = '_top';
+if(image){
+const img = el('img');
+img.src = image; img.alt = info.title; img.loading = 'lazy'; img.decoding = 'async';
+poster.append(img);
+}
+if(info.partner){
+const band = el('div', 'partner');
+band.append(el('small', '', PARTNER_LABEL), el('b', '', info.partner.toLocaleUpperCase('nl')));
+poster.append(band);
+}
+const hover = el('div', 'hover');
+if(info.description) hover.append(el('p', '', info.description));
+hover.append(el('span', '', 'BEKIJK →'));
+poster.append(hover);
+
+const kindline = el('div', 'kindline');
+kindline.append(el('span', 'kind', info.kind));
+if(info.length) kindline.append(el('span', 'separator', '·'), el('em', '', info.length));
+
+const title = el('a', 'title', info.title);
+title.href = info.href;
+title.target = '_top';
+
+article.append(poster, kindline, title);
+if(info.themes.length) article.append(el('div', 'theme', info.themes.join(' · ')));
+if(info.price) article.append(el('div', 'price', info.price));
+if(info.description) article.append(el('p', 'mobile-desc', info.description));
+return article;
+}
+
+function fillRail(id, list, wide){
+const section = root.querySelector('#' + id);
+if(!list.length){ if(section.querySelector('.skel')) section.hidden = true; return; }
+section.querySelector('.posters').replaceChildren(...list.map(info => card(info, wide)));
+section.hidden = false;
+}
+
+function buildShorts(list){
+const section = root.querySelector('#shorts');
+if(!section || !list.length) return;
+const track = section.querySelector('.shorts-track');
+const soundBtn = section.querySelector('.shorts-sound');
+const navBtns = [...section.querySelectorAll('.shorts-nav')];
+let muted = true, current = -1, timer = null, demoStart = 0, demoRaf = 0, inView = false, viewerOpen = false;
+const embedded = list.some(s => s.uid);
+const viewer = section.querySelector('.short-viewer');
+const feed = viewer.querySelector('.sv-feed');
+const dockCta = viewer.querySelector('.sv-dock-cta');
+const dockSound = viewer.querySelector('.sv-dock-sound');
+const svList = list.map((s, i) => ({ s, i })).filter(x => x.s.uid);
+let svCurrent = -1, lastFocus = null;
+
+const items = list.map((s, i) => {
+const card = el('article', 'short' + (s.video || s.uid ? ' has-video' : ''));
+card.setAttribute('aria-label', 'Short: ' + s.title);
+let media;
+if(s.video){
+media = el('video');
+media.src = s.video;
+if(s.poster) media.poster = s.poster;
+media.muted = true; media.playsInline = true; media.preload = i < 2 ? 'auto' : 'none';
+media.setAttribute('playsinline', '');
+media.addEventListener('ended', () => next());
+media.addEventListener('timeupdate', () => { if(media.duration) bar.style.width = (media.currentTime / media.duration * 100) + '%'; });
+} else {
+media = el('img');
+media.alt = ''; media.decoding = 'async';
+if(s.poster) media.src = s.poster;
+if(s.uid){
+fetch(SHORT_INFO(s.uid)).then(r => r.ok ? r.json() : null).then(j => {
+const name = j && j.video && (j.video.name || '').trim();
+if(name){
+s.title = name;
+const h = card.querySelector('.short-copy h3');
+if(h) h.textContent = name;
+card.setAttribute('aria-label', 'Short: ' + name);
+const sx = svList.find(x => x.s === s);
+if(sx && sx.title) sx.title.textContent = name;
+}
+if(s.poster) return;
+const p = j && j.video && j.video.cover && j.video.cover.mediaPath;
+const imgCdn = j && j.cdn_v1 && j.cdn_v1.imageCdn && j.cdn_v1.imageCdn.url;
+const host = String(imgCdn || '1577787583.rsc.cdn77.org').replace(/^https?:\/\//, '').replace(/\/+$/, '');
+media.src = p && host ? 'https://' + host + '/' + p : s.fallbackPoster;
+}).catch(() => { if(!s.poster) media.src = s.fallbackPoster; });
+media.addEventListener('error', () => { if(s.fallbackPoster && media.src !== s.fallbackPoster) media.src = s.fallbackPoster; }, { once:true });
+/* Beeld als achtergrond van de kaart (cover): de iPhone tekende liggende beelden anders als een strook bovenaan */
+media.addEventListener('load', () => { card.style.backgroundImage = 'url("' + (media.currentSrc || media.src) + '")'; card.classList.add('bg'); });
+}
+}
+const progress = el('div', 'short-progress');
+const bar = el('i');
+progress.append(bar);
+const copy = el('div', 'short-copy');
+copy.append(el('h3', '', s.title));
+const link = el('a', 'short-link', 'Volledige documentaire →');
+link.href = s.href; link.target = '_top';
+copy.append(link);
+card.append(media, progress, copy);
+if(s.demo) card.append(el('span', 'short-demo', 'VOORBEELD'));
+if(s.uid) card.append(el('span', 'short-play'));
+const activate = () => s.uid ? openViewer(i) : play(i, true);
+card.addEventListener('click', e => { if(!e.target.closest('a')) activate(); });
+card.tabIndex = 0;
+card.addEventListener('keydown', e => { if((e.key === 'Enter' || e.key === ' ') && e.target === card){ e.preventDefault(); activate(); } });
+track.append(card);
+return { card, media, bar, video:!!s.video };
+});
+
+const stopAll = () => {
+clearTimeout(timer); cancelAnimationFrame(demoRaf);
+items.forEach(it => { it.card.classList.remove('playing'); if(it.video) it.media.pause(); });
+};
+const reveal = card => {
+const l = card.offsetLeft, r = l + card.offsetWidth;
+if(l < track.scrollLeft || r > track.scrollLeft + track.clientWidth) track.scrollTo({ left:l, behavior:reducedMotion.matches ? 'auto' : 'smooth' });
+};
+const demoTick = it => {
+const p = Math.min(1, (performance.now() - demoStart) / (SHORT_DEMO_SECONDS * 1000));
+it.bar.style.width = (p * 100) + '%';
+if(p < 1) demoRaf = requestAnimationFrame(() => demoTick(it));
+};
+function play(i, userAction){
+stopAll();
+current = (i + items.length) % items.length;
+const it = items[current];
+items.forEach(x => { if(x !== it) x.bar.style.width = '0'; });
+it.card.classList.add('playing');
+if(userAction || inView) reveal(it.card);
+if(it.video){
+it.media.muted = muted;
+it.media.currentTime = 0;
+const pr = it.media.play();
+if(pr && pr.catch) pr.catch(() => { it.media.muted = true; it.media.play().catch(() => {}); });
+} else {
+demoStart = performance.now();
+demoTick(it);
+timer = setTimeout(next, SHORT_DEMO_SECONDS * 1000);
+}
+}
+function next(){ play(current + 1); }
+
+soundBtn.hidden = !items.some(it => it.video);
+if(embedded) section.querySelector('.shorts-controls').classList.add('no-sound');
+soundBtn.addEventListener('click', () => {
+muted = !muted;
+soundBtn.textContent = muted ? 'Geluid aan' : 'Geluid uit';
+soundBtn.setAttribute('aria-pressed', String(!muted));
+items.forEach(it => { if(it.video) it.media.muted = muted; });
+});
+navBtns.forEach(btn => btn.addEventListener('click', () => {
+const step = (items[0].card.offsetWidth + 20) * (btn.dataset.dir === '1' ? 1 : -1);
+track.scrollBy({ left:step, behavior:'smooth' });
+}));
+
+const visible = () => {
+if(document.hidden) return false;
+const frame = window.frameElement;
+const r = section.getBoundingClientRect();
+let top = r.top, bottom = r.bottom, vh = window.innerHeight;
+try{
+if(frame){ const f = frame.getBoundingClientRect(); top += f.top; bottom += f.top; vh = window.parent.innerHeight; }
+}catch(e){}
+return bottom > vh * .25 && top < vh * .75;
+};
+const check = () => {
+if(viewerOpen || embedded) return;
+const v = visible();
+if(v === inView) return;
+inView = v;
+if(reducedMotion.matches) return; // 'Beperk beweging': enkel afspelen na een klik
+if(inView){ current < 0 ? play(0) : play(current); }
+else stopAll();
+};
+svList.forEach((x, k) => {
+const item = el('div', 'sv-item');
+const st = el('div', 'sv-stage');
+const poster = el('div', 'sv-poster');
+st.append(poster);
+const foot = el('div', 'sv-foot');
+const h = el('h3', '', x.s.title);
+const cta = el('a', 'sv-cta', 'Bekijk de volledige documentaire →');
+cta.href = x.s.href; cta.target = '_top';
+foot.append(h, cta);
+item.append(st, foot);
+item.dataset.k = k;
+feed.append(item);
+Object.assign(x, { item, stage:st, poster, title:h });
+});
+const mkClone = (x, side) => {
+const c = el('div', 'sv-item sv-clone');
+const st = el('div', 'sv-stage'); const po = el('div', 'sv-poster'); st.append(po); c.append(st);
+c.dataset.clone = side; c.dataset.k = side === 'first' ? 0 : svList.length - 1;
+return { item:c, poster:po };
+};
+const cloneLast = svList.length > 1 ? mkClone(svList[svList.length - 1], 'last') : null;
+const cloneFirst = svList.length > 1 ? mkClone(svList[0], 'first') : null;
+if(cloneLast){ feed.prepend(cloneLast.item); feed.append(cloneFirst.item); }
+const svFrame = x => x.stage.querySelector('iframe');
+const svVideo = document.createElement('video');
+svVideo.playsInline = true; svVideo.setAttribute('playsinline', ''); svVideo.loop = true; svVideo.muted = true; svVideo.preload = 'auto';
+const svBar = el('div', 'sv-progress'); const svBarFill = el('i'); svBar.append(svBarFill);
+const svPausedIcon = el('span', 'sv-paused');
+const svBox = el('div', 'sv-box');
+svBox.append(svVideo, svBar, svPausedIcon);
+const svSoundBtn = viewer.querySelector('.sv-sound');
+let svMuted = true, hls = null, hlsLoading = null, useIframe = false;
+const streamCache = {};
+const mseOk = (() => { try{ return !!window.MediaSource && MediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"'); }catch(e){ return false; } })();
+const nativeHls = !mseOk && !!svVideo.canPlayType('application/vnd.apple.mpegurl');
+function loadHlsJs(){
+if(window.Hls) return Promise.resolve(window.Hls);
+if(!hlsLoading) hlsLoading = new Promise((ok, ko) => { const sc = document.createElement('script'); sc.src = HLS_JS; sc.onload = () => ok(window.Hls); sc.onerror = ko; document.head.append(sc); });
+return hlsLoading;
+}
+const STREAM_TTL = 5 * 60 * 1000;
+let preconnected = false;
+function streamUrl(uid, fresh){
+const c = streamCache[uid];
+if(!fresh && c && Date.now() - c.t < STREAM_TTL) return c.p;
+const p = fetch(SHORT_INFO(uid)).then(r => r.json())
+.then(j => fetch(j.deliveryUrl)).then(r => r.text()).then(t => JSON.parse(atob(t)).url)
+.then(url => {
+if(!preconnected){ try{ const l = document.createElement('link'); l.rel = 'preconnect'; l.href = new URL(url).origin; l.crossOrigin = 'anonymous'; document.head.append(l); preconnected = true; }catch(e){} }
+return url;
+})
+.catch(e => { if(streamCache[uid] && streamCache[uid].p === p) delete streamCache[uid]; throw e; });
+streamCache[uid] = { p, t:Date.now() };
+return p;
+}
+function warmShorts(){
+if(window.innerWidth <= SHORTS_PAGE_FROM && SHORTS_PAGE) return;
+if(!nativeHls) loadHlsJs().catch(() => {});
+svList.forEach(x => streamUrl(x.s.uid).catch(() => {}));
+}
+const syncSvSound = () => {
+svSoundBtn.textContent = svMuted ? 'Geluid aan' : 'Geluid uit';
+svSoundBtn.setAttribute('aria-pressed', String(!svMuted));
+dockSound.setAttribute('aria-pressed', String(!svMuted));
+dockSound.setAttribute('aria-label', svMuted ? 'Geluid aan' : 'Geluid uit');
+svVideo.muted = svMuted;
+};
+dockSound.addEventListener('click', () => svSoundBtn.click());
+svSoundBtn.addEventListener('click', () => {
+svMuted = !svMuted; syncSvSound();
+if(svVideo.paused) svVideo.play().catch(() => {});
+});
+svVideo.addEventListener('click', () => { svVideo.paused ? svVideo.play().catch(() => {}) : svVideo.pause(); });
+svVideo.addEventListener('play', () => { const st = svBox.parentElement; if(st) st.classList.remove('is-paused'); });
+svVideo.addEventListener('pause', () => { const st = svBox.parentElement; if(st && viewerOpen) st.classList.add('is-paused'); });
+svVideo.addEventListener('timeupdate', () => { if(svVideo.duration) svBarFill.style.width = (svVideo.currentTime / svVideo.duration * 100) + '%'; });
+function svPlayStream(x, k, retry){
+x.stage.append(svBox);
+x.stage.classList.remove('is-paused');
+svBarFill.style.width = '0';
+svVideo.pause();
+if(hls){ hls.destroy(); hls = null; }
+svVideo.removeAttribute('src'); svVideo.load();
+svVideo.muted = svMuted;
+const start = () => svVideo.play().catch(() => {
+svMuted = true; syncSvSound(); svVideo.play().catch(() => x.stage.classList.add('is-paused'));
+});
+[k + 1, k - 1].forEach(j => { const y = svList[(j + svList.length) % svList.length]; if(y) streamUrl(y.s.uid).catch(() => {}); });
+Promise.all([streamUrl(x.s.uid, retry), nativeHls ? null : loadHlsJs()]).then(([url, Hls]) => {
+if(svCurrent !== k || !viewerOpen) return;
+if(nativeHls){
+svVideo.addEventListener('error', () => { if(svCurrent === k && viewerOpen) svFail(); }, { once:true });
+svVideo.src = url; start(); return;
+}
+if(!Hls || !Hls.isSupported()) throw new Error('geen HLS');
+hls = new Hls({ capLevelToPlayerSize:true, startFragPrefetch:true });
+hls.loadSource(url); hls.attachMedia(svVideo);
+hls.on(Hls.Events.MANIFEST_PARSED, start);
+hls.on(Hls.Events.ERROR, (e, d) => { if(d.fatal){ hls.destroy(); hls = null; svFail(); } });
+}).catch(svFail);
+function svFail(){ if(svCurrent !== k || !viewerOpen) return; if(!retry) return svPlayStream(x, k, true); svFallback(); }
+function svFallback(){ if(svCurrent !== k || !viewerOpen) return; useIframe = true; svBox.remove(); svSoundBtn.hidden = true; dockSound.hidden = true; svIframe(x); }
+}
+function svIframe(x){
+const r = x.stage.getBoundingClientRect();
+const w = Math.round(window.innerWidth > 820 ? Math.min(r.width, (r.height - 56) * 9 / 16) : r.width);
+const hh = Math.round(window.innerWidth > 820 ? r.height - 56 : r.height);
+const size = w + 'x' + hh;
+const f = svFrame(x);
+if(f && f.dataset.size === size) return;
+if(f) f.remove();
+const nf = document.createElement('iframe');
+nf.title = 'Short: ' + x.s.title;
+nf.allow = 'autoplay; fullscreen; picture-in-picture; encrypted-media';
+nf.setAttribute('allowfullscreen', '');
+nf.dataset.size = size;
+nf.src = SHORT_EMBED(x.s.uid, w, hh);
+x.stage.append(nf);
+}
+function svActivate(k){
+if(k < 0 || k >= svList.length) return;
+const changed = k !== svCurrent;
+svCurrent = k;
+dockCta.href = svList[k].s.href;
+svList.forEach((x, j) => {
+const img = items[x.i] && items[x.i].media;
+if(img && img.currentSrc && !x.poster.style.backgroundImage){
+x.poster.style.backgroundImage = 'url("' + img.currentSrc + '")';
+if(cloneFirst && j === 0) cloneFirst.poster.style.backgroundImage = x.poster.style.backgroundImage;
+if(cloneLast && j === svList.length - 1) cloneLast.poster.style.backgroundImage = x.poster.style.backgroundImage;
+}
+if(j !== k){ const f = svFrame(x); if(f) f.remove(); x.stage.classList.remove('is-paused'); }
+});
+const x = svList[k];
+if(useIframe) svIframe(x);
+else if(changed || svBox.parentElement !== x.stage) svPlayStream(x, k);
+}
+let svAim = -1, svAimT = 0;
+function svStep(d){
+const n = svList.length;
+const base = (svAim >= 0 && Date.now() - svAimT < 800) ? svAim : svCurrent;
+svAim = ((base + d) % n + n) % n; svAimT = Date.now();
+svGo(base + d);
+}
+function svGo(k){
+let target;
+if(k >= svList.length) target = cloneFirst ? cloneFirst.item : svList[0].item;
+else if(k < 0) target = cloneLast ? cloneLast.item : svList[svList.length - 1].item;
+else target = svList[k].item;
+feed.scrollTo({ top:target.offsetTop, behavior:reducedMotion.matches ? 'auto' : 'smooth' });
+}
+function svWrap(){
+if(!cloneLast || !viewerOpen) return;
+const h = feed.clientHeight || 1;
+if(feed.scrollTop <= cloneLast.item.offsetTop + h * .4){ feed.scrollTop = svList[svList.length - 1].item.offsetTop; svActivate(svList.length - 1); }
+else if(feed.scrollTop >= cloneFirst.item.offsetTop - h * .4){ feed.scrollTop = svList[0].item.offsetTop; svActivate(0); }
+}
+if('IntersectionObserver' in window){
+let ioTimer = 0;
+const io = new IntersectionObserver(entries => entries.forEach(e => {
+if(!viewerOpen || !e.isIntersecting || e.target.dataset.clone) return;
+clearTimeout(ioTimer);
+ioTimer = setTimeout(() => {
+if(!viewerOpen) return;
+const k = Math.round(feed.scrollTop / (feed.clientHeight || 1)) - (cloneLast ? 1 : 0);
+if(k >= 0 && k < svList.length && k !== svCurrent) svActivate(k);
+}, 140);
+}), { root:feed, threshold:.6 });
+svList.forEach(x => io.observe(x.item));
+}
+{
+const warmIdle = () => ('requestIdleCallback' in window) ? requestIdleCallback(warmShorts, { timeout:2500 }) : setTimeout(warmShorts, 1500);
+if(document.readyState === 'complete') warmIdle(); else window.addEventListener('load', warmIdle, { once:true });
+const sec = document.getElementById('shorts');
+if(sec){ sec.addEventListener('pointerenter', warmShorts); sec.addEventListener('focusin', warmShorts); }
+}
+let svTimer = 0;
+feed.addEventListener('scroll', () => {
+clearTimeout(svTimer);
+svTimer = setTimeout(() => {
+if(!viewerOpen) return;
+svWrap();
+const k = Math.round(feed.scrollTop / (feed.clientHeight || 1)) - (cloneLast ? 1 : 0);
+if(k >= 0 && k < svList.length && k !== svCurrent) svActivate(k);
+}, 120);
+}, { passive:true });
+let hiddenHead = null;
+function revHead(hide){
+try{
+if(hide){
+if(window.innerWidth > 820 || window.parent === window) return;
+const logo = window.parent.document.querySelector('img[alt="NavLogo"]');
+const head = logo && logo.closest('.fixed');
+if(head){ head.style.setProperty('display', 'none', 'important'); hiddenHead = head; }
+} else if(hiddenHead){ hiddenHead.style.removeProperty('display'); hiddenHead = null; }
+}catch(e){}
+}
+function openViewer(i){
+const k = svList.findIndex(x => x.i === i);
+if(k < 0) return;
+if(SHORTS_PAGE && window.innerWidth <= SHORTS_PAGE_FROM){
+const uid = svList[k].s.uid;
+try{ (window.parent !== window ? window.parent : window).sessionStorage.setItem('bagageShortsCurrent', uid); }catch(e){}
+const sp = SHORTS_PAGE + '?s=' + encodeURIComponent(uid);
+try{ const t = window.top; if(!(t.__bagageGo && t.__bagageGo(new URL(sp).pathname + new URL(sp).search))) t.location.href = sp; }catch(e){ location.href = sp; }
+return;
+}
+revHead(true);
+lastFocus = document.activeElement;
+viewerOpen = true;
+stopAll();
+svCurrent = -1;
+viewer.hidden = false;
+setTimeout(() => requestAnimationFrame(() => {
+if(!viewerOpen) return;
+feed.scrollTop = svList[k].item.offsetTop;
+svCurrent = -1;
+svActivate(k);
+}), 60);
+viewer.querySelector('.sv-close').focus({ preventScroll:true });
+}
+const RETURN_KEY = 'bagageShort';
+function hostWin(){ try{ if(window.parent !== window && window.parent.document) return window.parent; }catch(e){} return window; }
+function rememberShort(){
+if(svCurrent < 0) return;
+const uid = svList[svCurrent].s.uid;
+const hw = hostWin();
+try{ hw.sessionStorage.setItem(RETURN_KEY, JSON.stringify({ uid, t:Date.now() })); }catch(e){}
+try{
+if(hw !== window && !hw.document.getElementById('bagage-back-watch')){
+const sc = hw.document.createElement('script');
+sc.id = 'bagage-back-watch';
+sc.textContent = "window.addEventListener('popstate',function(){try{sessionStorage.setItem('" + RETURN_KEY + "Back',String(Date.now()))}catch(e){}});";
+hw.document.head.appendChild(sc);
+}
+}catch(e){}
+revHead(false);
+}
+[dockCta].concat(svList.map(x => x.item.querySelector('.sv-cta'))).forEach(a => a && a.addEventListener('click', rememberShort));
+function reopenShort(){
+const hw = hostWin();
+let v = null, back = 0, navBack = false;
+try{
+v = JSON.parse(hw.sessionStorage.getItem(RETURN_KEY) || 'null');
+back = +(hw.sessionStorage.getItem(RETURN_KEY + 'Back') || 0);
+const nav = hw.performance.getEntriesByType && hw.performance.getEntriesByType('navigation')[0];
+navBack = !!(nav && nav.type === 'back_forward');
+}catch(e){}
+if(!v || Date.now() - v.t > 30 * 60 * 1000) return;
+const viaBack = (back && back >= v.t && Date.now() - back < 20000) || navBack;
+if(!viaBack) return;
+try{ hw.sessionStorage.removeItem(RETURN_KEY); hw.sessionStorage.removeItem(RETURN_KEY + 'Back'); }catch(e){}
+const x = svList.find(y => y.s.uid === v.uid);
+if(x) openViewer(x.i);
+}
+window.addEventListener('pageshow', e => { if(e.persisted && viewerOpen && !useIframe){ revHead(true); svVideo.play().catch(() => {}); } });
+window.addEventListener('pagehide', () => revHead(false));
+function closeViewer(){
+viewer.hidden = true;
+revHead(false);
+viewerOpen = false;
+svList.forEach(x => { const f = svFrame(x); if(f) f.remove(); });
+svVideo.pause();
+if(hls){ hls.destroy(); hls = null; }
+svBox.remove();
+svCurrent = -1;
+if(lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll:true });
+repaintShorts();
+}
+/* iPhone tekent de shortskaarten na het afspelen soms half (beeld bovenaan, zwart eronder): kaarten opnieuw laten tekenen */
+function repaintShorts(){
+requestAnimationFrame(() => items.forEach(it => { const m = it.media; m.style.display = 'none'; void m.offsetHeight; m.style.display = ''; }));
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden) repaintShorts(); });
+window.addEventListener('pageshow', repaintShorts);
+viewer.querySelector('.sv-close').addEventListener('click', closeViewer);
+viewer.querySelector('.sv-dock-close').addEventListener('click', closeViewer);
+setTimeout(reopenShort, 0);
+let rsTimer = 0;
+const onResize = () => { clearTimeout(rsTimer); rsTimer = setTimeout(() => {
+if(!viewerOpen || svCurrent < 0) return;
+const k = svCurrent;
+feed.scrollTop = svList[k].item.offsetTop;
+if(useIframe) svIframe(svList[k]);
+}, 300); };
+window.addEventListener('resize', onResize);
+try{ if(window.parent !== window) window.parent.addEventListener('resize', onResize); }catch(e){}
+viewer.querySelectorAll('.sv-nav button').forEach(b => b.addEventListener('click', () => svStep(+b.dataset.dir)));
+document.addEventListener('keydown', e => {
+if(!viewerOpen) return;
+if(e.key === 'Escape'){ e.preventDefault(); closeViewer(); }
+else if(e.key === ' ' && !useIframe && !(e.target.closest && e.target.closest('button, a'))){ e.preventDefault(); svVideo.paused ? svVideo.play().catch(() => {}) : svVideo.pause(); }
+else if((e.key === 'm' || e.key === 'M') && !useIframe){ svSoundBtn.click(); }
+else if(e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown'){ e.preventDefault(); svStep(1); }
+else if(e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); svStep(-1); }
+});
+
+section.hidden = false;
+setInterval(check, 400);
+document.addEventListener('visibilitychange', check);
+check();
+}
+
+fetchAll().then(items => {
+buildPageMap(items);
+const episodesBySeason = {};
+const seasonsInSeries = new Set(items.flatMap(x => (x.seasons || []).map(se => se.id)));
+items.filter(i => i.seasonId).forEach(ep => {
+(episodesBySeason[ep.seasonId] = episodesBySeason[ep.seasonId] || []).push(ep);
+});
+const newest = items
+.filter(i => !i.seasonId && !i.seriesId && !seasonsInSeries.has(i.id) && !isHidden(i, items))
+.map(i => describe(i, items, episodesBySeason))
+.sort((a, b) => b.published - a.published);
+const byId = Object.fromEntries(newest.map(info => [info.id, info]));
+const shown = onePerPage(newest);
+
+fillRail('nieuw', shown.slice(0, NEW_COUNT), true);
+
+let picks = onePerPage(newest.filter(info => info.keys.has(PICK_TAG)));
+if(!picks.length) picks = PICK_FALLBACK.map(id => byId[id]).filter(Boolean);
+fillRail('selectie', picks.slice(0, PICK_MAX));
+
+const findFull = s => {
+if(s.id){
+if(byId[s.id]) return byId[s.id];
+const it = items.find(x => x.id === s.id);
+if(it) return describe(it, items, episodesBySeason);
+}
+if(s.zoek){
+const q = s.zoek.toLocaleLowerCase('nl');
+const hits = items.filter(x => (x.title || '').toLocaleLowerCase('nl').includes(q));
+const it = hits.find(x => x.seasonId) || hits[0];
+if(it) return describe(it, items, episodesBySeason);
+}
+return null;
+};
+const shortList = SHORTS.length
+? SHORTS.map(s => { const info = findFull(s); return { uid:s.uid || '', video:s.uid ? '' : (s.video || ''), poster:s.poster || '', fallbackPoster:(info && info.poster) || '', title:s.title || (info && info.title) || '', href:toPage(s.href) || (info ? info.href : STORE + 'pages/catalogus'), demo:false }; })
+: shown.filter(info => info.poster).sort(() => Math.random() - .5).slice(0, SHORT_DEMO_COUNT)
+.map(info => ({ video:'', poster:info.poster, title:info.title, href:info.href, demo:true }));
+buildShorts(shortList);
+
+try{ buildHero(items, episodesBySeason); }catch(e){ console.warn('Hero', e); }
+root.querySelectorAll('.hero-slide[data-id]').forEach(slide => {
+const info = byId[slide.dataset.id];
+const meta = slide.querySelector('.meta');
+if(info && info.price && meta && !meta.querySelector('.price')) meta.append(el('span', 'price', info.price));
+});
+linkToPages(root);
+}).catch(err => { console.error(err); const n = root.querySelector('#nieuw'); if(n && n.querySelector('.skel')) n.hidden = true; });
+})();
+</script>
+<script>
+(() => {
+let host;
+try{ host = window.parent && window.parent !== window ? window.parent.document : document; }
+catch{ return; }
+
+if(!host.getElementById('bagage-home-chrome')){
+const style = host.createElement('style');
+style.id = 'bagage-home-chrome';
+style.textContent =
+'div:has(> button > img[src*="ic-back"]){display:none!important}' +
+'.bagage-head{transition:background-color .3s ease}' +
+'.bagage-head.bagage-head-solid{background-color:rgba(9,12,13,.94)!important}' +
+(document.querySelector('#bagage-landing.licht') ? '.bagage-head{background-color:rgba(9,12,13,.94)!important}' : '') +
+'footer[class],footer{--color-mainText:#1a1a18;--color-placeholderText:#55534f;--color-border:#ddd6c8;background:#f7f4ee!important;color:#1a1a18!important;border-color:#ddd6c8!important}' +
+'footer [class],footer *{color:#55534f!important;border-color:#ddd6c8!important;background-color:transparent!important}' +
+'footer a:hover [class],footer a:hover{color:#1a1a18!important}' +
+'footer img,footer svg{filter:invert(1)}';
+style.textContent += '.MuiDrawer-paper div.cursor-pointer:has(> p.rd-menu__item:empty){display:none!important}';
+host.head.append(style);
+
+const view = host.defaultView;
+const onLogo = e => {
+const t = e.target;
+const box = t.closest && t.closest('a, [class*="cursor-pointer"]');
+const isLogo = (t.matches && t.matches('img[alt="NavLogo"]')) || (box && box.querySelector('img[alt="NavLogo"]'));
+if(!isLogo) return;
+e.preventDefault();
+e.stopPropagation();
+const lang = view.location.pathname.split('/')[1] || 'nl';
+view.location.href = '/' + lang;
+};
+host.addEventListener('click', onLogo, true);
+
+const cleanup = () => { style.remove(); host.removeEventListener('click', onLogo, true); };
+window.addEventListener('pagehide', cleanup);
+window.addEventListener('unload', cleanup);
+}
+
+const root = document.getElementById('bagage-landing');
+const frame = window.frameElement;
+if(!root || !frame) return;
+
+const ownFooter = root.querySelector('.site-footer');
+if(ownFooter){
+const syncFooter = () => { ownFooter.hidden = !!host.querySelector('footer'); };
+syncFooter();
+const footerWatch = new MutationObserver(syncFooter);
+footerWatch.observe(host.body, { childList:true, subtree:true });
+window.addEventListener('pagehide', () => footerWatch.disconnect());
+}
+const measure = () => {
+const logo = host.querySelector('img[alt="NavLogo"]');
+const header = logo && logo.closest('.fixed');
+if(!header) return;
+const overlap = Math.max(0, Math.round(((el) => { const v = el.ownerDocument.defaultView; let st = (el.ownerDocument.scrollingElement || el.ownerDocument.documentElement).scrollTop; for (let p = frame.parentElement; p && p !== el.ownerDocument.body; p = p.parentElement) { const oy = v.getComputedStyle(p).overflowY; if (oy !== 'visible' && oy !== 'clip' && p.scrollHeight > p.clientHeight + 1) { st = p.scrollTop; break; } } const b = el.getBoundingClientRect().bottom; if (st <= 2 || !v.__bagageHeaderMax) v.__bagageHeaderMax = Math.max(v.__bagageHeaderMax || 0, b); return v.__bagageHeaderMax - (frame.getBoundingClientRect().top + st); })(header)));
+root.style.setProperty('--revidd-header', overlap + 'px');
+};
+measure();
+window.addEventListener('load', measure);
+
+const solidHeader = () => {
+const logo = host.querySelector('img[alt="NavLogo"]');
+const header = logo && logo.closest('.fixed');
+if(!header) return;
+header.classList.add('bagage-head');
+header.classList.toggle('bagage-head-solid', window.scrollY > 10 || host.defaultView.scrollY > 10);
+};
+window.addEventListener('scroll', solidHeader, { passive:true });
+host.defaultView.addEventListener('scroll', solidHeader, { passive:true });
+solidHeader();
+setTimeout(solidHeader, 1500);
+window.parent.addEventListener('resize', measure);
+setTimeout(measure, 1500);
+})();
+</script>
+
+<script src="https://markmommaerts.github.io/bagage-site/bagage-site.js"></script>
