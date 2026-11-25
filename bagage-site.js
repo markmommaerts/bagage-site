@@ -612,7 +612,7 @@ tabOpen = tabKey;
 /* Revidd voegt tabs soms later toe en hergebruikt de knoppen: na een korte pauze opnieuw de juiste tab zoeken en aanklikken */
 const kies = () => { const t = [...document.querySelectorAll('button')].find(b => b.textContent.trim().toLowerCase() === tabNaam.toLowerCase() && b.offsetParent && !b.hasAttribute('data-bagage-weg')); if (t && location.pathname + '|' + new URLSearchParams(location.search).get('tab') === tabKey) { t.click(); return t; } };
 kies(); setTimeout(kies, 1200);
-setTimeout(() => { const t = kies(); if (t) try { t.scrollIntoView({ block:'start', behavior:'smooth' }); } catch (e) { /* oud */ } }, 2500);
+setTimeout(() => { const t = kies(); if (t) try { t.scrollIntoView({ block:'center' }); } catch (e) { /* oud */ } }, 2500);
 }
 }
 } catch (e) { /* geen tab */ }
