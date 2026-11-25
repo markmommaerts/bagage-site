@@ -548,7 +548,7 @@ el.setAttribute('data-bagage-tekst', txt);
 const weg = (el, aan) => { if (aan !== el.hasAttribute('data-bagage-weg')) el.toggleAttribute('data-bagage-weg', aan); };
 /* promotiecode uit de link onthouden */
 try { const c = new URLSearchParams(location.search).get('code'); if (c) sessionStorage.setItem('bagageCode', c.trim()); } catch (e) { /* geen opslag */ }
-let codeKlik = 0;
+let codeKlik = 0, codeOpen = '';
 const TITELS = [[/^sign in\b/i, 'Inloggen'], [/^sign up\b/i, 'Account aanmaken'], [/^search\b/i, 'Zoeken'], [/^subscriptions\b/i, 'Abonnementen']];
 const extras = () => {
 const id = pageId();
@@ -596,9 +596,10 @@ if (code && /^\/[a-z]{2}\/tvod\//.test(location.pathname)) {
 const inp = [...document.querySelectorAll('input')].find(i => i.offsetParent && /code|kortings|coupon|promo/i.test((i.placeholder || '') + ' ' + (i.name || '') + ' ' + (i.id || '')));
 if (inp) {
 if (!inp.value) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(inp, code); inp.dispatchEvent(new Event('input', { bubbles:true })); }
-} else if (Date.now() - codeKlik > 3000) {
+} else if (Date.now() - codeKlik > 3000 && codeOpen !== location.pathname + '|' + code) {
+/* het codevenster één keer per huurpagina openen; sluit de kijker het, dan blijft het dicht */
 const link = [...document.querySelectorAll('*')].find(e => !e.childElementCount && /^kortingscode toepassen/i.test(e.textContent.trim()));
-if (link) { codeKlik = Date.now(); (link.closest('button,a,[class*="cursor-pointer"]') || link).click(); }
+if (link) { codeKlik = Date.now(); codeOpen = location.pathname + '|' + code; (link.closest('button,a,[class*="cursor-pointer"]') || link).click(); }
 }
 }
 };
