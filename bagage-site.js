@@ -641,7 +641,7 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { say('Vul een geldig e-mailadres
 const btn = form.querySelector('button'); btn.disabled = true; say('Even geduld…');
 try {
 const token = await fetch(GHOST_MEMBERS + 'integrity-token/').then(r => r.ok ? r.text() : '');
-const r = await fetch(GHOST_MEMBERS + 'send-magic-link/', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ email, emailType:'signup', integrityToken:token, labels:['bron: bagage-site'] }) });
+const r = await fetch(GHOST_MEMBERS + 'send-magic-link/', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ email, emailType:'signup', integrityToken:token, labels:['bron: bagage-site'], newsletters:[{ name:'Bagage' }] }) });
 if (!r.ok) throw new Error('Ghost ' + r.status);
 form.remove();
 say('Bijna klaar: bevestig je inschrijving via de mail die we je net stuurden.', 'nb-ok');
