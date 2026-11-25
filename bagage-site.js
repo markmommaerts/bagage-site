@@ -506,7 +506,7 @@ exStyle.textContent =
 '#bagage-nb p{margin:0 0 10px}#bagage-nb form{display:flex;gap:8px;flex-wrap:wrap}' +
 '#bagage-nb input{flex:1 1 200px;min-width:0;height:40px;padding:0 12px;border:1px solid rgba(244,241,233,.4);background:transparent;color:#f4f1e9;font:inherit}' +
 '#bagage-nb input::placeholder{color:rgba(244,241,233,.6)}#bagage-nb button{height:40px;padding:0 16px;border:0;background:#ef6a28;color:#111;font:700 14px Arial,Helvetica,sans-serif;cursor:pointer}' +
-'@media(min-width:768px){#bagage-nb{margin-left:60px}}#bagage-nb.in-banner{margin:6px 0 0;max-width:100%}#bagage-nb button:disabled{opacity:.6}#bagage-nb small{display:block;margin-top:8px;color:rgba(244,241,233,.65);font-size:12px}#bagage-nb .nb-ok{color:#e8b654}#bagage-nb .nb-err{color:#f4844c}' +
+'@media(min-width:768px){#bagage-nb{margin-left:60px}}#bagage-nb.in-banner{margin:6px 0 0;max-width:100%}#bagage-nb button:disabled{opacity:.6}#bagage-nb small{display:block;margin-top:8px;color:rgba(244,241,233,.65);font-size:12px}#bagage-nb .nb-ok{color:#c85a0f}#bagage-nb .nb-err{color:#f4844c}' +
 'div.fixed:has(img[alt="NavLogo"]){transition:transform .3s ease}' +
 'div.fixed.bagage-kop-weg:has(img[alt="NavLogo"]){transform:translateY(-100%)!important}';
 document.head.append(exStyle);
