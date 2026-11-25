@@ -573,13 +573,13 @@ weg(dk, !!id && duidingTel[id] === 0);
 }
 /* teksten */
 document.querySelectorAll('p, span, div, h1, h2, h3, h4, a, button, label').forEach(el => {
-if (el.childElementCount) return;
+if (el.childElementCount && [...el.children].some(c => c.tagName !== 'BR')) return;
 const t = el.textContent.trim();
 if (!t || t.length > 200) return;
 if (/^dutch$/i.test(t)) vervang(el, 'Nederlands');
 else if (/^no newsletter posts yet\.?$/i.test(t)) vervang(el, 'Nog geen duiding bij deze titel.');
 else if (/^you may get access to/i.test(t)) weg(el, true);
-else if (/^je hebt geen actief abonnementspakket\.?$/i.test(t) || /^krijg toegang en begin met kijken door een abonnement/i.test(t)) weg(el, true);
+else if (/^je hebt geen actief abonnementspakket/i.test(t) || /^krijg toegang en begin met kijken door een abonnement/i.test(t)) weg(el, true);
 else if (/^geen abonnementen beschikbaar in jouw land$/i.test(t)) vervang(el, 'Bagage werkt zonder abonnement: je huurt per titel. Heb je een promotiecode van een partner? Vul ze in bij het huren, via "Kortingscode toepassen".');
 else {
 const m = /^EUR\s*(\d+)[.,](\d{2})$/i.exec(t);
