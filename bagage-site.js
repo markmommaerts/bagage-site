@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-25f (Sign in/Sign up vertaald), 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -582,6 +582,8 @@ if (el.childElementCount && [...el.children].some(c => c.tagName !== 'BR')) retu
 const t = el.textContent.trim();
 if (!t || t.length > 200) return;
 if (/^dutch$/i.test(t)) vervang(el, 'Nederlands');
+else if (/^sign in$/i.test(t)) vervang(el, 'Inloggen');
+else if (/^sign up$/i.test(t)) vervang(el, 'Account aanmaken');
 else if (/^no newsletter posts yet\.?$/i.test(t)) vervang(el, 'Nog geen duiding bij deze titel.');
 else if (/^you may get access to/i.test(t)) weg(el, true);
 else if (/^je hebt geen actief abonnementspakket/i.test(t) || /^krijg toegang en begin met kijken door een abonnement/i.test(t)) weg(el, true);
