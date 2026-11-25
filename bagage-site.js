@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-26 (tab Korte versies via tag KORT: <id>), 2026-11-25j (?tab= opnieuw kiezen na laden), 2026-11-25i (tab Gerelateerd niet meer per ongeluk verborgen), 2026-11-25h (?tab=duiding opent de tab Duiding), 2026-11-25g (inhoudsiconen rechts van leeftijd), 2026-11-25f (Sign in/Sign up vertaald), 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-26b (link naar volledige versie op korte versies), 2026-11-26 (tab Korte versies via tag KORT: <id>), 2026-11-25j (?tab= opnieuw kiezen na laden), 2026-11-25i (tab Gerelateerd niet meer per ongeluk verborgen), 2026-11-25h (?tab=duiding opent de tab Duiding), 2026-11-25g (inhoudsiconen rechts van leeftijd), 2026-11-25f (Sign in/Sign up vertaald), 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -507,6 +507,7 @@ exStyle.textContent =
 'html.bagage-kort-open .rd-tabs button[value]{color:var(--bk-off)!important;font-weight:400!important}#bagage-kort-tab.aan{color:var(--bk-on)!important;font-weight:600!important}html.bagage-kort-open .rd-tabs > div.absolute{left:var(--bk-left)!important;width:var(--bk-w)!important}' +
 '#bagage-kort-panel{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}#bagage-kort-panel a{display:block;color:inherit;text-decoration:none}#bagage-kort-panel img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#1a1d22}#bagage-kort-panel b{display:block;margin-top:10px;font:600 15px/1.35 "Open Sans",Arial,sans-serif}#bagage-kort-panel small{display:block;margin-top:4px;opacity:.65;font-size:12px}' +
 '@media(min-width:768px){#bagage-kort-panel{margin:20px 60px}}' +
+'#bagage-vol{display:inline-block;margin-top:2px;color:#ef6a28;font:600 14px/1.4 "Open Sans",Arial,sans-serif;text-decoration:none}#bagage-vol:hover{text-decoration:underline}' +
 '#bagage-nb{box-sizing:border-box;max-width:460px;margin:20px 20px 4px;padding:14px 16px;border:1px solid rgba(244,241,233,.22);background:rgba(9,12,13,.55);color:#f4f1e9;font:14px/1.45 Arial,Helvetica,sans-serif}' +
 '#bagage-nb p{margin:0 0 10px}#bagage-nb form{display:flex;gap:8px;flex-wrap:wrap}' +
 '#bagage-nb input{flex:1 1 200px;min-width:0;height:40px;padding:0 12px;border:1px solid rgba(244,241,233,.4);background:transparent;color:#f4f1e9;font:inherit}' +
@@ -524,13 +525,13 @@ const m = /^(\d+)_(DAYS|WEEKS|MONTHS|YEARS)$/.exec(d || ''); if (!m) return '';
 const n = +m[1], w = { DAYS:['dag','dagen'], WEEKS:['week','weken'], MONTHS:['maand','maanden'], YEARS:['jaar','jaar'] }[m[2]];
 return n + ' ' + w[n === 1 ? 0 : 1];
 };
-let prijzen = null, prijzenBezig = null, kortMap = {};
+let prijzen = null, prijzenBezig = null, kortMap = {}, langMap = {};
 const laadPrijzen = () => {
 if (prijzen) return Promise.resolve(prijzen);
 if (prijzenBezig) return prijzenBezig;
-try { const c = JSON.parse(sessionStorage.getItem('bagagePrijzen2') || 'null'); if (c && Date.now() - c.t < 10 * 60 * 1000) { prijzen = c.p; kortMap = c.k || {}; return Promise.resolve(prijzen); } } catch (e) { /* geen opslag */ }
+try { const c = JSON.parse(sessionStorage.getItem('bagagePrijzen3') || 'null'); if (c && Date.now() - c.t < 10 * 60 * 1000) { prijzen = c.p; kortMap = c.k || {}; langMap = c.l || {}; return Promise.resolve(prijzen); } } catch (e) { /* geen opslag */ }
 prijzenBezig = (async () => {
-const p = {}, k = {}; let skip = 0;
+const p = {}, k = {}, alle = {}; let skip = 0;
 for (;;) {
 const r = await fetch(API, { method:'POST', headers:{ 'api-key':API_KEY, 'Content-Type':'application/json' }, body:JSON.stringify({ limit:100, skip }) });
 if (!r.ok) break;
@@ -538,6 +539,7 @@ const j = await r.json();
 (j.data || []).forEach(i => {
 const t = (i.tvod || []).filter(x => x && Number(x.price) > 0).sort((a, b) => Number(b.price) - Number(a.price))[0];
 if (t) p[i.id] = euroNl(t.price) + (duurNl(t.duration) ? ' · ' + duurNl(t.duration) : '');
+alle[i.id] = { titel:i.title || '', url:'/' + lang() + '/' + (String(i.seoSlug || '').replace(/^\/+/, '') || ((/episode/i.test(i.queryName || '') ? 'episodes/' : /season/i.test(i.queryName || '') ? 'seasons/' : 'movies/') + 'titel')) + '-' + i.id };
 /* korte versies: tag KORT: <Content ID van de lange versie> */
 (i.tags || []).forEach(tg => {
 const m = /^KORT\s*[:\-–]\s*([0-9a-f]{24})$/i.exec(String((tg && tg.name) || tg).trim());
@@ -551,7 +553,9 @@ skip += 100;
 if (!j.data || !j.data.length || skip >= j.count) break;
 }
 prijzen = p; kortMap = k;
-try { sessionStorage.setItem('bagagePrijzen2', JSON.stringify({ t:Date.now(), p, k })); } catch (e) { /* geen opslag */ }
+/* omgekeerd: korte versie → haar volledige versie */
+const l = {}; Object.keys(k).forEach(lid => { if (alle[lid]) k[lid].forEach(v => { l[v.id] = alle[lid]; }); }); langMap = l;
+try { sessionStorage.setItem('bagagePrijzen3', JSON.stringify({ t:Date.now(), p, k, l:langMap })); } catch (e) { /* geen opslag */ }
 return p;
 })().catch(() => { prijzen = {}; return prijzen; });
 return prijzenBezig;
@@ -630,6 +634,24 @@ setTimeout(() => { const t = kies(); if (t) try { t.scrollIntoView({ block:'cent
 } catch (e) { /* geen tab */ }
 /* eigen tab 'Korte versies' (na Details, Gerelateerd, Duiding) */
 try { korteTab(); } catch (e) { /* geen korte versies */ }
+/* op een korte versie: link naar de volledige versie */
+try {
+const lang_ = langMap[pageId()];
+let vl = document.getElementById('bagage-vol');
+if (vl && (!lang_ || vl.dataset.pad !== location.pathname)) { vl.remove(); vl = null; }
+const huur = [...document.querySelectorAll('button')].find(b => /^(huren|nu kijken)$/i.test(b.textContent.trim()) && b.offsetParent);
+const kol = huur && huur.closest('div.max-w-md');
+if (lang_ && kol) {
+if (!vl) {
+vl = document.createElement('a'); vl.id = 'bagage-vol'; vl.dataset.pad = location.pathname; vl.href = lang_.url;
+vl.textContent = 'Bekijk de volledige versie: ' + lang_.titel + ' →';
+vl.addEventListener('click', ev => { ev.preventDefault(); if (!window.__bagageGo || !window.__bagageGo(lang_.url)) location.href = lang_.url; });
+}
+const nb = document.getElementById('bagage-nb');
+if (nb && nb.parentNode === kol) { if (vl.nextElementSibling !== nb) kol.insertBefore(vl, nb); }
+else if (vl.parentNode !== kol || vl.nextElementSibling) kol.appendChild(vl);
+}
+} catch (e) { /* geen volledige versie */ }
 /* promotiecode invullen op de huurpagina */
 let code = ''; try { code = sessionStorage.getItem('bagageCode') || ''; } catch (e) { /* geen opslag */ }
 if (code && /^\/[a-z]{2}\/tvod\//.test(location.pathname)) {
