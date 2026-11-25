@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-25g (inhoudsiconen rechts van leeftijd), 2026-11-25f (Sign in/Sign up vertaald), 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-25h (?tab=duiding opent de tab Duiding), 2026-11-25g (inhoudsiconen rechts van leeftijd), 2026-11-25f (Sign in/Sign up vertaald), 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -554,7 +554,7 @@ el.setAttribute('data-bagage-tekst', txt);
 const weg = (el, aan) => { if (aan !== el.hasAttribute('data-bagage-weg')) el.toggleAttribute('data-bagage-weg', aan); };
 /* promotiecode uit de link onthouden */
 try { const c = new URLSearchParams(location.search).get('code'); if (c) sessionStorage.setItem('bagageCode', c.trim()); } catch (e) { /* geen opslag */ }
-let codeKlik = 0, codeOpen = '';
+let codeKlik = 0, codeOpen = '', tabOpen = '';
 const TITELS = [[/^sign in\b/i, 'Inloggen'], [/^sign up\b/i, 'Account aanmaken'], [/^search\b/i, 'Zoeken'], [/^subscriptions\b/i, 'Abonnementen']];
 const extras = () => {
 const id = pageId();
@@ -599,6 +599,15 @@ document.querySelectorAll('button, a').forEach(b => { if (/^subscribe$/i.test(b.
 /* paginatitels */
 TITELS.forEach(([re, nl]) => { if (re.test(document.title)) document.title = document.title.replace(re, nl); });
 nbUitnodiging();
+/* deep link naar een tab: ?tab=duiding (of een andere tabnaam) opent die tab op de detailpagina, één keer per link */
+try {
+const tabNaam = new URLSearchParams(location.search).get('tab');
+const tabKey = location.pathname + '|' + tabNaam;
+if (tabNaam && pageId() && tabOpen !== tabKey) {
+const tab = [...document.querySelectorAll('button')].find(b => b.textContent.trim().toLowerCase() === tabNaam.toLowerCase() && b.offsetParent && !b.hasAttribute('data-bagage-weg'));
+if (tab) { tabOpen = tabKey; tab.click(); setTimeout(() => { try { tab.scrollIntoView({ block:'start', behavior:'smooth' }); } catch (e) { /* oud */ } }, 300); }
+}
+} catch (e) { /* geen tab */ }
 /* promotiecode invullen op de huurpagina */
 let code = ''; try { code = sessionStorage.getItem('bagageCode') || ''; } catch (e) { /* geen opslag */ }
 if (code && /^\/[a-z]{2}\/tvod\//.test(location.pathname)) {
