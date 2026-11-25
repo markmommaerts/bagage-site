@@ -507,7 +507,7 @@ exStyle.textContent =
 'html.bagage-kort-open .rd-tabs button[value]{color:var(--bk-off)!important;font-weight:400!important}#bagage-kort-tab.aan{color:var(--bk-on)!important;font-weight:600!important}html.bagage-kort-open .rd-tabs > div.absolute{left:var(--bk-left)!important;width:var(--bk-w)!important}' +
 '#bagage-kort-panel{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}#bagage-kort-panel a{display:block;color:inherit;text-decoration:none}#bagage-kort-panel img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#1a1d22}#bagage-kort-panel b{display:block;margin-top:10px;font:600 15px/1.35 "Open Sans",Arial,sans-serif}#bagage-kort-panel small{display:block;margin-top:4px;opacity:.65;font-size:12px}' +
 '@media(min-width:768px){#bagage-kort-panel{margin:20px 60px}}' +
-'#bagage-vol{display:inline-block;margin-top:2px;color:#ef6a28;font:600 14px/1.4 "Open Sans",Arial,sans-serif;text-decoration:none}#bagage-vol:hover{text-decoration:underline}' +
+'#bagage-vol{display:inline-block;margin-top:2px;color:#ef6a28;text-shadow:0 1px 3px rgba(0,0,0,.9);font:600 14px/1.4 "Open Sans",Arial,sans-serif;text-decoration:none}#bagage-vol:hover{text-decoration:underline}' +
 '#bagage-nb{box-sizing:border-box;max-width:460px;margin:20px 20px 4px;padding:14px 16px;border:1px solid rgba(244,241,233,.22);background:rgba(9,12,13,.55);color:#f4f1e9;font:14px/1.45 Arial,Helvetica,sans-serif}' +
 '#bagage-nb p{margin:0 0 10px}#bagage-nb form{display:flex;gap:8px;flex-wrap:wrap}' +
 '#bagage-nb input{flex:1 1 200px;min-width:0;height:40px;padding:0 12px;border:1px solid rgba(244,241,233,.4);background:transparent;color:#f4f1e9;font:inherit}' +
