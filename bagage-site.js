@@ -501,7 +501,7 @@ exStyle.id = 'bagage-extras';
 exStyle.textContent =
 'button[data-bagage-prijs]::after{content:" · " attr(data-bagage-prijs);text-transform:none;white-space:nowrap;font-weight:inherit}' +
 '[data-bagage-weg]{display:none!important}' +
-'[data-bagage-tekst]{font-size:0!important}[data-bagage-tekst]::after{content:attr(data-bagage-tekst);font-size:var(--bagage-fs,16px)}' +
+'[data-bagage-tekst]{font-size:0!important}[data-bagage-tekst]::after{content:attr(data-bagage-tekst);font-size:var(--bagage-fs,16px);display:inline-block;line-height:1.45}' +
 'div.fixed:has(img[alt="NavLogo"]){transition:transform .3s ease}' +
 'div.fixed.bagage-kop-weg:has(img[alt="NavLogo"]){transform:translateY(-100%)!important}';
 document.head.append(exStyle);
