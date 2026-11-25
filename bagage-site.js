@@ -644,7 +644,7 @@ const token = await fetch(GHOST_MEMBERS + 'integrity-token/').then(r => r.ok ? r
 const r = await fetch(GHOST_MEMBERS + 'send-magic-link/', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ email, emailType:'signup', integrityToken:token, labels:['bron: bagage-site'], newsletters:[{ name:'Bagage' }] }) });
 if (!r.ok) throw new Error('Ghost ' + r.status);
 form.remove();
-say('Bijna klaar: bevestig je inschrijving via de mail die we je net stuurden.', 'nb-ok');
+say('Check je mail en bevestig je inschrijving.', 'nb-ok');
 try { localStorage.setItem('bagageNieuwsbrief', '1'); } catch (err) { /* geen opslag */ }
 } catch (err) {
 say('Dat lukte niet. Probeer het opnieuw, of schrijf je in via bagage.ghost.io.', 'nb-err');
