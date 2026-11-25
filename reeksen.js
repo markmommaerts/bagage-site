@@ -63,7 +63,7 @@ window.BAGAGE_REEKSEN = [
       site:'https://museum-dereede.com/' },
     tekst:'Het Antwerpse museum voor grafiek, met werk van Goya, Rops en Munch, brengt samen met BAGAGE deze documentaire over Munch.',
     home:false,
-    ids:['6a9d5ca4b65cd631559e4698'],
+    ids:['6b06f24e7e3ae5e03eabd820'],
     shorts:[ /* media-id's van de Munch-shorts, zodra ze in de mediabibliotheek staan */ ],
     kaders:[ /* Collectie · Verdieping · Museum · Bezoek */
       'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/6aa75838-7b1a-4444-8f25-0a16a9817009.jpg',
