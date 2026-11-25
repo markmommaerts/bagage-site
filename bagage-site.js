@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -487,6 +487,133 @@ box.append(a);
 });
 if (grid) grid.parentNode.insertBefore(box, grid); else head.parentNode.insertBefore(box, head.nextSibling);
 };
+/* =========================================================
+   EXTRA'S (25/11/2026) — zelf opgelost i.p.v. te wachten op Revidd
+   - prijs naast de knop "Huren" op detailpagina's (uit het prijsveld in Revidd)
+   - tab Duiding verborgen als er bij die titel geen artikel is (Ghost)
+   - Engelse teksten vertaald of verborgen; knop "Subscribe" weg (Bagage heeft geen abonnementen)
+   - huurpagina: "EUR 11.99" wordt "11,99 €"
+   - promotiecode uit een link (?code=XXXX) vooraf ingevuld bij "Kortingscode toepassen"
+   - kop verdwijnt bij naar beneden scrollen en komt terug bij naar boven scrollen
+   ========================================================= */
+const exStyle = document.createElement('style');
+exStyle.id = 'bagage-extras';
+exStyle.textContent =
+'button[data-bagage-prijs]::after{content:" · " attr(data-bagage-prijs);text-transform:none;white-space:nowrap;font-weight:inherit}' +
+'[data-bagage-weg]{display:none!important}' +
+'[data-bagage-tekst]{font-size:0!important}[data-bagage-tekst]::after{content:attr(data-bagage-tekst);font-size:var(--bagage-fs,16px)}' +
+'div.fixed:has(img[alt="NavLogo"]){transition:transform .3s ease}' +
+'div.fixed.bagage-kop-weg:has(img[alt="NavLogo"]){transform:translateY(-100%)!important}';
+document.head.append(exStyle);
+const API = 'https://bagage.api1.revidd.video/partner/v1/content/fetch';
+const API_KEY = '4649e3177994e74974747df6ae98c9868791c5bcfc673faa';
+const GHOST = 'https://bagage.ghost.io/ghost/api/content/posts/?key=ba7d6876786ccada3ce5ee5da1&limit=1&fields=id&filter=tag:';
+const euroNl = n => Number(n).toFixed(2).replace('.', ',') + ' €';
+const duurNl = d => {
+const m = /^(\d+)_(DAYS|WEEKS|MONTHS|YEARS)$/.exec(d || ''); if (!m) return '';
+const n = +m[1], w = { DAYS:['dag','dagen'], WEEKS:['week','weken'], MONTHS:['maand','maanden'], YEARS:['jaar','jaar'] }[m[2]];
+return n + ' ' + w[n === 1 ? 0 : 1];
+};
+let prijzen = null, prijzenBezig = null;
+const laadPrijzen = () => {
+if (prijzen) return Promise.resolve(prijzen);
+if (prijzenBezig) return prijzenBezig;
+try { const c = JSON.parse(sessionStorage.getItem('bagagePrijzen') || 'null'); if (c && Date.now() - c.t < 10 * 60 * 1000) { prijzen = c.p; return Promise.resolve(prijzen); } } catch (e) { /* geen opslag */ }
+prijzenBezig = (async () => {
+const p = {}; let skip = 0;
+for (;;) {
+const r = await fetch(API, { method:'POST', headers:{ 'api-key':API_KEY, 'Content-Type':'application/json' }, body:JSON.stringify({ limit:100, skip }) });
+if (!r.ok) break;
+const j = await r.json();
+(j.data || []).forEach(i => {
+const t = (i.tvod || []).filter(x => x && Number(x.price) > 0).sort((a, b) => Number(b.price) - Number(a.price))[0];
+if (t) p[i.id] = euroNl(t.price) + (duurNl(t.duration) ? ' · ' + duurNl(t.duration) : '');
+});
+skip += 100;
+if (!j.data || !j.data.length || skip >= j.count) break;
+}
+prijzen = p;
+try { sessionStorage.setItem('bagagePrijzen', JSON.stringify({ t:Date.now(), p })); } catch (e) { /* geen opslag */ }
+return p;
+})().catch(() => { prijzen = {}; return prijzen; });
+return prijzenBezig;
+};
+const pageId = () => { const m = /\/(movies|seasons|episodes)\/[^/?#]*?([0-9a-f]{24})\/?$/.exec(location.pathname); return m ? m[2] : ''; };
+const duidingTel = {};
+const vervang = (el, txt) => {
+if (el.getAttribute('data-bagage-tekst') === txt) return;
+el.style.setProperty('--bagage-fs', getComputedStyle(el).fontSize);
+el.setAttribute('data-bagage-tekst', txt);
+};
+const weg = (el, aan) => { if (aan !== el.hasAttribute('data-bagage-weg')) el.toggleAttribute('data-bagage-weg', aan); };
+/* promotiecode uit de link onthouden */
+try { const c = new URLSearchParams(location.search).get('code'); if (c) sessionStorage.setItem('bagageCode', c.trim()); } catch (e) { /* geen opslag */ }
+let codeKlik = 0;
+const TITELS = [[/^sign in\b/i, 'Inloggen'], [/^sign up\b/i, 'Account aanmaken'], [/^search\b/i, 'Zoeken'], [/^subscriptions\b/i, 'Abonnementen']];
+const extras = () => {
+const id = pageId();
+/* prijs naast Huren */
+if (id) {
+if (!prijzen) laadPrijzen().then(() => labels());
+const p = prijzen && prijzen[id];
+document.querySelectorAll('button').forEach(b => {
+if (!/^huren$/i.test(b.textContent.trim())) return;
+if (p && b.getAttribute('data-bagage-prijs') !== p) b.setAttribute('data-bagage-prijs', p);
+if (!p && b.hasAttribute('data-bagage-prijs')) b.removeAttribute('data-bagage-prijs');
+});
+}
+/* Duiding verbergen zonder artikel */
+const dk = [...document.querySelectorAll('button[value]')].find(b => b.hasAttribute('data-bagage-duiding') || /^(duiding|nieuwsbrief)$/i.test(b.textContent.trim()));
+if (dk) {
+if (id && !(id in duidingTel)) {
+duidingTel[id] = null;
+fetch(GHOST + encodeURIComponent(id)).then(r => r.json()).then(j => { duidingTel[id] = (j.posts || []).length; labels(); }).catch(() => { duidingTel[id] = 1; });
+}
+weg(dk, !!id && duidingTel[id] === 0);
+}
+/* teksten */
+document.querySelectorAll('p, span, div, h1, h2, h3, h4, a, button, label').forEach(el => {
+if (el.childElementCount) return;
+const t = el.textContent.trim();
+if (!t || t.length > 200) return;
+if (/^dutch$/i.test(t)) vervang(el, 'Nederlands');
+else if (/^no newsletter posts yet\.?$/i.test(t)) vervang(el, 'Nog geen duiding bij deze titel.');
+else if (/^you may get access to/i.test(t)) weg(el, true);
+else if (/^je hebt geen actief abonnementspakket\.?$/i.test(t) || /^krijg toegang en begin met kijken door een abonnement/i.test(t)) weg(el, true);
+else if (/^geen abonnementen beschikbaar in jouw land$/i.test(t)) vervang(el, 'Bagage werkt zonder abonnement: je huurt per titel. Heb je een promotiecode van een partner? Vul ze in bij het huren, via "Kortingscode toepassen".');
+else {
+const m = /^EUR\s*(\d+)[.,](\d{2})$/i.exec(t);
+if (m) vervang(el, m[1] + ',' + m[2] + ' €');
+}
+});
+/* knop Subscribe weg (kop en detailpagina's) */
+document.querySelectorAll('button, a').forEach(b => { if (/^subscribe$/i.test(b.textContent.trim())) weg(b, true); });
+/* paginatitels */
+TITELS.forEach(([re, nl]) => { if (re.test(document.title)) document.title = document.title.replace(re, nl); });
+/* promotiecode invullen op de huurpagina */
+let code = ''; try { code = sessionStorage.getItem('bagageCode') || ''; } catch (e) { /* geen opslag */ }
+if (code && /^\/[a-z]{2}\/tvod\//.test(location.pathname)) {
+const inp = [...document.querySelectorAll('input')].find(i => i.offsetParent && /code|kortings|coupon|promo/i.test((i.placeholder || '') + ' ' + (i.name || '') + ' ' + (i.id || '')));
+if (inp) {
+if (!inp.value) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(inp, code); inp.dispatchEvent(new Event('input', { bubbles:true })); }
+} else if (Date.now() - codeKlik > 3000) {
+const link = [...document.querySelectorAll('*')].find(e => !e.childElementCount && /^kortingscode toepassen/i.test(e.textContent.trim()));
+if (link) { codeKlik = Date.now(); (link.closest('button,a,[class*="cursor-pointer"]') || link).click(); }
+}
+}
+};
+/* kop verbergen bij naar beneden scrollen */
+let kopY = 0;
+document.addEventListener('scroll', e => {
+const sc = e.target === document ? document.scrollingElement : e.target;
+if (!sc || !(sc === document.scrollingElement || sc.id === 'main-layout-scroll')) return;
+const logo = document.querySelector('img[alt="NavLogo"]');
+const head = logo && logo.closest('.fixed');
+if (!head) return;
+const y = sc.scrollTop;
+if (y < 80 || y < kopY - 6) { head.classList.remove('bagage-kop-weg'); kopY = y; }
+else if (y > kopY + 6) { head.classList.add('bagage-kop-weg'); kopY = y; }
+}, { capture:true, passive:true });
 let shTimer = 0, lbTimer = 0;
 const labels = () => {
 if (document.documentElement.classList.contains('bagage-shorts-open') !== /^\/[a-z]{2}\/pages\/shorts\/?$/.test(location.pathname)) shortsMode(location.pathname);
@@ -519,6 +646,7 @@ document.querySelectorAll('span[style]').forEach(sp => {
 const on = !sp.childElementCount && /^read more\s*→?$/i.test(sp.textContent.trim());
 if (on !== sp.hasAttribute('data-bagage-lees')) sp.toggleAttribute('data-bagage-lees', on);
 });
+try { extras(); } catch (e) { /* extra's mogen de rest nooit blokkeren */ }
 };
 new MutationObserver(() => {
 if (!shTimer) shTimer = setTimeout(() => { shTimer = 0; searchHits(); }, 120);
