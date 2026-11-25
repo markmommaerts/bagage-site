@@ -502,11 +502,11 @@ exStyle.textContent =
 'button[data-bagage-prijs]::after{content:" · " attr(data-bagage-prijs);text-transform:none;white-space:nowrap;font-weight:inherit}' +
 '[data-bagage-weg]{display:none!important}' +
 '[data-bagage-tekst]{font-size:0!important}[data-bagage-tekst]::after{content:attr(data-bagage-tekst);font-size:var(--bagage-fs,16px);display:inline-block;line-height:1.45}' +
-'#bagage-nb{max-width:440px;margin:18px 0 6px;padding:14px 16px;border:1px solid rgba(244,241,233,.22);background:rgba(9,12,13,.55);color:#f4f1e9;font:14px/1.45 Arial,Helvetica,sans-serif}' +
+'#bagage-nb{box-sizing:border-box;max-width:460px;margin:20px 20px 4px;padding:14px 16px;border:1px solid rgba(244,241,233,.22);background:rgba(9,12,13,.55);color:#f4f1e9;font:14px/1.45 Arial,Helvetica,sans-serif}' +
 '#bagage-nb p{margin:0 0 10px}#bagage-nb form{display:flex;gap:8px;flex-wrap:wrap}' +
 '#bagage-nb input{flex:1 1 200px;min-width:0;height:40px;padding:0 12px;border:1px solid rgba(244,241,233,.4);background:transparent;color:#f4f1e9;font:inherit}' +
 '#bagage-nb input::placeholder{color:rgba(244,241,233,.6)}#bagage-nb button{height:40px;padding:0 16px;border:0;background:#ef6a28;color:#111;font:700 14px Arial,Helvetica,sans-serif;cursor:pointer}' +
-'#bagage-nb button:disabled{opacity:.6}#bagage-nb small{display:block;margin-top:8px;color:rgba(244,241,233,.65);font-size:12px}#bagage-nb .nb-ok{color:#e8b654}#bagage-nb .nb-err{color:#f4844c}' +
+'@media(min-width:768px){#bagage-nb{margin-left:60px}}#bagage-nb button:disabled{opacity:.6}#bagage-nb small{display:block;margin-top:8px;color:rgba(244,241,233,.65);font-size:12px}#bagage-nb .nb-ok{color:#e8b654}#bagage-nb .nb-err{color:#f4844c}' +
 'div.fixed:has(img[alt="NavLogo"]){transition:transform .3s ease}' +
 'div.fixed.bagage-kop-weg:has(img[alt="NavLogo"]){transform:translateY(-100%)!important}';
 document.head.append(exStyle);
@@ -617,8 +617,9 @@ let klaar = false; try { klaar = localStorage.getItem('bagageNieuwsbrief') === '
 if (klaar) return;
 const knop = [...document.querySelectorAll('button')].find(b => /^(huren|nu kijken)$/i.test(b.textContent.trim()) && b.offsetParent);
 if (!knop) return;
-const rij = knop.parentElement && knop.parentElement.parentElement ? knop.parentElement : null;
-if (!rij) return;
+/* onder de banner (de knop staat in een laag over het bannerbeeld, met vaste hoogte) */
+const rij = knop.closest('div.relative.w-full') || (knop.parentElement && knop.parentElement.parentElement);
+if (!rij || !rij.parentNode) return;
 const al = document.getElementById('bagage-nb');
 if (al && al.previousElementSibling === rij) return;
 if (al) al.remove();
