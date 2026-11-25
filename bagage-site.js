@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -506,7 +506,7 @@ exStyle.textContent =
 '#bagage-nb p{margin:0 0 10px}#bagage-nb form{display:flex;gap:8px;flex-wrap:wrap}' +
 '#bagage-nb input{flex:1 1 200px;min-width:0;height:40px;padding:0 12px;border:1px solid rgba(244,241,233,.4);background:transparent;color:#f4f1e9;font:inherit}' +
 '#bagage-nb input::placeholder{color:rgba(244,241,233,.6)}#bagage-nb button{height:40px;padding:0 16px;border:0;background:#ef6a28;color:#111;font:700 14px Arial,Helvetica,sans-serif;cursor:pointer}' +
-'@media(min-width:768px){#bagage-nb{margin-left:60px}}#bagage-nb button:disabled{opacity:.6}#bagage-nb small{display:block;margin-top:8px;color:rgba(244,241,233,.65);font-size:12px}#bagage-nb .nb-ok{color:#e8b654}#bagage-nb .nb-err{color:#f4844c}' +
+'@media(min-width:768px){#bagage-nb{margin-left:60px}}#bagage-nb.in-banner{margin:6px 0 0;max-width:100%}#bagage-nb button:disabled{opacity:.6}#bagage-nb small{display:block;margin-top:8px;color:rgba(244,241,233,.65);font-size:12px}#bagage-nb .nb-ok{color:#e8b654}#bagage-nb .nb-err{color:#f4844c}' +
 'div.fixed:has(img[alt="NavLogo"]){transition:transform .3s ease}' +
 'div.fixed.bagage-kop-weg:has(img[alt="NavLogo"]){transform:translateY(-100%)!important}';
 document.head.append(exStyle);
@@ -617,18 +617,19 @@ let klaar = false; try { klaar = localStorage.getItem('bagageNieuwsbrief') === '
 if (klaar) return;
 const knop = [...document.querySelectorAll('button')].find(b => /^(huren|nu kijken)$/i.test(b.textContent.trim()) && b.offsetParent);
 if (!knop) return;
-/* onder de banner (de knop staat in een laag over het bannerbeeld, met vaste hoogte) */
+/* vanaf 768 px: in de bannerlaag, net onder Delen (daar is plaats); smaller: onder de banner (de laag heeft daar een vaste hoogte) */
+const kolom = window.innerWidth >= 768 && knop.closest('div.max-w-md');
 const rij = knop.closest('div.relative.w-full') || (knop.parentElement && knop.parentElement.parentElement);
-if (!rij || !rij.parentNode) return;
+if (!kolom && (!rij || !rij.parentNode)) return;
+const plaats = b => { if (kolom) { b.classList.add('in-banner'); kolom.appendChild(b); } else { b.classList.remove('in-banner'); rij.parentNode.insertBefore(b, rij.nextSibling); } };
 const al = document.getElementById('bagage-nb');
-if (al && al.previousElementSibling === rij) return;
-if (al) al.remove();
+if (al) { if (kolom ? al.parentNode !== kolom || al.nextElementSibling : al.previousElementSibling !== rij) plaats(al); return; }
 const box = document.createElement('div');
 box.id = 'bagage-nb';
 box.innerHTML = '<p>Ontvang onze wekelijkse nieuwsbrief en blijf op de hoogte van nieuwe documentaires en artikels.</p>' +
 '<form novalidate><input type="email" name="email" autocomplete="email" placeholder="Je e-mailadres" aria-label="Je e-mailadres" required><button type="submit">Inschrijven</button></form>' +
 '<small>Je krijgt eerst een mail om je inschrijving te bevestigen. Uitschrijven kan altijd.</small>';
-rij.parentNode.insertBefore(box, rij.nextSibling);
+plaats(box);
 const form = box.querySelector('form'), info = box.querySelector('small');
 const say = (t, c) => { info.textContent = t; info.className = c || ''; };
 form.addEventListener('submit', async e => {
