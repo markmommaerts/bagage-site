@@ -595,7 +595,7 @@ let code = ''; try { code = sessionStorage.getItem('bagageCode') || ''; } catch 
 if (code && /^\/[a-z]{2}\/tvod\//.test(location.pathname)) {
 const inp = [...document.querySelectorAll('input')].find(i => i.offsetParent && /code|kortings|coupon|promo/i.test((i.placeholder || '') + ' ' + (i.name || '') + ' ' + (i.id || '')));
 if (inp) {
-if (!inp.value) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(inp, code); inp.dispatchEvent(new Event('input', { bubbles:true })); }
+if (!inp.value && !inp.hasAttribute('data-bagage-code')) { inp.setAttribute('data-bagage-code', ''); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(inp, code); inp.dispatchEvent(new Event('input', { bubbles:true })); }
 } else if (Date.now() - codeKlik > 3000 && codeOpen !== location.pathname + '|' + code) {
 /* het codevenster één keer per huurpagina openen; sluit de kijker het, dan blijft het dicht */
 const link = [...document.querySelectorAll('*')].find(e => !e.childElementCount && /^kortingscode toepassen/i.test(e.textContent.trim()));
