@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-25f (Sign in/Sign up vertaald), 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-25g (inhoudsiconen rechts van leeftijd), 2026-11-25f (Sign in/Sign up vertaald), 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -502,6 +502,7 @@ exStyle.textContent =
 'button[data-bagage-prijs]::after{content:" · " attr(data-bagage-prijs);text-transform:none;white-space:nowrap;font-weight:inherit}' +
 '[data-bagage-weg]{display:none!important}' +
 '[data-bagage-tekst]{font-size:0!important}[data-bagage-tekst]::after{content:attr(data-bagage-tekst);font-size:var(--bagage-fs,16px);display:inline-block;line-height:1.45}' +
+'div.mr-10:has(> span:first-child > img[title]){align-items:center}div.mr-10 > span:first-child:has(> img[title]){order:9;margin-left:8px}div.mr-10 > span:first-child:has(> img[title]) + b{display:none}' +
 '#bagage-nb{box-sizing:border-box;max-width:460px;margin:20px 20px 4px;padding:14px 16px;border:1px solid rgba(244,241,233,.22);background:rgba(9,12,13,.55);color:#f4f1e9;font:14px/1.45 Arial,Helvetica,sans-serif}' +
 '#bagage-nb p{margin:0 0 10px}#bagage-nb form{display:flex;gap:8px;flex-wrap:wrap}' +
 '#bagage-nb input{flex:1 1 200px;min-width:0;height:40px;padding:0 12px;border:1px solid rgba(244,241,233,.4);background:transparent;color:#f4f1e9;font:inherit}' +
