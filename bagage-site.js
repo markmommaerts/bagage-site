@@ -578,7 +578,7 @@ fetch(GHOST + encodeURIComponent(id)).then(r => r.json()).then(j => { duidingTel
 weg(dk, !!id && duidingTel[id] === 0);
 }
 /* Revidd hergebruikt tabknoppen: een andere tab die vroeger Duiding was, niet verborgen laten */
-document.querySelectorAll('button[value][data-bagage-weg]').forEach(b => { if (b !== dk) weg(b, false); });
+document.querySelectorAll('button[value][data-bagage-weg]').forEach(b => { if (b !== dk && !/^subscribe$/i.test(b.textContent.trim())) weg(b, false); });
 /* teksten */
 document.querySelectorAll('p, span, div, h1, h2, h3, h4, a, button, label').forEach(el => {
 if (el.childElementCount && [...el.children].some(c => c.tagName !== 'BR')) return;
