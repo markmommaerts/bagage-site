@@ -423,16 +423,21 @@
     const byId = Object.fromEntries(items.map(i => [i.id, i]));
     const uid = i => i && i.actualmedia && i.actualmedia[0] && i.actualmedia[0].id;
     const uids = new Set();
+    /* Een duidingsartikel in Ghost hangt aan een titel via een tag met het Revidd Content ID (sinds oktober 2026;
+       zo werkt ook de tab Duiding op de detailpagina's). Oudere artikels met de media-UID (#uid) blijven gevonden. */
+    const cids = new Set();
     const add = id => {
       const item = byId[id]; if (!item) return;
+      cids.add(String(item.id).toLowerCase());
       if (uid(item)) uids.add(String(uid(item)));
       (item.seasons || []).forEach(s => add(s.id));
-      items.filter(x => x.seasonId === id).forEach(ep => { if (uid(ep)) uids.add(String(uid(ep))); });
+      items.filter(x => x.seasonId === id).forEach(ep => { cids.add(String(ep.id).toLowerCase()); if (uid(ep)) uids.add(String(uid(ep))); });
     };
     ids.forEach(add);
-    if (!uids.size) return;
+    if (!uids.size && !cids.size) return;
+    const tags = [...cids, ...[...uids].flatMap(u => ['hash-' + u, u])];
     const url = GHOST_CONTENT + '?key=' + GHOST_KEY + '&limit=6&filter=' +
-      encodeURIComponent('tag:[' + [...uids].flatMap(u => ['hash-' + u, u]).join(',') + ']') +
+      encodeURIComponent('tag:[' + tags.join(',') + ']') +
       '&fields=title,slug,html,excerpt,custom_excerpt,feature_image,published_at,reading_time,url&order=published_at%20desc';
     const date = iso => iso ? new Date(iso).toLocaleDateString('nl-BE', { day:'numeric', month:'long', year:'numeric' }) : '';
     const reader = el('div', 'bg-reader'); reader.hidden = true;
