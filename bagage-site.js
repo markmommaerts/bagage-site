@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-25i (tab Gerelateerd niet meer per ongeluk verborgen), 2026-11-25h (?tab=duiding opent de tab Duiding), 2026-11-25g (inhoudsiconen rechts van leeftijd), 2026-11-25f (Sign in/Sign up vertaald), 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-25j (?tab= opnieuw kiezen na laden), 2026-11-25i (tab Gerelateerd niet meer per ongeluk verborgen), 2026-11-25h (?tab=duiding opent de tab Duiding), 2026-11-25g (inhoudsiconen rechts van leeftijd), 2026-11-25f (Sign in/Sign up vertaald), 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -607,7 +607,13 @@ const tabNaam = new URLSearchParams(location.search).get('tab');
 const tabKey = location.pathname + '|' + tabNaam;
 if (tabNaam && pageId() && tabOpen !== tabKey) {
 const tab = [...document.querySelectorAll('button')].find(b => b.textContent.trim().toLowerCase() === tabNaam.toLowerCase() && b.offsetParent && !b.hasAttribute('data-bagage-weg'));
-if (tab) { tabOpen = tabKey; tab.click(); setTimeout(() => { try { tab.scrollIntoView({ block:'start', behavior:'smooth' }); } catch (e) { /* oud */ } }, 300); }
+if (tab) {
+tabOpen = tabKey;
+/* Revidd voegt tabs soms later toe en hergebruikt de knoppen: na een korte pauze opnieuw de juiste tab zoeken en aanklikken */
+const kies = () => { const t = [...document.querySelectorAll('button')].find(b => b.textContent.trim().toLowerCase() === tabNaam.toLowerCase() && b.offsetParent && !b.hasAttribute('data-bagage-weg')); if (t && location.pathname + '|' + new URLSearchParams(location.search).get('tab') === tabKey) { t.click(); return t; } };
+kies(); setTimeout(kies, 1200);
+setTimeout(() => { const t = kies(); if (t) try { t.scrollIntoView({ block:'start', behavior:'smooth' }); } catch (e) { /* oud */ } }, 2500);
+}
 }
 } catch (e) { /* geen tab */ }
 /* promotiecode invullen op de huurpagina */
