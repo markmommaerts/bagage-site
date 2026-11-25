@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -502,6 +502,11 @@ exStyle.textContent =
 'button[data-bagage-prijs]::after{content:" · " attr(data-bagage-prijs);text-transform:none;white-space:nowrap;font-weight:inherit}' +
 '[data-bagage-weg]{display:none!important}' +
 '[data-bagage-tekst]{font-size:0!important}[data-bagage-tekst]::after{content:attr(data-bagage-tekst);font-size:var(--bagage-fs,16px);display:inline-block;line-height:1.45}' +
+'#bagage-nb{max-width:440px;margin:18px 0 6px;padding:14px 16px;border:1px solid rgba(244,241,233,.22);background:rgba(9,12,13,.55);color:#f4f1e9;font:14px/1.45 Arial,Helvetica,sans-serif}' +
+'#bagage-nb p{margin:0 0 10px}#bagage-nb form{display:flex;gap:8px;flex-wrap:wrap}' +
+'#bagage-nb input{flex:1 1 200px;min-width:0;height:40px;padding:0 12px;border:1px solid rgba(244,241,233,.4);background:transparent;color:#f4f1e9;font:inherit}' +
+'#bagage-nb input::placeholder{color:rgba(244,241,233,.6)}#bagage-nb button{height:40px;padding:0 16px;border:0;background:#ef6a28;color:#111;font:700 14px Arial,Helvetica,sans-serif;cursor:pointer}' +
+'#bagage-nb button:disabled{opacity:.6}#bagage-nb small{display:block;margin-top:8px;color:rgba(244,241,233,.65);font-size:12px}#bagage-nb .nb-ok{color:#e8b654}#bagage-nb .nb-err{color:#f4844c}' +
 'div.fixed:has(img[alt="NavLogo"]){transition:transform .3s ease}' +
 'div.fixed.bagage-kop-weg:has(img[alt="NavLogo"]){transform:translateY(-100%)!important}';
 document.head.append(exStyle);
@@ -590,6 +595,7 @@ if (m) vervang(el, m[1] + ',' + m[2] + ' €');
 document.querySelectorAll('button, a').forEach(b => { if (/^subscribe$/i.test(b.textContent.trim())) weg(b, true); });
 /* paginatitels */
 TITELS.forEach(([re, nl]) => { if (re.test(document.title)) document.title = document.title.replace(re, nl); });
+nbUitnodiging();
 /* promotiecode invullen op de huurpagina */
 let code = ''; try { code = sessionStorage.getItem('bagageCode') || ''; } catch (e) { /* geen opslag */ }
 if (code && /^\/[a-z]{2}\/tvod\//.test(location.pathname)) {
@@ -602,6 +608,44 @@ const link = [...document.querySelectorAll('*')].find(e => !e.childElementCount 
 if (link) { codeKlik = Date.now(); codeOpen = location.pathname + '|' + code; (link.closest('button,a,[class*="cursor-pointer"]') || link).click(); }
 }
 }
+};
+/* nieuwsbrief-uitnodiging onder de knop Huren / Nu kijken op detailpagina's (inschrijving in Ghost, met bevestigingsmail) */
+const GHOST_MEMBERS = 'https://bagage.ghost.io/members/api/';
+const nbUitnodiging = () => {
+if (!pageId()) return;
+let klaar = false; try { klaar = localStorage.getItem('bagageNieuwsbrief') === '1'; } catch (e) { /* geen opslag */ }
+if (klaar) return;
+const knop = [...document.querySelectorAll('button')].find(b => /^(huren|nu kijken)$/i.test(b.textContent.trim()) && b.offsetParent);
+if (!knop) return;
+const rij = knop.parentElement && knop.parentElement.parentElement ? knop.parentElement : null;
+if (!rij) return;
+const al = document.getElementById('bagage-nb');
+if (al && al.previousElementSibling === rij) return;
+if (al) al.remove();
+const box = document.createElement('div');
+box.id = 'bagage-nb';
+box.innerHTML = '<p>Ontvang de wekelijkse nieuwsbrief van Bagage en blijf op de hoogte van nieuwe documentaires en artikels.</p>' +
+'<form novalidate><input type="email" name="email" autocomplete="email" placeholder="Je e-mailadres" aria-label="Je e-mailadres" required><button type="submit">Inschrijven</button></form>' +
+'<small>Je krijgt eerst een mail om je inschrijving te bevestigen. Uitschrijven kan altijd.</small>';
+rij.parentNode.insertBefore(box, rij.nextSibling);
+const form = box.querySelector('form'), info = box.querySelector('small');
+const say = (t, c) => { info.textContent = t; info.className = c || ''; };
+form.addEventListener('submit', async e => {
+e.preventDefault();
+const email = form.email.value.trim();
+if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { say('Vul een geldig e-mailadres in.', 'nb-err'); form.email.focus(); return; }
+const btn = form.querySelector('button'); btn.disabled = true; say('Even geduld…');
+try {
+const token = await fetch(GHOST_MEMBERS + 'integrity-token/').then(r => r.ok ? r.text() : '');
+const r = await fetch(GHOST_MEMBERS + 'send-magic-link/', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ email, emailType:'signup', integrityToken:token, labels:['bron: bagage-site'] }) });
+if (!r.ok) throw new Error('Ghost ' + r.status);
+form.remove();
+say('Bijna klaar: bevestig je inschrijving via de mail die we je net stuurden.', 'nb-ok');
+try { localStorage.setItem('bagageNieuwsbrief', '1'); } catch (err) { /* geen opslag */ }
+} catch (err) {
+say('Dat lukte niet. Probeer het opnieuw, of schrijf je in via bagage.ghost.io.', 'nb-err');
+} finally { btn.disabled = false; }
+});
 };
 /* kop verbergen bij naar beneden scrollen */
 let kopY = 0;
