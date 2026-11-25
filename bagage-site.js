@@ -625,7 +625,7 @@ if (al && al.previousElementSibling === rij) return;
 if (al) al.remove();
 const box = document.createElement('div');
 box.id = 'bagage-nb';
-box.innerHTML = '<p>Ontvang de wekelijkse nieuwsbrief van Bagage en blijf op de hoogte van nieuwe documentaires en artikels.</p>' +
+box.innerHTML = '<p>Ontvang onze wekelijkse nieuwsbrief en blijf op de hoogte van nieuwe documentaires en artikels.</p>' +
 '<form novalidate><input type="email" name="email" autocomplete="email" placeholder="Je e-mailadres" aria-label="Je e-mailadres" required><button type="submit">Inschrijven</button></form>' +
 '<small>Je krijgt eerst een mail om je inschrijving te bevestigen. Uitschrijven kan altijd.</small>';
 rij.parentNode.insertBefore(box, rij.nextSibling);
