@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -631,6 +631,8 @@ box.innerHTML = '<p>Ontvang onze wekelijkse nieuwsbrief en blijf op de hoogte va
 '<small>Je krijgt eerst een mail om je inschrijving te bevestigen. Uitschrijven kan altijd.</small>';
 plaats(box);
 const form = box.querySelector('form'), info = box.querySelector('small');
+/* ingelogd: e-mailadres van het Bagage-account alvast invullen (de lezer bevestigt nog zelf via de mail van Ghost) */
+try { const m = JSON.stringify((window.__NEXT_DATA__ || {}).props || {}).match(/"me":\{[^{}]*?"email":"([^"@\s]+@[^"\s]+)"/); if (m) form.email.value = m[1]; } catch (e) { /* geen account */ }
 const say = (t, c) => { info.textContent = t; info.className = c || ''; };
 form.addEventListener('submit', async e => {
 e.preventDefault();
