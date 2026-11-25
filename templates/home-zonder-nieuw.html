@@ -1,6 +1,6 @@
 <!-- =========================================================
      BAGAGE — Startpagina, versie zonder "Nieuw op Bagage" (22/11/2026)
-     Paginaadres in Revidd: …/nl/pages/home
+     Paginaadres in Revidd: de startpagina (/nl)
      Volgorde: hero · Welkom bij Bagage · Onze keuzes van de maand (tag KEUZE) · Ontdek onze verhalen ·
      Reeksen & dossiers · Shorts · nieuwsbrief. Wat nieuw is, komt via de hero (tag UITGELICHT) of de keuzes.
      Vorige versie, met "Nieuw op Bagage": templates/home.html
@@ -266,7 +266,7 @@ style="background-image:url('https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc8
 <footer class="site-footer">
 <div class="shell foot">
 <div class="foot-brand">
-<a href="https://bagage.store1.revidd.video/nl/pages/home"><img class="foot-logo" src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/413eada8-4b04-4f80-9222-4259ff74c867.png" alt="Bagage" loading="lazy"></a>
+<a href="https://bagage.store1.revidd.video/nl"><img class="foot-logo" src="https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/413eada8-4b04-4f80-9222-4259ff74c867.png" alt="Bagage" loading="lazy"></a>
 <div class="footlinks">
 <a href="https://bagage.store1.revidd.video/privacy-policy">Privacybeleid</a>
 <a href="https://bagage.store1.revidd.video/terms-of-use">Gebruiksvoorwaarden</a>
@@ -1237,7 +1237,7 @@ const isLogo = (t.matches && t.matches('img[alt="NavLogo"]')) || (box && box.que
 if(!isLogo) return;
 e.preventDefault();
 e.stopPropagation();
-const home = '/' + (view.location.pathname.split('/')[1] || 'nl') + '/pages/home';
+const home = '/' + (view.location.pathname.split('/')[1] || 'nl');
 if(!(view.__bagageGo && view.__bagageGo(home))) view.location.href = home;
 };
 host.addEventListener('click', onLogo, true);

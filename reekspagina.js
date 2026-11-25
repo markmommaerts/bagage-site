@@ -90,7 +90,7 @@
         const isLogo = (t.matches && t.matches('img[alt="NavLogo"]')) || (box && box.querySelector('img[alt="NavLogo"]'));
         if (!isLogo) return;
         e.preventDefault(); e.stopPropagation();
-        const home = '/' + lang() + '/pages/home';
+        const home = '/' + lang();
         if (!(view.__bagageGo && view.__bagageGo(home))) view.location.href = home;
       };
       host.addEventListener('click', onLogo, true);

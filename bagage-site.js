@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -372,9 +372,10 @@ bar + ' span{color:#f4f1e9!important}' +
 '[data-bagage-footlinks]{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin:14px 0 10px;font-size:13px}[data-bagage-footlinks] a{color:inherit;text-decoration:none}[data-bagage-footlinks] a:hover{color:#b63712!important}';
 document.head.append(st);
 const lang = () => (location.pathname.split('/')[1] || 'nl').replace(/^en$/, 'nl');
-/* De echte startpagina is /nl/pages/home. Revidds eigen startpagina (/nl, /nl/home) toont een oude kopie. */
-const homeUrl = () => '/' + lang() + '/pages/home';
-const isOldHome = p => /^\/((en|nl)(\/home)?)?\/?$/.test(p);
+/* Startpagina = /nl (Revidd, 25/11/2026: logo's linken naar /nl, /nl/home stuurt door naar /nl).
+   Oude adressen /nl/home en /nl/pages/home gaan naar /nl. */
+const homeUrl = () => '/' + lang();
+const isOldHome = p => /^\/(en|nl)\/(home|pages\/home)\/?$/.test(p);
 window.__bagageGo = (url, replace) => {
 try { const r = window.next && window.next.router; const f = r && (replace ? r.replace : r.push); if (typeof f === 'function') { f.call(r, url); window.__bagageSpa = 1; return true; } } catch (e) {}
 return false;
@@ -435,7 +436,7 @@ return orig.apply(this, arguments);
 };
 });
 const PAGES = [
-['Welkom', '/pages/home', 'De startpagina van Bagage, met nieuwe titels en shorts', 'welkom home start startpagina begin bagage nieuw nieuwe'],
+['Welkom', '', 'De startpagina van Bagage, met nieuwe titels en shorts', 'welkom home start startpagina begin bagage nieuw nieuwe'],
 ['Catalogus', '/pages/catalogus', 'Alle documentaires en reeksen, per thema', 'catalogus aanbod overzicht alle documentaires documentaire reeksen reeks films film thema themas kunst cultuur geschiedenis natuur filosofie religie mens samenleving bestemmingen reizen reis'],
 ['Reeksen & dossiers', '/pages/partnerkeuze', 'Reeksen, dossiers en documentaires rond één onderwerp, met partners en eigen selecties', 'reeksen reeks dossiers dossier partner partners partnerkeuze museum musea organisatie organisaties selectie verdieping'],
 ['Prijzen & FAQ', '/pages/prijzen-faq', 'Prijzen, toegang en veelgestelde vragen', 'prijs prijzen kost kosten tarief tarieven abonnement betalen betaling gratis huren kopen faq vragen vraag veelgestelde hulp help account inloggen registreren'],

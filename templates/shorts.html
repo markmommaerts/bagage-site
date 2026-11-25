@@ -3,7 +3,7 @@
      Paginaadres in Revidd: …/nl/pages/shorts
      Versie 2026-11-22: sneller starten — de eerste short wordt al opgehaald terwijl de pagina
      zich opbouwt, Revidd-info wordt per short maar één keer gevraagd, de catalogus pas na de
-     eerste short, de volgende short alvast klaargezet. Terug/fallback naar /nl/pages/home.
+     eerste short, de volgende short alvast klaargezet. Terug/fallback naar /nl (startpagina).
      Posters (staand 1080×1920) staan in de lijst, zodat er nooit een zwart of leeg vlak verschijnt.
      ========================================================= -->
 <base target="_top"><style>
@@ -124,7 +124,7 @@ const SHORTS = [
 { uid:'3746544', poster:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/1c19b9f5-2e3f-4f44-afd1-0a6322a0612e.jpg', title:'Florence',          href:'https://bagage.store1.revidd.video/episodes/heilige-oorden-kerken-florence-6ae5df357e11c8a635c10c11', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 4 \u00b7 Florence' },
 { uid:'3746546', poster:'https://1577787583.rsc.cdn77.org/6a951185e6ab34ccc82b94a6/images/95921ba4-b135-4131-96da-4ed144a445a0.jpg', title:'Rusland',           href:'https://bagage.store1.revidd.video/nl/episodes/heilige-oorden-kerken-rusland-6ae5ddc5c63fd9d6c70978fb', serie:'Heilige Oorden \u00b7 Kerken', ep:'Aflevering 5 \u00b7 Rusland' }
 ];
-const HOME = 'https://bagage.store1.revidd.video/nl/pages/home';
+const HOME = 'https://bagage.store1.revidd.video/nl';
 const INFO = uid => 'https://api.revidd.com/media/v1/org/public/video/' + encodeURIComponent(uid);
 const EMBED = (uid, w, h) => 'https://embed.revidd.com/iframe/index.html?mid=' + encodeURIComponent(uid) + '&platform=OTT&w=' + w + '&h=' + h + '&loop=true';
 const HLS_JS = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js';
