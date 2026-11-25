@@ -4,7 +4,7 @@
    <script src="https://ADRES/bagage-site.js"></script>
    Een wijziging hier geldt meteen voor alle pagina's.
    Inhoud: 1. kader op maat (hoogte, scrollen, kop)  2. site-fix (logo, menu, zoeken, navigatie)
-   Versie: 2026-11-25j (?tab= opnieuw kiezen na laden), 2026-11-25i (tab Gerelateerd niet meer per ongeluk verborgen), 2026-11-25h (?tab=duiding opent de tab Duiding), 2026-11-25g (inhoudsiconen rechts van leeftijd), 2026-11-25f (Sign in/Sign up vertaald), 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
+   Versie: 2026-11-26 (tab Korte versies via tag KORT: <id>), 2026-11-25j (?tab= opnieuw kiezen na laden), 2026-11-25i (tab Gerelateerd niet meer per ongeluk verborgen), 2026-11-25h (?tab=duiding opent de tab Duiding), 2026-11-25g (inhoudsiconen rechts van leeftijd), 2026-11-25f (Sign in/Sign up vertaald), 2026-11-25e (nieuwsbrief: e-mail ingevuld als je ingelogd bent), 2026-11-25d (nieuwsbrief in banner onder Delen vanaf 768 px), 2026-11-25c (nieuwsbrief-uitnodiging onder Huren), 2026-11-25b (prijs bij Huren, Duiding verbergen, vertalingen, promotiecode uit link, kop weg bij scrollen), 2026-11-25 (startpagina = /nl), 2026-11-22f (beelden vol op gsm, home gsm: keuzes en reeksen vegen, uitklapmenu overal licht, vegen op iPad liggend, startpagina = /nl/pages/home, eigen onderbalk weg, shorts sneller opwarmen, zwart scherm bij openen shorts)
    ========================================================= */
 /* =========================================================
    SLOGAN (november 2026): "Blijf lezen. Blijf kijken. Blijf vragen."
@@ -503,6 +503,10 @@ exStyle.textContent =
 '[data-bagage-weg]{display:none!important}' +
 '[data-bagage-tekst]{font-size:0!important}[data-bagage-tekst]::after{content:attr(data-bagage-tekst);font-size:var(--bagage-fs,16px);display:inline-block;line-height:1.45}' +
 'div.mr-10:has(> span:first-child > img[title]){align-items:center}div.mr-10 > span:first-child:has(> img[title]){order:9;margin-left:8px}div.mr-10 > span:first-child:has(> img[title]) + b{display:none}' +
+'#bagage-kort-panel{display:none;margin:16px 20px}html.bagage-kort-open #bagage-kort-panel{display:grid}html.bagage-kort-open div:has(> .rd-tabs) ~ div:not(#bagage-kort-panel){display:none!important}' +
+'html.bagage-kort-open .rd-tabs button[value]{color:var(--bk-off)!important;font-weight:400!important}#bagage-kort-tab.aan{color:var(--bk-on)!important;font-weight:600!important}html.bagage-kort-open .rd-tabs > div.absolute{left:var(--bk-left)!important;width:var(--bk-w)!important}' +
+'#bagage-kort-panel{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}#bagage-kort-panel a{display:block;color:inherit;text-decoration:none}#bagage-kort-panel img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#1a1d22}#bagage-kort-panel b{display:block;margin-top:10px;font:600 15px/1.35 "Open Sans",Arial,sans-serif}#bagage-kort-panel small{display:block;margin-top:4px;opacity:.65;font-size:12px}' +
+'@media(min-width:768px){#bagage-kort-panel{margin:20px 60px}}' +
 '#bagage-nb{box-sizing:border-box;max-width:460px;margin:20px 20px 4px;padding:14px 16px;border:1px solid rgba(244,241,233,.22);background:rgba(9,12,13,.55);color:#f4f1e9;font:14px/1.45 Arial,Helvetica,sans-serif}' +
 '#bagage-nb p{margin:0 0 10px}#bagage-nb form{display:flex;gap:8px;flex-wrap:wrap}' +
 '#bagage-nb input{flex:1 1 200px;min-width:0;height:40px;padding:0 12px;border:1px solid rgba(244,241,233,.4);background:transparent;color:#f4f1e9;font:inherit}' +
@@ -520,13 +524,13 @@ const m = /^(\d+)_(DAYS|WEEKS|MONTHS|YEARS)$/.exec(d || ''); if (!m) return '';
 const n = +m[1], w = { DAYS:['dag','dagen'], WEEKS:['week','weken'], MONTHS:['maand','maanden'], YEARS:['jaar','jaar'] }[m[2]];
 return n + ' ' + w[n === 1 ? 0 : 1];
 };
-let prijzen = null, prijzenBezig = null;
+let prijzen = null, prijzenBezig = null, kortMap = {};
 const laadPrijzen = () => {
 if (prijzen) return Promise.resolve(prijzen);
 if (prijzenBezig) return prijzenBezig;
-try { const c = JSON.parse(sessionStorage.getItem('bagagePrijzen') || 'null'); if (c && Date.now() - c.t < 10 * 60 * 1000) { prijzen = c.p; return Promise.resolve(prijzen); } } catch (e) { /* geen opslag */ }
+try { const c = JSON.parse(sessionStorage.getItem('bagagePrijzen2') || 'null'); if (c && Date.now() - c.t < 10 * 60 * 1000) { prijzen = c.p; kortMap = c.k || {}; return Promise.resolve(prijzen); } } catch (e) { /* geen opslag */ }
 prijzenBezig = (async () => {
-const p = {}; let skip = 0;
+const p = {}, k = {}; let skip = 0;
 for (;;) {
 const r = await fetch(API, { method:'POST', headers:{ 'api-key':API_KEY, 'Content-Type':'application/json' }, body:JSON.stringify({ limit:100, skip }) });
 if (!r.ok) break;
@@ -534,12 +538,20 @@ const j = await r.json();
 (j.data || []).forEach(i => {
 const t = (i.tvod || []).filter(x => x && Number(x.price) > 0).sort((a, b) => Number(b.price) - Number(a.price))[0];
 if (t) p[i.id] = euroNl(t.price) + (duurNl(t.duration) ? ' · ' + duurNl(t.duration) : '');
+/* korte versies: tag KORT: <Content ID van de lange versie> */
+(i.tags || []).forEach(tg => {
+const m = /^KORT\s*[:\-–]\s*([0-9a-f]{24})$/i.exec(String((tg && tg.name) || tg).trim());
+if (!m) return;
+const c = (i.coverimage || [])[0] || {};
+const pad = String(i.seoSlug || '').replace(/^\/+/, '') || ((/episode/i.test(i.queryName || '') ? 'episodes/' : 'movies/') + 'titel');
+(k[m[1]] = k[m[1]] || []).push({ id:i.id, titel:i.title || '', beeld:c.coverUrl ? 'https://' + (c.cdnDomainName || '1577787583.rsc.cdn77.org') + '/' + c.coverUrl + '?width=600' : '', url:'/' + lang() + '/' + pad + '-' + i.id, duur:(((i.actualmedia || [])[0] || {}).duration) || 0 });
+});
 });
 skip += 100;
 if (!j.data || !j.data.length || skip >= j.count) break;
 }
-prijzen = p;
-try { sessionStorage.setItem('bagagePrijzen', JSON.stringify({ t:Date.now(), p })); } catch (e) { /* geen opslag */ }
+prijzen = p; kortMap = k;
+try { sessionStorage.setItem('bagagePrijzen2', JSON.stringify({ t:Date.now(), p, k })); } catch (e) { /* geen opslag */ }
 return p;
 })().catch(() => { prijzen = {}; return prijzen; });
 return prijzenBezig;
@@ -616,6 +628,8 @@ setTimeout(() => { const t = kies(); if (t) try { t.scrollIntoView({ block:'cent
 }
 }
 } catch (e) { /* geen tab */ }
+/* eigen tab 'Korte versies' (na Details, Gerelateerd, Duiding) */
+try { korteTab(); } catch (e) { /* geen korte versies */ }
 /* promotiecode invullen op de huurpagina */
 let code = ''; try { code = sessionStorage.getItem('bagageCode') || ''; } catch (e) { /* geen opslag */ }
 if (code && /^\/[a-z]{2}\/tvod\//.test(location.pathname)) {
@@ -628,6 +642,51 @@ const link = [...document.querySelectorAll('*')].find(e => !e.childElementCount 
 if (link) { codeKlik = Date.now(); codeOpen = location.pathname + '|' + code; (link.closest('button,a,[class*="cursor-pointer"]') || link).click(); }
 }
 }
+};
+/* tab 'Korte versies': korte versies van deze lange documentaire of aflevering (tag KORT: <id> op de korte versie) */
+let kortPad = '';
+const korteTab = () => {
+const html = document.documentElement;
+const id = pageId(), lijst = (id && kortMap[id]) || [];
+const balk = document.querySelector('.rd-tabs > div:first-child');
+let knop = document.getElementById('bagage-kort-tab'), paneel = document.getElementById('bagage-kort-panel');
+if (kortPad !== location.pathname) { kortPad = location.pathname; html.classList.remove('bagage-kort-open'); if (knop) knop.remove(); if (paneel) paneel.remove(); knop = paneel = null; }
+if (!lijst.length || !balk) return;
+const wrap = balk.closest('.rd-tabs').parentElement;
+const echt = [...balk.querySelectorAll('button[value]')];
+if (!echt.length) return;
+if (!knop) {
+const uit = echt.find(b => !/text-primary/.test(b.className)) || echt[0];
+knop = document.createElement('button');
+knop.type = 'button'; knop.id = 'bagage-kort-tab'; knop.textContent = 'Korte versies';
+knop.className = uit.className.replace(/\btext-primary\b/g, 'text-borderLight').replace(/\bfont-semibold\b/g, '');
+knop.addEventListener('click', () => {
+const aan = echt.find(b => /text-primary/.test(b.className)) || echt[0], af = echt.find(b => !/text-primary/.test(b.className)) || echt[0];
+html.style.setProperty('--bk-on', getComputedStyle(aan).color);
+html.style.setProperty('--bk-off', getComputedStyle(af).color);
+html.style.setProperty('--bk-left', knop.offsetLeft + 'px');
+html.style.setProperty('--bk-w', knop.offsetWidth + 'px');
+html.classList.add('bagage-kort-open'); knop.classList.add('aan');
+});
+balk.addEventListener('click', ev => { if (ev.target.closest('button[value]')) { html.classList.remove('bagage-kort-open'); knop.classList.remove('aan'); } }, true);
+}
+if (knop.parentNode !== balk || knop.nextElementSibling) balk.appendChild(knop);
+if (!paneel) {
+paneel = document.createElement('div');
+paneel.id = 'bagage-kort-panel';
+lijst.forEach(v => {
+const a = document.createElement('a');
+a.href = v.url;
+const min = v.duur ? Math.max(1, Math.round(v.duur / 60)) + ' min' : '';
+a.innerHTML = (v.beeld ? '<img loading="lazy" alt="">' : '') + '<b></b>' + (min ? '<small></small>' : '');
+if (v.beeld) a.querySelector('img').src = v.beeld;
+a.querySelector('b').textContent = v.titel;
+if (min) a.querySelector('small').textContent = min;
+a.addEventListener('click', ev => { ev.preventDefault(); if (!window.__bagageGo || !window.__bagageGo(v.url)) location.href = v.url; });
+paneel.appendChild(a);
+});
+}
+if (paneel.previousElementSibling !== wrap) wrap.after(paneel);
 };
 /* nieuwsbrief-uitnodiging onder de knop Huren / Nu kijken op detailpagina's (inschrijving in Ghost, met bevestigingsmail) */
 const GHOST_MEMBERS = 'https://bagage.ghost.io/members/api/';
