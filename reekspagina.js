@@ -335,7 +335,7 @@
   function vulPaneel(pan, item, eps, w) {
     if (!pan) return;
     const url = urlVan(item);
-    pan.querySelectorAll('.set-cta').forEach(a => { a.href = url; });
+    pan.querySelectorAll('.set-cta').forEach(a => { a.href = w.perTitel && eps.length === 1 ? urlVan(eps[0]) : url; });
     const grid = pan.querySelector('.set-grid');
     const solo = isDocu && eps.length === 1;           /* losse documentaire: één groot blok, tekst ernaast */
     pan.classList.toggle('is-solo', solo);
@@ -343,7 +343,7 @@
     const covers = eps.map(e => img(e.coverimage, 800));
     const allSame = covers.every(c => c && c === covers[0]);
     grid.replaceChildren(...eps.map((e, i) => {
-      const a = el('a', 'set-item'); a.href = url;
+      const a = el('a', 'set-item'); a.href = w.perTitel ? urlVan(e) : url;
       const frame = el('div', 'set-frame');
       const pic = el('img');
       const thumb = e.actualmedia && e.actualmedia[0] && e.actualmedia[0].coverUrl ? CDN + e.actualmedia[0].coverUrl + '?width=800' : '';
@@ -352,7 +352,8 @@
       frame.append(pic);
       const desc = (e.description || '').trim();
       const len = minuten(e.actualmedia && e.actualmedia[0] && e.actualmedia[0].duration);
-      const nr = solo ? w.deel : w.deel + ' ' + (i + 1);
+      const dn = /\bdeel\s*(\d+)/i.exec(e.title || '');   /* nummer uit de titel (Deel 3) als dat er staat */
+      const nr = solo ? w.deel : w.deel + ' ' + (w.perTitel ? i + 1 : dn ? +dn[1] : i + 1);
       a.append(frame, el('div', 'set-no', nr + (len ? ' · ' + len : '')), el('h3', 'set-name', naam(e.title, item.title)));
       if (desc) a.append(el('p', 'set-desc', desc));
       a.setAttribute('aria-label', 'Bekijk ' + naam(e.title, item.title));
@@ -371,18 +372,30 @@
     const byId = Object.fromEntries(items.map(i => [i.id, i]));
     const season = byId[cfg.seizoen];
     if (!season) { console.warn('Reekspagina: seizoen niet gevonden', cfg.seizoen); return; }
-    const eps = titelsVan(items, season);
+    /* Korte versies: (1) apart seizoen (data-kort = seizoen-id), of (2) losse titels: veld kort in reeksen.js
+       of data-kort met titel-id's (komma-gescheiden), of (3) titels met tag "KORT: <id>" die naar dit seizoen
+       of een titel ervan wijzen. Losse korte versies die in het seizoen zelf staan, verdwijnen uit "volledig". */
+    const entry = (window.BAGAGE_REEKSEN || []).find(r => r.page === cfg.pagina) || {};
+    const kortSeizoen = byId[cfg.kort] && byId[cfg.kort].episodes ? byId[cfg.kort] : null;
+    const alle = titelsVan(items, season);
+    const langIds = new Set([season.id, ...alle.map(e => e.id)]);
+    const kortTag = x => (x.tags || []).some(t => { const m = /^KORT\s*[:\-–]\s*([0-9a-f]{24})$/i.exec((t && t.name) || ''); return m && langIds.has(m[1]); });
+    const kortIds = kortSeizoen ? [] : [...new Set([...(entry.kort || []), ...String(cfg.kort || '').split(',').map(x => x.trim()).filter(x => /^[0-9a-f]{24}$/i.test(x)), ...items.filter(kortTag).map(x => x.id)])];
+    const kortLos = kortIds.map(id => byId[id]).filter(Boolean);
+    const eps = alle.filter(e => !kortIds.includes(e.id));
 
     /* Links naar het seizoen (of de titel) */
     root.querySelectorAll('[data-link="seizoen"]').forEach(a => { a.href = urlVan(season); });
 
     /* Tabblad 1: de volledige reeks / het volledige dossier */
     const gratis = isGratis(eps);
-    vulPaneel(root.querySelector('#pan-vol') || root.querySelector('.set'), season, eps, { ...woord, extra: gratis ? ' · gratis' : isDocu ? '' : ' · één huurprijs' + (byId[cfg.kort] ? ', korte versies inbegrepen' : '') });
+    vulPaneel(root.querySelector('#pan-vol') || root.querySelector('.set'), season, eps, { ...woord, extra: gratis ? ' · gratis' : isDocu ? '' : ' · één huurprijs' + (kortSeizoen || kortLos.length ? ', korte versies inbegrepen' : '') });
 
     /* Tabblad 2: de korte versies (apart seizoen in Revidd, data-kort) */
-    const kort = byId[cfg.kort];
-    if (kort) vulPaneel(root.querySelector('#pan-kort'), kort, titelsVan(items, kort), { deel:'Kort', stuks:'korte versies', een:'korte versie', extra: ' · inbegrepen bij ' + woord.het });
+    const kort = kortSeizoen;
+    const kortW = { deel:'Kort', stuks:'korte versies', een:'korte versie', extra: ' · inbegrepen bij ' + woord.het };
+    if (kort) vulPaneel(root.querySelector('#pan-kort'), kort, titelsVan(items, kort), kortW);
+    else if (kortLos.length) vulPaneel(root.querySelector('#pan-kort'), season, kortLos, { ...kortW, perTitel:true });
 
     /* Prijs en prijsvoordeel */
     const p = prijs(season);
@@ -413,7 +426,7 @@
     }
 
     /* Achtergrond: Ghost-artikels bij de afleveringen */
-    achtergrond(items, [season.id, ...(kort ? [kort.id] : []), ...(root.querySelector('.bg-achtergrond')?.dataset.reviddIds || '').split(',').map(x => x.trim()).filter(Boolean)]);
+    achtergrond(items, [season.id, ...(kort ? [kort.id] : []), ...kortIds, ...(root.querySelector('.bg-achtergrond')?.dataset.reviddIds || '').split(',').map(x => x.trim()).filter(Boolean)]);
   }).catch(err => console.warn('Reekspagina', err));
 
   /* ---------- Achtergrond (Ghost) + lezer ---------- */

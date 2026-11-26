@@ -20,6 +20,9 @@
    anker   optioneel: ankernaam op Reeksen & dossiers (…/partnerkeuze#anker)
    shorts  optioneel: media-id's van de shorts (reels in de mediabibliotheek), in volgorde;
            ze verschijnen naast elkaar in het tabblad De shorts van de reekspagina
+   kort    optioneel: Revidd-id's van losse korte versies (geen apart seizoen); ze komen in het tabblad
+           De korte versies en verdwijnen uit De volledige reeks. Titels met tag "KORT: <id van een titel
+           of het seizoen van deze pagina>" komen er ook vanzelf bij.
    shortsBeeld optioneel: staand beeld (1080×1920) voor de kaart "De shorts" zolang de reeks geen eigen shorts heeft
    kaders  optioneel: beelden voor de vierkante contextkaarten van de partner (bv. Collectie · Verdieping ·
            Museum · Bezoek), in volgorde, zonder ?width=…; leeg ('') = huidig beeld laten staan.
@@ -41,7 +44,8 @@ window.BAGAGE_REEKSEN = [
       site:'https://www.inflandersfields.be/' },
     tekst:'Het museum over de Eerste Wereldoorlog brengt samen met BAGAGE deze reeks, vanuit de mensen die de oorlog meemaakten. Met extra context via tentoonstellingen en getuigenissen.',
     home:true,
-    ids:['6acbbe9bf75648400cbb0473', '6a996b9cb6a6cc4adaee6a8b'] },
+    ids:['6acbbe9bf75648400cbb0473', '6a996b9cb6a6cc4adaee6a8b'],
+    kort:['6a996346f1b043550ec9b206'] },  /* Deel 1 Razernij: korte versie; lange versie volgt */
 
   { page:'goodplanet',
     title:'De aarde vanuit de hemel', type:'Dossier · 4 documentaires', soort:'dossier',
