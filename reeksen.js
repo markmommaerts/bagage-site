@@ -44,8 +44,7 @@ window.BAGAGE_REEKSEN = [
       site:'https://www.inflandersfields.be/' },
     tekst:'Het museum over de Eerste Wereldoorlog brengt samen met BAGAGE deze reeks, vanuit de mensen die de oorlog meemaakten. Met extra context via tentoonstellingen en getuigenissen.',
     home:true,
-    ids:['6acbbe9bf75648400cbb0473', '6a996b9cb6a6cc4adaee6a8b'],
-    kort:['6a996346f1b043550ec9b206'] },  /* Deel 1 Razernij: korte versie; lange versie volgt */
+    ids:['6acbbe9bf75648400cbb0473', '6a996b9cb6a6cc4adaee6a8b'] },
 
   { page:'goodplanet',
     title:'De aarde vanuit de hemel', type:'Dossier · 4 documentaires', soort:'dossier',
